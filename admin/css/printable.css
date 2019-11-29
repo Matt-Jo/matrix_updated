@@ -1,0 +1,40 @@
+#menu {
+    display: none;
+}
+
+#header {
+    display: none;
+}
+
+a {
+    color: #3D3D3D !important;
+    font-family: Arial !important;
+    font-size: 8pt !important;
+}
+
+.printable,
+.noPrint,
+.qTip {
+    display: none;
+}
+
+table.tablesorter {
+    display: table;
+}
+
+table.tablesorter thead tr th.numeric {
+    padding-right: 0;
+}
+
+table.tablesorter thead tr th {
+    padding: 0;
+}
+
+.ui-widget-content {
+    border: none;
+}
+
+.ui-tabs,
+.ui-tabs-panel {
+    padding: 0 !important;
+}

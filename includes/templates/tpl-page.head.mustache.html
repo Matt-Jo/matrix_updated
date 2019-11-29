@@ -1,0 +1,357 @@
+<style>
+	#ck-new-header { display:block; width:100%; text-align:center; background-color:#f2f2f2; border-width:0px 0px 1px 0px; border-style:solid; border-color:#cecece; height:93px; position:fixed; z-index:9999; top:0; left:0; }
+	#ck-header-body { width:100%; max-width:1200px; margin:0 auto; }
+	#ck-header-body-top { display:flex; justify-content:space-between; align-content:center; padding:5px 0; }
+	#ck-new-search-bar { width:100%; max-width:600px; }
+	#ck-new-desktop-logo { width:200px; }
+	#ck-new-mobile-logo { width:40px; height:40px; }
+	#connect .about-us { display:flex; }
+
+	/* desktop search */
+	#ck-header-search-bar { display:flex; width:100%; margin-top:10px; }
+	#ck-header-search-bar input { height:25px; width:100%; font-size:16px; }
+	#ck-header-search-bar { display:flex; height:35px; width:100%; }
+	#ck-header-search-bar button { height:100%; margin:0; width:12%; background-color:#3b8baa; color:#ffffff; border:none; border-radius: 0 5px 5px 0; }
+	.ck-new-search-input { background-color:#fff; height:100%; display:flex; width:88%; align-items:center; border:1px solid #bcbec0; border-radius: 5px 0 0 5px; box-sizing:border-box; }
+	.ck-new-search-input input { border:none; height:100%; margin:0; }
+	.ck-new-search-input i { border:none; margin:0; font-size:25px; padding:5px; color:#e21836; font-weight:bold; }
+	#ck-new-icons { font-size:30px; display:flex; justify-content:space-around; width:110px; }
+	#ck-new-menu-button { font-size:24px; margin:5px; }
+	.visuallyhidden { display:none; }
+	/*end desktop search*/
+
+	.mobile-new { display:none !important; }
+	.ck-home-page-header-icon { font-size:23px; color:#747678; margin:5px; cursor:pointer; }
+	.ck-home-page-header-icon:hover { color:#3b8baa; }
+
+	.slide-down-container { position:relative; }
+	.slide-down { position:absolute; background-color:#fff; font-size:14px; width:130px; display:none; color:#666666; border:1px solid #666666; padding:4px 0; background-color:#fff; left:-50px; z-index:999999; }
+	.slide-down ul { margin:0 auto; padding:0; }
+	.slide-down ul li { list-style-type:none; text-align:center; margin:10px 0; }
+	.slide-down ul li a { color:#666666; }
+	#contact-slide-down { width:160px; left:-75px; }
+
+	#ck-new-main { margin:139px 0 0 0; }
+	#hero-rotator { width:100% !important; }
+	#ck-topnav { top:50px; border-bottom:1px solid #bcbec0; border-top:1px solid #bcbec0; }
+	#ck-topnav { text-align:left !important; }
+	#contact-phone { font-size:18px; }
+
+	/*mobile search bar */
+	#ck-new-mobile-search-bar-container { display:none; width:100%; background-color:#ffffff; height:60px; position:absolute; z-index:99999; }
+	#ck-new-mobile-search-bar-container form { width:100%; display:block; text-align:center; }
+	#ck-new-mobile-search-bar-container input { width:95%; height:35px; display:inline; vertical-align:bottom; outline:none; font-size:16px; margin:0 .25%; margin-top:5px; }
+
+	.more { cursor:pointer !important; }
+
+	#mobile-footer-legal { display:none; }
+	#ck-description { text-align:center; width:100%; }
+
+	.add-to-cart { background-color:#a3b93f; background:linear-gradient(#a3b93f, #8fa538); width:125px; height:35px; text-align:center; padding:5px; border:1px solid #8fa538; border-radius:17px; color:#ffffff; font-size:15px; font-weight:bold; outline:none; }
+	.add-to-cart:hover { border:2px solid #999999; background:#8ca33c; }
+	.cart-icon { position: relative; text-decoration:none; display:inline-block; }
+	.cart-items-count { position:absolute; background:#e21836; top:5px; right:0; font-size:12px; width:10px; text-align:center; height:10px; line-height:12px; color:#fff; border-radius:50%; font-weight:bold; display:block; }
+
+  /* flyout style */
+	.active-flyout { right:0 !important; display:block !important; }
+	#cart-flyout {  z-index:99999; width:500px; position:fixed; bottom:0; right:-110%; max-height:100%; background-color:#fff; border:1px solid #999999; top:0; box-shadow: 0 0 0 0 rgba(0, 0, 0, 0), 4px 0px 10px 4px rgba(0, 0, 0, 0.7); display:hidden; display:flex; flex-direction:column; align-content:space-between; }
+	#close-cart-flyout { cursor:pointer; color:#ffffff; font-size:22px; padding:3px; font-weight:bold; }
+	#cart-flyout-main { display:flex; flex-direction:column; height:77%; }
+	#cart-flyout-header { display:flex; justify-content:space-between; background-color:#e21836; align-items:center; padding:5px 10px; border-bottom:1px solid #999999; max-height:45px; min-height:45px; }
+	#cart-flyout-header span { font-size:22px; color:#ffffff; font-weight:bold; padding:10px 0; }
+	#cart-flyout-products { overflow-y:auto; padding-top:10px; padding-bottom:10px; padding-right:15px; }
+	.cart-flyout-product { display:flex; padding:15px 0; }
+	.cart-flyout-section { display:flex; flex-direction:column; border-bottom:1px solid #666666; }
+	.cart-flyout-product-image { margin-right:8px; }
+
+	.content-products-model { font-weight:bold; color:#3b8baa; font-size:16px; }
+	.content-products-title { color:#666666; }
+	.price-original { color:#666666; padding-left:5px; text-decoration:line-through; font-size:15px; text-align:right; }
+	.price-special { color:#e21836; font-weight:bold; padding-left:5px; font-size:18px; }
+	.price-display { color:#e21836; font-weight:bold; padding-left:5px; font-size:18px; }
+	#cart-flyout-checkout { background-color:white; display:flex; flex-direction:column; height:250px; justify-content:center; align-items:center; box-shadow: 0 0 0 0 rgba(0, 0, 0, 0), 0 -1px 16px 0 rgba(0, 0, 0, 0.13); }
+	#cart-flyout-checkout a { text-decoration:none; color:white; width:50%; text-align:center; }
+	#cart-flyout-checkout button { background:linear-gradient(#a3b93f, #8fa538); border-radius:18px; font-size:18px; color:white; font-weight:bold; margin-top:10px; width:100%; height:35px; border:1px solid #8fa538; }
+	#cart-flyout-checkout button:hover { background:linear-gradient(#8fa538, #8fa538); }
+	.cart-flyout-organize { display:flex; justify-content:space-between; width:100%; }
+	.image-plus-content { display:flex; }
+	.included-option-note { font-style:italic; font-size:13px; color:#999999; margin-left:110px; }
+	.delete-product-from-cart { color:#e21836; cursor:pointer; padding:0 10px; font-weight:bold; font-size:18px; }
+	.has-included-items { display:flex; flex-direction:column; }
+	#cart-flyout-warranty { display:flex; justify-content:space-between; width:70%; font-size:18px; }
+	#cart-flyout-total { display:flex; justify-content:space-between; width:70%; font-size:18px; padding-bottom:10px; }
+	#cart-flyout-free-shipping { width:100%; margin:0 auto; height:10px; border:1px solid #999999; border-radius:5px; background-color:#cfd1d4; }
+	#shipping-progress-bar { height:100%; background:linear-gradient(#3b8baa, #285e73); border-radius:5px; }
+	#progress-bar-title { padding:10px; font-size:16px; color:#e21836; }
+	.fa-shipping-fast { padding-left:5px; font-size:20px; }
+	.quantity-button-container { display:flex; width:20%; justify-content:center; padding-top:6px; align-items:center; background-color:white; }
+	.quantity-button-minus { background-color:white; width:30px; height:21px; border:1px solid #999999; border-top-left-radius:4px; border-bottom-left-radius:4px; }
+	.quantity-button-number { width:30px; height:17px; border:1px solid #999999; text-align:center; font-family:arial; font-size:14px; }
+	.quantity-button-plus { background-color:white; width:30px; height:21px; border:1px solid #999999; border-top-right-radius:4px; border-bottom-right-radius:4px; }
+	.quantity-button-plus:active { background-color:#3b8baa; }
+	.quantity-button-minus:active { background-color:#3b8baa; }
+	.quantity-subtotal { display:flex; justify-content:space-between; width:90%; align-items:center; padding:0 0 10px 40px; }
+	.line-item-subtotal { font-size:15px; font-weight:bold; color:#777; }
+	.line-item-desc { font-size:13px; color:#777; padding-right:4px; }
+	.subtotal-flyout-section { border-top:2px solid #cecece; padding-top:5px; }
+	#cart-flyout-checkout-organize { display:flex; flex-direction:column; height:90%; width:100%; justify-content:center; align-items:center; }
+	#cart-flyout-empty-cart { text-align:center; font-size:20px; color:#3b8baa; padding:15px; display:flex; flex-direction:column; }
+	#cart-flyout-empty-cart i { font-size:60px; padding-top:25px; }
+	.flyout-recommendation { padding-left:50px; padding-top:5px; }
+	.flyout-recommendation span { font-weight:bold; text-decoration:underline;  }
+	#checkout-cart-carets { display:flex; justify-content:space-around; width:100%; border-top:1px solid #cfd1d4; }
+	#checkout-cart-carets i { color:#999999; font-size:18px; }
+	#free-shipping-received { height:50px; width:100%; }
+	#free-shipping-animation { padding:10px; font-size:16px; color:#e21836; font-weight:bold; display:none; }
+	#free-shipping-animation .fa-trophy-alt { font-size:18px; color:orange; }
+	#free-shipping-block { width:80%; text-align:center; }
+	#shipping-message-block { height:50px; width:100%; }
+	#flyout-darken-back { background:rgb(0, 0, 0); opacity:0.3; position:fixed; width:100%; height:100%; z-index:99999; top:0; display:none; }
+	.each-item { padding-left:3px; font-weight:normal; font-size:12px; }
+	.cart-flyout-price { display:flex; padding-right:8px; align-items:baseline; }
+	/* end flyout style */
+
+	.ck-tn-link.outlet { font-weight:bold; color:#e21836; }
+	.slide-down .dow-nav { color:#e21836; font-weight:bold; }
+
+	.rcrSect { display: flex; flex-direction: column; padding-bottom: 15px; padding-top: 5px; background-color: #ffffff; box-shadow: 0px 0px 34px -2px rgba(0,0,0,0.26); margin-bottom:10px; }
+	.reviews-title { text-align: center; font-size: 32px; color: #3b8baa; font-weight: bold; padding: 5px; margin: 0; }
+	.cReviews { justify-content: center; display:flex; }
+	.customer-name { margin: 0; font-weight: bold; color: #3b8baa; font-size: 1.4em; }
+	.cReviews div { text-align:center; width: 33%; padding: 10px 5px; }
+	.cReviews p { margin: 5px 10px; color: #666666; }
+	.starLight { color: #e21836; }
+	.fa-star { color: #e21836; }
+	.fa-1-5x { font-size: 21px;}
+	.fa-2x { font-size:24px; }
+	@media only screen and (max-width: 420px) { .desktopOnly { display: none; }
+		.slideshow-container { min-width:100%; }
+		.cReviews div { width: 90%; }
+		.cReviews { align-items: center;}
+		.rcrSect {border-top: 2px solid #adafb2; border-bottom: 2px solid #adafb2; border-left: none; border-right: none; }
+	}
+
+	/* On smaller screens, decrease text size */
+	@media only screen and (max-width: 300px) {
+		.text { font-size: 11px; }
+	}
+
+	@media all and (max-width:1200px) {
+		#ck-header-body { padding:0 15px; }
+		#ck-new-icons { margin-right:30px; }
+	}
+	@media all and (max-width:600px) {
+		#cart-flyout { top:50px; width:100%; box-shadow:none; }
+		.cart-items-count { top:10px; }
+		.add-to-cart { width:200px; height:40px; font-size:18px; }
+	}
+
+	@media all and (min-width:600px) and (max-width:980px) {
+		#cart-flyout { top:50px; width:75%; }
+		.cart-items-count { top:10px; }
+	}
+
+	@media all and (max-width:980px) {
+		#ck-topnav .section-content { width:100%; }
+		#sitewide-message { display:none; }
+		#ck-new-header { height:50px; text-align:left; }
+		#ck-new-header-body { padding:5px; }
+		#ck-new-main { margin-top:50px; }
+		#ck-new-icons { margin-right:30px; width: 185px; }
+		#ck-new-icons span { padding:0 3px; }
+		#ck-new-logo-container { margin-left:5px; }
+		.mobile-new { display:inline-block !important; }
+		.desktop { display:none !important; }
+		.tn-menu { flex-direction:column; }
+
+		#ck-topnav li .more { background:#ffffff; }
+		#ck-topnav li .more:before { background:#3b8baa; }
+		#ck-topnav li .more:after { background:#3b8baa; }
+		#ck-topnav li .more-inner { background:#ffffff; }
+		#ck-topnav li .more-inner:before { background:#e21836; }
+		#ck-topnav li .more-inner:after { background:#e21836; }
+
+	    .ck-tn-dd-container, .ck-tn-po-container { padding-left:22px; }
+
+		#who-we-are { float:none; margin:0; text-align:center; padding:5px; }
+		#who-we-are { text-align:center; }
+
+		#ck-footer { margin-bottom:55px; }
+		#ck-byline .reach-us, #ck-byline .copyright { margin:0; display:block; padding-bottom:10px; }
+		#ck-byline { height:auto; padding-top:10px; }
+		#mobile-footer-legal { display:block; font-size:12px; }
+		#help-desk, #connect, #ck-confidence { padding:0; margin:0; float:none; text-align:center; overflow:hidden; width:100%; }
+	    #help-desk .link-group { float:none; display:inline-block; width:48%; }
+	    #help-desk .link-group-right { text-align:left; margin-left:1%; }
+		#help-desk .link-group-left { text-align:right; margin-right:1%; }
+		#cat-map { display:none; }
+	    #connect .ft-head { text-align:center; }
+		#connect .link-group-mobile-container { margin:0 auto; display:inline-block; }
+		#connect .link-group-mobile-container .about-us .ft-link { margin:0 10px; }
+		#newsletter-signup { margin:15px 0 0 0; padding:0; width:100%; flex-direction:column; align-items:center; text-align:center; }
+		#newsletter-intro { font-size:24px; width:100%; margin:0; padding:0 0 10px 0; }
+	    #confidence-cc { margin:10px 0 !important; }
+	    #social-icons { width:100%; }
+		#connect .about-us { margin-top:15px; border-top:2px solid #cecece; padding-top:20px; }
+	}
+</style>
+<header id="ck-new-header">
+	{{#head.sitewide_header}}
+	<div id="sitewide-message" class="sitewide_message">
+		{{&head.sitewide_header}}
+	</div>
+	{{/head.sitewide_header}}
+	<div id="ck-header-body">
+		<div id="ck-header-body-top">
+			<span id="ck-new-logo-container" itemscope itemtype="http://schema.org/Organization">
+				<a href="{{body.homepage}}" title="CablesAndKits.com" itemprop="url">
+					<img src="{{static_files}}/img/Logo_2018J3.png" id="ck-new-desktop-logo" class="desktop" alt="CablesAndKits" title="CablesAndKits" itemprop="logo">
+					<img src="{{static_files}}/img/ckOnly.png" id="ck-new-mobile-logo" class="mobile-new" alt="CablesAndKits" title="CablesAndKits" itemprop="logo">
+				</a>
+			</span> <!-- center on mobile / left align on desktop -->
+			<span class="desktop" id="ck-new-search-bar">
+				<form id="search-form" role="search" action="/advanced_search_result.php" method="get">
+					<div id="ck-header-search-bar">
+						<span class="ck-new-search-input">
+							<i class="far fa-search"></i>
+							<label class="visuallyhidden" for="search">Search:</label>
+							<input type="search" aria-label="search text" name="keywords" placeholder="What are you looking for?">
+						</span>
+						<button class="ck button">Search</button>
+					</div>
+				</form>
+			</span>
+			<span id="ck-new-icons">
+				<span id="ck-new-search-bar-button"><i class="far fa-search ck-home-page-header-icon mobile-new"></i></span>
+	            <span class="login slide-down-container" id="account-slide-down-container" data-type="account">
+		            <i class="far fa-user ck-home-page-header-icon slide-down-button" data-type="account"></i>
+					<div class="slide-down" id="account-slide-down">
+						<ul>
+<!--							<a href="/account.php" class="login my-account slide-down-button" data-type="account">-->
+							{{#login.user_id}}
+							<li><a href="/account.php">My Account</a></li>
+							<li><a href="/logoff.php">Log Off</a></li>
+							{{/login.user_id}}
+							{{^login.user_id}}
+							<li><a href="/login.php">Log In</a></li>
+							{{/login.user_id}}
+						</ul>
+					</div>
+	            </span>
+				<span class="slide-down-container" id="contact-slide-down-container" data-type="contact">
+					<i class="far fa-question-circle ck-home-page-header-icon slide-down-button" data-type="contact"></i>
+					<div class="slide-down" id="contact-slide-down">
+						<ul>
+							<li><i class="far fa-phone"></i><a href="tel:{{contact_phone}}"><b id="contact-phone"> {{contact_phone}}</b></a></li>
+							<li>Mon-Fri 9am-6pm ET</li>
+							<li><a href="/custserv.php">Customer Service</a></li>
+							<li><a href="/about-us-i-6.html">About Us</a></li>
+							<li><a href="https://blog.cablesandkits.com">Blog</a></li>
+							<li><a href="/learning-center/home">Learning Center</a></li>
+							<li><a class="dow-nav" href="https://www.cablesandkits.com/c/deals-of-the-week">Deals of the Week</a></li>
+						</ul>
+					</div>
+				</span>
+				<span class="cart-icon">
+					<i class="far fa-shopping-cart ck-home-page-header-icon" id="cart-flyout-icon"></i>
+					{{#cart.has_products}}<i class="cart-items-count"></i>{{/cart.has_products}}
+				</span>
+				<span class="mobile-new"><i class="far fa-bars menu-button ck-home-page-header-icon" id="ck-new-menu-button"></i></span>
+			</span>
+		</div>
+	</div>
+	<div id="ck-new-mobile-search-bar-container">
+		<form id="search-form" role="search" action="/advanced_search_result.php" method="get">
+			<label class="visuallyhidden" for="search">Search:</label>
+			<input type="search" aria-label="search text" name="keywords" placeholder="What are you looking for?">
+		</form>
+	</div>
+	<nav id="ck-topnav">
+		<div class="section-content">
+			<ul class="tn-menu">
+				{{#topnav}}
+					{{#categories}}
+				<li class="ck-tn-container">
+					<a href="{{link}}" class="ck-tn-link">{{title}}</i></a>
+					{{#cat_level_2}}
+					<div style="position:absolute;">
+					<ul class="tn-dropdown">
+						{{#categories}}
+						<li class="ck-tn-dd-container">
+							<a href="{{link}}" class="ck-tn-dd-link">{{title}}{{#cat_level_3}}<div class="bump">&rsaquo;</div>{{/cat_level_3}}</a>
+							{{#cat_level_3}}
+							<div style="position:absolute;">
+							<ul class="tn-popout">
+								{{#categories}}
+								<li class="ck-tn-po-container">
+									<a href="{{link}}" class="ck-tn-po-link">{{title}}</a>
+								</li>
+								{{/categories}}
+							</ul>
+							</div>
+							{{/cat_level_3}}
+						</li>
+						{{/categories}}
+					</ul>
+					</div>
+					{{/cat_level_2}}
+				</li>
+					{{/categories}}
+				<li class="ck-tn-container">
+					<a href="/outlet.php" class="ck-tn-link outlet">DEALS</a>
+				</li>
+				{{/topnav}}
+			</ul>
+		</div>
+	</nav>
+	<script>
+		var ck_topnav = new ck.topnav([{link:'ck-tn-container', menu:'tn-dropdown'}, {link:'ck-tn-dd-container', menu:'tn-popout'}, {link: 'ck-tn-po-container'}], '#ck-topnav .tn-menu');
+	</script>
+</header>
+<main id="ck-new-main">
+	<div id="flyout-darken-back">
+	</div>
+	<div id="cart-flyout">
+		<div id="cart-flyout-main">
+			<div id="cart-flyout-header">
+				<span>My Cart</span>
+				<i id="close-cart-flyout" class="fas fa-times-circle"></i>
+			</div>
+			<div id="cart-flyout-products">
+			<!-- populated by javascript -->
+			</div>
+		</div>
+		<div id="cart-flyout-checkout">
+			<div id="free-shipping-block">
+				<div id="free-shipping-eligible">
+					<div id="free-shipping-received">
+						<div id="shipping-message-block">
+							<div id="progress-bar-title">Free Shipping @ $99 Progress Bar</div>
+							<div id="free-shipping-animation">
+								<i class="fas fa-trophy-alt"></i>
+								<span>You Got FREE SHIPPING!</span>
+								<i class="fas fa-trophy-alt"></i>
+							</div>
+						</div>
+						<div id="cart-flyout-free-shipping">
+							<div id="shipping-progress-bar"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="free-shipping-not-eligible">
+				<div>This Order Is Not Eliblble For Free Shipping</div>
+			</div>
+			<div id="cart-flyout-checkout-organize">
+				<div id="cart-flyout-warranty">
+					<div>Lifetime Warranty</div>
+					<div>$0.00</div>
+				</div>
+				<div id="cart-flyout-total">
+					<div>Subtotal</div>
+					<div id="cart-flyout-total-cost" data-raw-total="{{cart.raw_total}}">{{cart.cart_flyout_total_cost}}</div>
+				</div>
+				<a href="/shopping_cart.php"><button type="button">Go To Cart</button></a>
+			</div>
+		</div>
+	</div>

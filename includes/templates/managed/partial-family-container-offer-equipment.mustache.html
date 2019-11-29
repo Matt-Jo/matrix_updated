@@ -1,0 +1,235 @@
+<style>
+	#prices { margin-top:15px; }
+	.regular-price { text-decoration:line-through; text-align:right; }
+	.item-price { font-weight:bold; color:#d22842; text-align:right; }
+	#special-price-notice { font-size:11px; color:#d22842; margin:15px 0px 0px 0px; display:none; }
+	#sibling-variants { background-color:#fff; border-style:solid; border-color:#cecece; border-width:2px 0px; padding:5px 8px; margin-top:15px; color:#666; }
+
+	#sibling-variants table { width:100%; }
+	.prime-option { text-align:left; font-size:20px; font-weight:normal; }
+	.secondary-option td { padding:4px 6px; font-size:18px; }
+	.secondary-option:hover td { background-color:#eef; cursor:pointer; }
+	.secondary-option .selector { text-align:center; }
+
+	#sibling-in-stock { margin:5px 10px; border-top:1px solid #cecece; font-size:18px; padding-top:10px; color:#000; }
+	#lifetime-warranty { margin-bottom:6px; }
+	.confidence { color:#0a3; margin-right:4px; font-weight:bold; font-size:16px; }
+	#in-stock-number { color:#3b8baa; font-size:22px;  }
+	#in-stock-indicator {  }
+	#in-stock-ships {  }
+	#in-stock-additional { font-size:12px; display:none; }
+
+	.ships-date { color:#0a3; font-weight:bold; }
+
+	#included-options { margin:5px 10px; border-top:1px solid #cecece; font-size:16px; padding-top:10px; font-style:italic; display:none; color:#999; line-height:1.2em; }
+	#included-options a { color:#999; }
+
+	#ck-advantages { display:flex; justify-content:space-around; font-size:15px; padding:15px 0 15px 0; text-align:center; background-color:#fefef6; border-bottom:2px solid #cecece; }
+	#ck-advantages i { color:#e21836; font-size:21px; padding-right:5px; }
+	#ck-advantages span { display:flex; align-items:center; color:#555; }
+
+	@media (max-width:980px) {
+		#regular-price { font-size:40px; line-height:.8em; }
+		#item-price { font-size:50px; line-height:.8em; }
+	}
+
+	@media (max-width:767px) {
+		/*#sibling-variants table, #sibling-variants thead, #sibling-variants tbody, #sibling-variants tr, #sibling-variants th, #sibling-variants td { display:block; }
+		#sibling-variants th { text-align:left; padding-top:0px; }
+		#sibling-variants td { padding-left:6px; }*/
+		#ck-advantages { justify-content:center; }
+		#ck-advantages span { width:30%; text-align:left; }
+	}
+</style>
+
+<div id="sibling-variants">
+	<table>
+		<tbody>
+			{{#variants.values}}
+			<tr>
+				<th colspan="4" class="prime-option">{{value_display}}</th>
+			</tr>
+				{{#subordinate}}
+			<tr class="secondary-option">
+				<td class="selector">
+					<input type="radio" class="variant-link" name="product-selector" data-prime-variant-type="{{variance_key}}" data-prime-option-value="{{value_key}}" data-variant-type="{{subvar.variance_key}}" aria-label="{{subval.value_key}}" data-option-value="{{subval.value_key}}" data-products-id="{{products_id}}" {{#subval.selected}}checked{{/subval.selected}}>
+				</td>
+				<td>{{subval.value_display}}</td>
+				<td class="regular-price" data-price="{{pdata.regular_price_number}}">{{pdata.regular_price}}</td>
+				<td class="item-price" data-price="{{pdata.price_number}}">{{pdata.price}}</td>
+			</tr>
+				{{/subordinate}}
+			{{/variants.values}}
+		</tbody>
+	</table>
+	<div id="sibling-in-stock">
+<!--		{{#show_lifetime_warranty}}-->
+<!--		<div id="lifetime-warranty"><span class="confidence">&#10004;</span> Lifetime Warranty</div>-->
+<!--		{{/show_lifetime_warranty}}-->
+		<span id="in-stock-number">{{{in_stock_number}}}</span>
+		<span id="in-stock-indicator">{{{in_stock_indicator}}}</span>
+		<span id="in-stock-ships">{{{in_stock_ships}}}</span>
+		<div id="in-stock-additional">{{{in_stock_additional}}}</div>
+	</div>
+	<div id="included-options">
+	</div>
+</div>
+
+<div id="ck-advantages">
+	<span><i class="fas fa-shield-alt"></i>Lifetime Warranty</span>
+	<span><i class="far fa-hands-helping"></i>30 Day Satisfaction</span>
+	<span><i class="far fa-shipping-timed"></i>Late Shipping till 8pm</span>
+</div>
+
+
+<div id="special-price-notice">
+	Sale quantities are limited to in-stock quantities. If you need more than what is in-stock,<br>
+	click <a href="https://lc.chat/now/8165031/" onclick="return chat_popup(this.href)">here</a> to chat with a CK representative.
+</div>
+<div id="product-schema">
+	{{> partial-product-schema.mustache.html }}
+</div>
+<script>
+	let base_url = '{{base_url}}';
+	let family_defaults = {{{family_defaults}}};
+
+	let variant_fields = {};
+
+	jQuery('.secondary-option td').click(function() {
+		jQuery(this).closest('.secondary-option').find('input').click();
+	});
+
+	jQuery(document).ready(function() {
+		jQuery('.variant-link').click(function(e) {
+			e.stopPropagation();
+			make_selection(jQuery(this));
+		});
+
+		variant_fields = {
+			$breadcrumbs: jQuery('#breadcrumbs'),
+			$model_number: jQuery('#model-number-field'),
+			$page_title: jQuery('head title'),
+			$title: jQuery('#item-name'),
+			$summary: jQuery('#summary'),
+			$hero_link: jQuery('#product-hero a'),
+			$hero_image: jQuery('#product-hero img'),
+			$carousel_links: jQuery('#image-carousel a'),
+			//$item_price: jQuery('#item-price'),
+			//$regular_price: jQuery('#regular-price'),
+			$in_stock_number: jQuery('#in-stock-number'),
+			$in_stock_indicator: jQuery('#in-stock-indicator'),
+			$in_stock_ships: jQuery('#in-stock-ships'),
+			$in_stock_additional: jQuery('#in-stock-additional'),
+			$products_id: jQuery('#products_id'),
+			//$discontinued: jQuery('#discontinued'),
+			$quantity: jQuery('#product-quantity'),
+			$included_options: jQuery('#included-options'),
+			$description: jQuery('#description .product-info-content'),
+			$schema: jQuery('#product-schema'),
+		};
+	});
+
+	let products = {};
+
+	function make_selection($selection) {
+		let products_id = $selection.data('products-id');
+
+		let qstring = {};
+
+		qstring[$selection.data('prime-variant-type')] = $selection.data('prime-option-value');
+		qstring[$selection.data('variant-type')] = $selection.data('option-value');
+
+		let new_url = base_url+'fp-'+products_id+'/?'+jQuery.param(qstring);
+
+		history.replaceState(qstring, null, new_url);
+
+		jQuery('.main-body-inner-container').addClass('fade');
+
+		if (products[products_id] != undefined) {
+			setTimeout(function() {
+				display_selection(products[products_id]);
+			}, 500);
+		}
+		else {
+			jQuery.ajax({
+				url: new_url,
+				type: 'get',
+				dataType: 'json',
+				data: { action: 'load-selection', ajax: 1 },
+				success: function(data) {
+					products[products_id] = data.product;
+					display_selection(data.product);
+				}
+			});
+		}
+	}
+
+	function display_selection(sel) {
+		variant_fields.$breadcrumbs.html(sel.breadcrumbs);
+		variant_fields.$model_number.html(sel.model_number);
+		variant_fields.$page_title.html(sel.page_title);
+		variant_fields.$title.html(sel.title);
+		variant_fields.$summary.html(sel.summary);
+
+		if (sel.images.length > 0) {
+			variant_fields.$hero_link.attr('href', '{{cdn}}/'+sel.images[0].image_large);
+			variant_fields.$hero_image.attr('src', '{{cdn}}/'+sel.images[0].image_large).attr('title',	sel.attribute_safe.name).attr('alt', sel.attribute_safe.name);
+
+			let carousel_idx;
+
+			variant_fields.$carousel_links.each(function(idx) {
+				carousel_idx = idx+1;
+
+				if (!sel.images[idx]) jQuery(this).remove();
+				else {
+					jQuery(this).attr('href', '{{cdn}}/'+sel.images[idx].image_large).attr('rel', "useZoom: 'Zoomer', smallImage: '{{cdn}}/"+sel.images[idx].image_large+"'");
+					jQuery(this).find('img').attr('src', '{{cdn}}/'+sel.images[idx].image_thumb).attr('title', sel.attribute_safe.name).attr('alt', sel.attribute_safe.name);
+				}
+			});
+
+			for (carousel_idx; carousel_idx<sel.images.length; carousel_idx++) {
+				jQuery('#image-carousel').append(' <a href="{{cdn}}/'+sel.images[carousel_idx].image_large+'" class="cloud-zoom-gallery" rel="useZoom: \'Zoomer\', smallImage: \'{{cdn}}/'+sel.images[carousel_idx].image_large+'\'"><img src="{{cdn}}/'+sel.images[carousel_idx].image_thumb+'" title="'+sel.attribute_safe.name+'" alt="'+sel.attribute_safe.name+'"></a>');
+			}
+
+			variant_fields.$carousel_links = jQuery('#image-carousel a');
+
+			jQuery('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();
+		}
+
+		/*variant_fields.$item_price.html(sel.price).attr('data-price', sel.price_number);
+
+		if (sel.regular_price) {
+			variant_fields.$regular_price.html(sel.regular_price).attr('data-price', sel.regular_price_number).show();
+			jQuery('#special-price-notice').show();
+		}
+		else {
+			variant_fields.$regular_price.hide();
+			jQuery('#special-price-notice').hide();
+		}*/
+
+		variant_fields.$in_stock_number.html(sel.in_stock_number);
+		variant_fields.$in_stock_indicator.html(sel.in_stock_indicator);
+		variant_fields.$in_stock_ships.html(sel.in_stock_ships);
+
+		if (sel.in_stock_additional) variant_fields.$in_stock_additional.html(sel.in_stock_additional).show();
+		else variant_fields.$in_stock_additional.hide();
+
+		variant_fields.$products_id.val(sel.products_id);
+
+		variant_fields.$quantity.val(1);
+
+		variant_fields.$description.html(sel.description);
+		variant_fields.$schema.html(sel.schema);
+
+		if (sel.products_id == '') {
+			jQuery('#add-current-to-cart').addClass('fade');
+			jQuery('#add-current-to-cart input').attr('disabled', true);
+		}
+		else {
+			jQuery('#add-current-to-cart').removeClass('fade');
+			jQuery('#add-current-to-cart input').attr('disabled', false);
+		}
+
+		jQuery('.main-body-inner-container').removeClass('fade');
+	}
+</script>

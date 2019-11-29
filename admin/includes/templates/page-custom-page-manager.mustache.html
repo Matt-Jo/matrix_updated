@@ -1,0 +1,246 @@
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.38.0/codemirror.css">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG" crossorigin="anonymous">
+
+<style>
+	#page-body { width:100%; }
+	#custom-page-manager-table { text-align:center; width:90%; }
+	.red-x { color:#d91a2a; }
+	.green-checkmark { color:#33cc25; }
+	.modal { display:none; position:fixed; z-index:1; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgb(0,0,0); background-color:rgba(0,0,0,0.4); }
+	.modal-content { background-color:#fefefe; margin:5% auto; border:1px solid #888; width:80%; max-height:85%; }
+	.close-modal { color:#000; float:right; font-size:35px; font-weight:bold; margin-right:-30px; margin-top:-38px; }
+	.close-modal:hover,
+	.close-modal:focus { color:#fff; text-decoration:none; cursor:pointer; }
+	.modal-container { padding:20px; height:900px; }
+	.custom-page-manager-input-block { margin:20px; }
+	.ck-icon { font-size:16px; }
+	.icon-link { text-decoration:none !important; color:#000 !important; cursor:pointer; }
+	.icon-button { cursor:pointer; }
+	#submit-custom-page-form { display:block; margin:5px auto; font-size:1rem; cursor:pointer; outline:0; border:none; background:#e0e1e2; padding:.45em .75em; text-transform:none; text-shadow:none; font-style:normal; text-align:center; text-decoration:none; border-radius:.2857rem; width:200px; height:40px; }
+
+	.header { overflow:hidden; width:90%; margin:10px 0; }
+	#create-new-page-button { float:right; font-size:30px; }
+	.form-input-block { display:inline-block; width:48%; vertical-align:top; }
+	.archive-page-button { margin-left:20px; color:#db2c00 !important; }
+	#meta-description { display:flex; word-break:break-all; word-wrap:break-word; width:100%; height:50px; }
+	#page-title { display:flex; flex-wrap:wrap; width:100%; }
+	.codeMirror { height:1000px; }
+	#url { width:300px; }
+	#meta-total { margin:0 auto; color:#4FB99F; text-align:right; font-size:14px; }
+	#title-total { margin:0 auto; color:#4FB99F; text-align:right; font-size:14px; }
+</style>
+<td id="page-body">
+	<h3>Custom Page Manager</h3>
+	<div class="header">
+		<i class="fal fa-plus-circle ck-icon icon-button" id="create-new-page-button"></i>
+	</div>
+	<table id="custom-page-manager-table" class="ck-table-manager">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Title</th>
+				<th>URL</th>
+				<th>Visibility</th>
+				<th>Sitewide Header</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#custom_pages}}
+			<tr>
+				<td>{{page_id}}</td>
+				<td>{{title}}</td>
+				<td>{{url_identifier}}{{url}}</td>
+				<td>
+					{{#visible?}}<i class="fal fa-check ck-icon green-checkmark"></i>{{/visible?}}
+					{{^visible?}}<i class="fal fa-times ck-icon red-x"></i>{{/visible?}}
+				</td>
+				<td>
+					{{#sitewide_header?}}<i class="fal fa-check ck-icon green-checkmark"></i>{{/sitewide_header?}}
+					{{^sitewide_header?}}<i class="fal fa-times ck-icon red-x"></i>{{/sitewide_header?}}
+				</td>
+				<td>
+					<a href="#" class="edit-custom-page" data-page-id="{{page_id}}" class="icon-link"><i class="fal fa-edit ck-icon"></i></a>
+					<a href="{{url_identifier}}{{url}}" class="icon-link" target="_blank"><i class="fal fa-external-link-alt ck-icon"></i></a>
+					<a href="#" data-page-id="{{page_id}}" class="icon-link archive-page-button"><i class="fal fa-trash ck-icon"></i></a>
+				</td>
+			</tr>
+			{{/custom_pages}}
+		</tbody>
+	</table>
+	<!-- Modal -->
+	<div id="custom-page-modal" class="modal">
+		<div class="modal-content">
+			<span class="close-modal">&times;</span>
+			<div class="modal-container">
+				<form action="/admin/custom-page-manager" method="post">
+					<div>
+						<div class="form-input-block">
+							<div class="custom-page-manager-input-block">
+								<label for="page-title">Title</label>
+								<input id="page-title" name="page_title">
+								<p id="title-total">Total Characters:0</p>
+							</div>
+							<div class="custom-page-manager-input-block">
+								<label for="url">URL</label>
+								<select id="url-identifier" name="url_identifier">
+									<option value="/c/">/c/</option>
+									<option value="/knowledge/">/knowledge/</option>
+									<option value="/learning-center/">/learning-center/</option>
+									<option value="/faq/">/faq/</option>
+									<option value="/info/">/info/</option>
+								</select>
+								<input id="url" name="url">
+							</div>
+							<div class="custom-page-manager-input-block">
+								<label for="meta-description">Meta Description</label>
+								<textarea id="meta-description" onkeyup="countMeta();" name="meta_description"></textarea>
+								<p id="meta-total">Total Characters:0</p>
+							</div>
+							<div class="custom-page-manager-input-block">
+								<label for="visibility">Visibility</label>
+								<input type="checkbox" id="visibility" name="visibility">
+							</div>
+						</div>
+						<div class="form-input-block">
+							<div class="custom-page-manager-input-block">
+								<label for="sitewide-header">Sitewide Header</label>
+								<input type="checkbox" id="sitewide-header" name="sitewide_header">
+							</div>
+							<div class="custom-page-manager-input-block">
+								<label for="product-id-list">Product Id List</label>
+								<input id="product-id-list" name="product_id_list">
+							</div>
+						</div>
+					</div>
+					<div>
+						<label for="code-editor">Page Code</label>
+						<textarea id="code-editor" class="code-editor" name="page_code"></textarea>
+					</div>
+					<input type="hidden" name="page_id" id="page-id" value="">
+					<input type="hidden" name="action" value="create" id="custom-page-form-action">
+					<button type="submit" id="submit-custom-page-form">Create</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end modal -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.38.0/codemirror.js"></script>
+	<script>
+		// archive custom page
+		jQuery('.archive-page-button').on('click', function () {
+			let response = confirm('Are you sure you want to archive this page?');
+			if (response) {
+				let page_id = jQuery(this).data('page-id');
+				window.location = '/admin/custom-page-manager?action=archive&id='+page_id;
+			}
+		});
+
+		let code_editor = null;
+
+		function activate_code_editor () {
+			setTimeout(function () {
+				if (!code_editor) {
+					instance = document.getElementById('code-editor');
+					code_editor = CodeMirror.fromTextArea(instance, {
+						tabSize: 4,
+						indenetWithTabs: true,
+						lineNumbers: true,
+						lineWrapping: true,
+					});
+				}
+			}, 150);
+		}
+
+		function clear_inputs() {
+			jQuery('#code-editor').val('');
+			jQuery('#product-id-list').val('');
+			jQuery('#page-title').val('');
+			jQuery('#meta-description').val('');
+			jQuery('#url').val('');
+			jQuery('#url-identifier').val('');
+			jQuery('#full-width').prop('checked', false);
+			jQuery('#sitewide-header').prop('checked', false);
+			jQuery('#visibility').prop('checked', false);
+		}
+
+		jQuery('#create-new-page-button').on('click', function () {
+			clear_inputs();
+			jQuery('#custom-page-modal').show();
+			jQuery('#submit-custom-page-form').html('Create');
+			jQuery('#custom-page-form-action').val('create');
+
+			activate_code_editor();
+		});
+
+		var $page_title = jQuery('#page-title');
+		var $meta_desc = jQuery('#meta-description');
+		$page_title.keyup(count_title);
+		function count_title() {
+			var total = $page_title.val();
+			var $title_total = jQuery('#title-total');
+			$title_total.html( "Best Practice(60 to 80) - Total Characters:" + total.length );
+			if (total.length > 70) {
+				$title_total.css('color', '#e21836');
+			}
+			else {
+				$title_total.css('color', '#4FB99F');
+			}
+		};
+		$meta_desc.keyup(count_meta);
+		function count_meta() {
+			var total = $meta_desc.val();
+			var $meta_total = jQuery('#meta-total');
+			$meta_total.html( "Best Practice(150 to 200) - Total Characters:" + total.length );
+			if (total.length > 200) {
+				$meta_total.css('color', '#e21836');
+			}
+			else {
+				$meta_total.css('color', '#4FB99F');
+			}
+		};
+
+		jQuery('.edit-custom-page').on('click', function () {
+			let page_id = jQuery(this).data('page-id');
+			clear_inputs();
+			jQuery.ajax({
+				url: '/admin/custom-page-manager?action=get-page-info',
+				method:'get',
+				dataType: 'json',
+				data: { ajax: 1, page_id: page_id },
+				success: function (data) {
+
+					console.log(data);
+					// prepare the modal
+					jQuery('#submit-custom-page-form').html('Edit');
+					jQuery('#custom-page-form-action').val('update');
+					jQuery('#page-id').val(page_id);
+
+					if (data.sitewide_header == 1) jQuery('#sitewide-header').prop('checked', true);
+					if (data.full_width == 1) jQuery('#full-width').prop('checked', true);
+					if (data.visibility == 1) jQuery('#visibility').prop('checked', true);
+
+					jQuery('#product-id-list').val(data.product_id_list);
+					jQuery('#code-editor').val(data.page_code);
+					jQuery('#page-title').val(data.page_title);
+
+					jQuery('#page_id').val(page_id);
+					jQuery('#meta-description').val(data.meta_description);
+					jQuery('#url-identifier').val(data.url_identifier);
+					jQuery('#url').val(data.url);
+
+					jQuery('#custom-page-modal').show();
+					activate_code_editor();
+					count_title();
+					count_meta();
+				}
+			});
+		});
+
+		jQuery('.close-modal').on('click', function () {
+			jQuery('#custom-page-modal').hide();
+			code_editor.toTextArea();
+			code_editor = null;
+		});
+	</script>
+</td>

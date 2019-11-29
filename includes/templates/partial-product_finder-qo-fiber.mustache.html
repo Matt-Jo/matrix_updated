@@ -1,0 +1,506 @@
+<style>
+	/*.option-chooser { min-height:200px; }*/
+	/*#connector-ends-block { min-width:300px; }*/
+	/*#cableTypeOpt { max-width:215px; }*/
+	.optlist-header { font-size:1.4em; text-align:center; color:#777; }
+	.option-help { margin-left:6px; position:relative; }
+
+	#opt-connector-ends-1, #opt-connector-ends-2, #opt-cabletype, #opt-length { padding:0px; }
+	/*#opt-category { margin:15px 0px 0px 0px; }
+	#opt-category.only { margin-top:45px; }
+	#opt-color { margin:20px 0px 0px 23px; max-width:200px; }
+	#opt-length { margin:10px 0px 0px 23px; max-width:250px; }*/
+
+	#opt-connector-ends-1, .opt-separator, #opt-connector-ends-2 { display:inline-block; vertical-align:middle; }
+	#opt-connector-ends-1, #opt-connector-ends-2 { margin-top:0px; }
+	.opt-separator { padding-top:10px; font-size:1.8em; color:#777; }
+
+	#opt-cabletype { margin-left:25px; margin-top:30px; }
+
+	#opt-length { margin:10px 0px 0px 0px; width:250px !important; }
+
+	.connector1-select, .connector2-select, .connector-type-select { margin:3px 5px 3px 5px; color:#fff; display:block; border-radius:9px; padding:5px 0px; width:80px; background-color:#9b9b9b; font-size:1.3em; line-height:100%; }
+	.connector1-select:hover, .connector1-select.selected, .connector2-select:hover, .connector2-select.selected, .connector-type-select:hover, .connector-type-select.selected { text-decoration:none; color:#fff; background-color:#3b8baa; }
+	.connector1-select.selected, .connector2-select.selected, .connector-type.selected { box-shadow:inset 5px 10px 20px -10px #27496d; }
+	.connector1-select.disabled, .connector2-select.disabled, .connector-type-select.disabled { color:#f3f3f3; background-color:#c3c3c3; cursor:default; }
+	.connector1-select.disabled:hover, .connector2-select.disabled:hover, .connector-type-select.disabled:hover { color:#f3f3f3; background-color:#c3c3c3; }
+	.connector1-select input, .connector2-select input, .connector-type-select input { margin:0px 3px 0px 8px; }
+
+	.cabletype-select { display:block; }
+	.cabletype-select div.colorblock { height:18px; width:19px; margin-right:20px; border:2px solid #acacac; border-radius:4px; /*line-height:100%;*/ position:relative; float:left; overflow:hidden; }
+	.cabletype-select div.colorblock.pair { position:relative; bottom:14px; transform:skew(0deg,-45deg); -ms-transform:skew(0deg,-45deg);
+-webkit-transform:skew(0deg,-45deg); }
+	.cabletype-label { font-size:1.4em; color:#9b9b9b; float:left; position:relative; bottom:3px; }
+	.cabletype-select .chk { display:none; }
+	.cabletype-select.selected { text-decoration:none; border-color:#000; box-shadow:0px 0px 6px #000; }
+	.cabletype-select.selected .chk { display:inline; color:#fff; position:absolute; bottom:1px; right:1px; font-size:.8em; line-height:100%; }
+	.cabletype-select.selected .black .chk { color:#000; }
+	.cabletype-select.disabled { opacity:0.25; cursor:default; }
+	.cabletype-select .crss { display:none; }
+	.cabletype-select.disabled.selected .crss { display:none; }
+	.cabletype-select.disabled .crss { display:inline; color:#000; position:absolute; bottom:1px; right:1px; font-size:.8em; line-height:100%; }
+
+	.length-select { display:block; height:27px; width:34px; margin:0px; border-style:solid; border-color:#acacac; border-width:0px 1px 1px 0px; position:relative; font-weight:bold; color:#777; font-size:1.3em; text-align:center; text-decoration:none; }
+	.length-select:hover { text-decoration:none; }
+	.length-select.top { border-top-width:1px; }
+	.length-select.left { border-left-width:1px; }
+	.length-select .chk { display:none; }
+	.length-select.selected { background-color:#3b8baa; color:#fff; }
+	.length-select.selected .chk { display:inline; position:absolute; bottom:-1px; right:1px; font-size:.5em; }
+	.length-select.disabled { cursor:default; color:#ddd; }
+	.length-select .crss { display:none; }
+	.length-select.disabled .crss { display:inline; position:absolute; bottom:-1px; right:1px; font-size:.5em; }
+
+	/*#opt-length.selected { color:#000; }*/
+
+	#opt-connector-ends-1 li, #opt-connector-ends-2 li { list-style-type:none; margin:0px; padding:0px; }
+	#opt-cabletype li { list-style-type:none; margin:0px; padding:0px; clear:both; }
+	#opt-length li { list-style-type:none; margin:0px; padding:0px; float:left; }
+
+	.opt-next.fiber { padding-top:80px; }
+
+	.optview-body.off { display:none; }
+
+	#metric-to-imperial { color:#3b8baa; margin-left:20px; font-weight:bold; }
+
+	.helper-modals { position:relative; }
+
+	/*#product-finder { overflow:visible !important; }*/
+
+	.option-helper { display:none; position:absolute; border-color:#777; border-style:solid; border-width:2px; border-radius:8px; padding:8px 10px; background-color:#fff; z-index:99; }
+	#connector-ends-help.option-helper { top:-50px; left:225px; }
+	#connector-ends-help.option-helper .caret { position:absolute; left:-24px; top:36px; }
+	.option-helper h4 { color:#3b8baa; text-align:center; border-bottom:2px solid #ccc; font-size:1.3em; white-space:nowrap; padding:0px 26px 4px 26px; margin:0px 0px 10px 0px; }
+	.helper-list { padding:0px; margin:0px; }
+	.helper-list li { list-style-type:none; margin:0px 0px 3px 0px; padding:0px; }
+	.helper-list .helper-title { display:block; color:#777; font-size:1.1em; font-weight:bold; border-bottom:2px solid #ccc; margin:0px 25px 3px 0px; padding:5px 3px 2px 3px; }
+
+	#cable-type-help.option-helper { top:35px; left:215px; }
+	#cable-type-help.option-helper .caret { position:absolute; left:243px; top:-28px; }
+	#cable-type-help .helper-table th, #cable-type-help .helper-table td { padding:4px; border: 0px; }
+	#cable-type-help .helper-table td { font-family:"Lucida Console", Monaco, "Courier New", Courier, monospace; white-space:pre; padding:4px; }
+	#cable-type-help .helper-table .row-odd td, #cable-type-help .helper-table .row-odd th { background-color:#ddd; }
+	#cable-type-help th span.specs { display:block; margin:0px; padding:0px; font-weight:normal; }
+
+	.connector-type-select { width:135px; }
+	#pf-options-block { padding-bottom:20px; }
+	.pf-options { display:flex; justify-content:space-between; flex-wrap:wrap; }
+	.pf-options-hidden { display:none; }
+	.pf-options, .pf-options-advanced { height:auto; overflow:hidden; }
+	.pf-options-advanced span { font-size:1.25em; }
+	.opt-group { height:100%; margin:0; float:none; padding-left:1rem; }
+	.opt-group-title { font-size:18px; margin:3px; padding:0; }
+	#polish-type-group { max-width:220px; }
+	.polish-type-input { width:48%; display:inline-block; }
+
+	.pf-header { margin:0; margin-bottom:1.5rem; padding-bottom:1.5rem; padding-left:0; }
+	.pf-options-main { display:flex; justify-content:space-between; }
+	.option-chooser { height:auto; min-width:85px; }
+</style>
+{{! <img id="fiber-banner-header" src="{{static_files} }/img/fibertool-coupon-code-banner.jpg" style="width:940px; height:96px;" alt="{{finder.main_category} } - Quick Order Tool" title="{{finder.main_category} } - Quick Order Tool"> }}
+<h2 class="pf-header">{{finder.main_category}} - Quick Order Tool</h2>
+<div class="helper-modals">
+	<div class="option-helper" id="connector-ends-help">
+		<img class="caret" src="{{static_files}}/img/Triangle_helpbox.png" alt="Connector Ends Help Image">
+		<h4>Connector Ends Help</h4>
+		<ul class="helper-list">
+			<li>
+				<span class="helper-title">LC Ends</span>
+				<img src="{{static_files}}/img/LC_help.jpg" alt="LC Ends Help Image">
+			</li>
+			<li>
+				<span class="helper-title">SC Ends</span>
+				<img src="{{static_files}}/img/SC_help.jpg" alt="SC Ends Help Image">
+			</li>
+			<li>
+				<span class="helper-title">ST Ends</span>
+				<img src="{{static_files}}/img/ST_help.jpg" alt="ST Ends Help Image">
+			</li>
+			<li>
+				<span class="helper-title">FC Ends</span>
+				<img src="{{static_files}}/img/FC_help.jpg" alt="FC Ends Help Image">
+			</li>
+			<li>
+				<span class="helper-title">MTRJ Ends</span>
+				<img src="{{static_files}}/img/MTRJ_help.jpg" alt="MTRJ Ends Help Image">
+			</li>
+		</ul>
+	</div>
+	<div class="option-helper" id="cable-type-help">
+		<img class="caret" src="{{static_files}}/img/F_type_help.png" alt="Cable Type Help Image">
+		<h4>Cable Type Help</h4>
+		<table class="helper-table" border="0" cellpadding="0" cellspacing="0">
+			<tbody>
+				<tr class="row-even">
+					<td></td>
+					<th>1 Gig Ethernet<br>Bandwidth</th>
+					<th>10 Gig Ethernet<br>Bandwidth</th>
+					<th>40 Gig Ethernet<br>Bandwidth</th>
+					<th>Wavelength<br>Range</th>
+					{{! <th>Maximum Attenuation<br>(db/km)</th>
+					<th>Modal Bandwidth<br>(MHz * km)</th> }}
+				</tr>
+				<tr class="row-odd">
+					<th>OM 1 <span class="specs">62.5/125 MMF</span></th>
+					<td>275m</td>
+					<td>-</td>
+					<td>-</td>
+					<td>850/1300</td>
+					{{! <td>3.4/1.0</td>
+					<td>220/ -</td> }}
+				</tr>
+				<tr class="row-even">
+					<th>OM 2 <span class="specs">50/125 MMF</span></th>
+					<td>550m</td>
+					<td>-</td>
+					<td>-</td>
+					<td>850/1300</td>
+					{{! <td>3.0/1.0<br>2.8/1.0</td>
+					<td>950/ -</td> }}
+				</tr>
+				<tr class="row-odd">
+					<th>OM 3 <span class="specs">50/125 LOMMF</span></th>
+					<td>550m</td>
+					<td>300m</td>
+					<td>100m</td>
+					<td>850/1300</td>
+					{{! <td>3.0/1.0<br>2.8/1.0</td>
+					<td>2000/ -</td> }}
+				</tr>
+				<tr class="row-even">
+					<th>OM 4 <span class="specs">50/125 LOMMF</span></th>
+					<td>550m</td>
+					<td>400m</td>
+					<td>150m</td>
+					<td>850/1300</td>
+					{{! <td>3.0/1.0<br>2.8/1.0</td>
+					<td>4700/ -</td> }}
+				</tr>
+				<tr class="row-odd">
+					<th>OM 5 <span class="specs">50/125 LOMMF</span></th>
+					<td>1100m</td>
+					<td>600m</td>
+					<td>150m</td>
+					<td>850/1300</td>
+					{{! <td>3.0/1.0<br>2.8/1.0</td>
+					<td>2000/ -</td> }}
+				</tr>
+				{{! <tr class="row-odd">
+					<th>OS 2 <span class="specs">9/125 SMF</span></th>
+					<td>5000m @1310nm</td>
+					<td>10000m @1310nm<br>40000m @1550nm</td>
+					<td>1310/1383/1550</td>
+					<td>0.4/0.4/0.3</td>
+					<td>-/ -/ -</td>
+				</tr> }}
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="pf-options-main">
+	<div id="connector-ends-block">
+		<h3 class="opt-header">1. Connector Ends <a href="#" class="option-help" data-desc="connector-ends"><img src="{{static_files}}/img/help.jpg" alt="Help Image"></a></h3>
+		<ul id="opt-connector-ends-1">
+			<li class="optlist-header">(A)</li>
+			{{#finder.connectors_1}}
+			<li><a href="#" class="connector1-select find-val {{#selected?}}selected{{/selected?}}" data-key="Connector1" data-val="{{connector}}"><input type="radio" name="connector1" {{#selected?}}checked{{/selected?}}> {{{connector}}}</a></li>
+			{{/finder.connectors_1}}
+		</ul>
+		<div class="opt-separator">to</div>
+		<ul id="opt-connector-ends-2">
+			<li class="optlist-header">(B)</li>
+			{{#finder.connectors_2}}
+			<li><a href="#" class="connector2-select find-val {{#selected?}}selected{{/selected?}}" data-key="Connector2" data-val="{{connector}}"><input type="radio" name="connector2" {{#selected?}}checked{{/selected?}}> {{{connector}}}</a></li>
+			{{/finder.connectors_2}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+	<div class="option-chooser"></div>
+	<div id="cableTypeOpt">
+		<h3 class="opt-header">2. Cable Type <a href="#" class="option-help" data-desc="cable-type"><img src="{{static_files}}/img/help.jpg"></a></h3>
+		<ul id="opt-cabletype">
+			{{#finder.cable_types}}
+			<li><a href="#" class="cabletype-select find-val" data-key="Cabletype" data-val="{{cabletype}}"><div href="#" class="colorblock {{selhex}} {{^enabled?}}disabled{{/enabled?}}" style="background-color:{{hex}}; color:{{hex}}" title="{{description}}">{{#pair}}<div class="colorblock pair {{^enabled?}}disabled{{/enabled?}}" style="background-color:{{.}};"></div>{{/pair}}<div class="chk">&#x2714;</div><div class="crss">&#x2716;</div></div> <div class="cabletype-label">{{description}}</div></a></li>
+			{{/finder.cable_types}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+	<div class="option-chooser"></div>
+	<div>
+		<h3 class="opt-header">3. Length in Meters:</h3>
+		<div>
+			&#8203;<!-- zero-width space keeps the vertical spacing when other elements are hidden -->
+			<span id="metric-to-imperial"></span>
+		</div>
+		<ul id="opt-length">
+			{{#finder.lengths}}
+			<li><a href="#" class="length-select find-val {{#top?}}top{{/top?}} {{#left?}}left{{/left?}}" data-key="Length" data-val="{{length}}" data-imperial="{{length_in_feet}}" title="{{length}}">{{display_length}}<div class="chk">&#x2714;</div><div class="crss">&#x2716;</div></a></li>
+			{{/finder.lengths}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+</div>
+
+<div id="pf-options-block">
+	<div class="pf-options-advanced">
+		<a href="#" id="advanced-toggle">
+			Advanced Options <i class="fas fa-chevron-down"></i>
+		</a>
+		<span class="pf-options-clear">
+			<a href="#" id="clear-all">[ Clear Selections ]</a>
+		</span>
+	</div>
+	<div class="pf-options pf-options-hidden">
+		{{#finder.polish_types?}}
+		<div class="opt-group" id="polish-type-group">
+			<h6 class="opt-group-title">Polish:</h6>
+			{{#finder.polish_types}}
+			<div class="polish-type-input">
+				<input type="radio" id="polishtype-{{polish}}" class="find-val dont-disable {{#selected?}}selected{{/selected?}}" name="Polishtype" value="{{polish}}" data-key="Polishtype" {{#selected?}}checked{{/selected?}}>
+				<label for="polishtype-{{polish}}" class="advanced-opt-label" data-key="Polishtype" data-val="{{polish}}">{{polish_short_name}}</label>
+			</div>
+			{{/finder.polish_types}}
+		</div>
+		{{/finder.polish_types?}}
+		{{#finder.jackets?}}
+		<div class="opt-group">
+			<h6 class="opt-group-title">Jacket:</h6>
+			{{#finder.jackets}}
+			<input type="radio" id="jacket-{{jacket}}" class="find-val dont-disable {{#selected?}}selected{{/selected?}}" name="Jacket" value="{{jacket}}" data-key="Jacket" {{#selected?}}checked{{/selected?}}>
+			<label for="jacket-{{jacket}}" class="advanced-opt-label" data-key="Jacket" data-val="{{jacket}}">{{jacket}}</label><br>
+			{{/finder.jackets}}
+		</div>
+		{{/finder.jackets?}}
+		{{#finder.corematerials?}}
+		<div class="opt-group">
+			<h6 class="opt-group-title">Core Material:</h6>
+			{{#finder.corematerials}}
+			<input type="radio" id="corematerial-{{corematerial}}" class="find-val dont-disable {{#selected?}}selected{{/selected?}}" name="Corematerial" value="{{corematerial}}" data-key="Corematerial" {{#selected?}}checked{{/selected?}}>
+			<label for="corematerial-{{corematerial}}" class="advanced-opt-label" data-key="Corematerial" data-val="{{corematerial}}">{{corematerial}}</label><br>
+			{{/finder.corematerials}}
+		</div>
+		{{/finder.corematerials?}}
+		{{#finder.connectortypes?}}
+		<div class="opt-group">
+			<h6 class="opt-group-title">Connector:</h6>
+			{{#finder.connectortypes}}
+			<div class="advanced-option-input">
+				<input type="radio" id="connectortypes-{{connectortype}}" class="find-val dont-disable {{#selected?}}selected{{/selected?}}" name="Connectortypes" value="{{connectortype}}" data-key="Brand" {{#selected?}}checked{{/selected?}}>
+				<label for="connectortypes-{{connectortype}}" class="advanced-opt-label" data-key="Connectortypes" data-val="{{connectortype}}">{{connectortype}}</label>
+			</div>
+			{{/finder.connectortypes}}
+		</div>
+		{{/finder.connectortypes?}}
+		{{#finder.brands?}}
+		<div class="opt-group">
+			<h6 class="opt-group-title">Brand:</h6>
+			{{#finder.brands}}
+			<div class="advanced-option-input">
+				<input type="radio" id="brand-{{brand}}" class="find-val dont-disable {{#selected?}}selected{{/selected?}}" name="Brand" value="{{brand}}" data-key="Brand" {{#selected?}}checked{{/selected?}}>
+				<label for="brand-{{brand}}" class="advanced-opt-label" data-key="Brand" data-val="{{brand}}">{{brand}}</label>
+			</div>
+			{{/finder.brands}}
+		</div>
+		{{/finder.brands?}}
+	</div>
+</div>
+<script>
+	jQuery('.option-help').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (jQuery('#'+jQuery(this).attr('data-desc')+'-help').is(':visible')) {
+			jQuery('.option-helper').hide();
+		}
+		else {
+			jQuery('.option-helper').hide();
+			jQuery('#'+jQuery(this).attr('data-desc')+'-help').show();
+		}
+
+	});
+	jQuery('.option-helper').click(function(e) {
+		e.stopPropagation();
+	});
+	jQuery('body').click(function() {
+		jQuery('.option-helper').hide();
+	});
+	jQuery('.length-select').mouseover(function() {
+		jQuery('#metric-to-imperial').text(jQuery(this).attr('data-val')+' = '+jQuery(this).attr('data-imperial')+' Feet');
+	});
+	jQuery('.length-select').click(function() {
+		jQuery('#metric-to-imperial').text(jQuery(this).attr('data-val')+' = '+jQuery(this).attr('data-imperial')+' Feet');
+	});
+	jQuery('#opt-length').mouseout(function() {
+		jQuery('#metric-to-imperial').text('');
+	});
+	// some of these could be generalized, but for now we'll make them specific
+	jQuery('.connector1-select, .connector2-select, .cabletype-select, .connector-type-select, .length-select, .opt-group input[type=radio]').click(function(e) {
+		var rb = e.target.nodeName.toLowerCase()=='input';
+		if (!rb) e.preventDefault();
+		var $btn = jQuery(this);
+		var selected = $btn.hasClass('selected');
+
+		if ($btn.hasClass('disabled')) return;
+
+		var val; // I don't think we need this
+
+		if ($btn.hasClass('connector1-select')) {
+			jQuery('.connector1-select').removeClass('selected');
+
+			$btn.find('input').each(function() {
+				jQuery(this).attr('checked', !selected);
+
+				if (!selected) {
+					$btn.addClass('selected');
+					val = $btn.attr('data-val');
+				}
+			});
+		}
+		else if ($btn.hasClass('connector2-select')) {
+			jQuery('.connector2-select').removeClass('selected');
+
+			$btn.find('input').each(function() {
+				jQuery(this).attr('checked', !selected);
+
+				if (!selected) {
+					$btn.addClass('selected');
+					val = $btn.attr('data-val');
+				}
+			});
+		}
+		else if ($btn.hasClass('connector-type-select')) {
+			jQuery('.connector-type-select').removeClass('selected');
+
+			$btn.find('input').each(function() {
+				jQuery(this).attr('checked', !selected);
+
+				if (!selected) {
+					$btn.addClass('selected');
+					val = $btn.attr('data-val');
+				}
+			});
+		}
+		else if ($btn.hasClass('cabletype-select') || $btn.hasClass('length-select')) {
+			if (!selected) {
+				$btn.addClass('selected');
+				val = $btn.attr('data-val');
+			}
+			else {
+				$btn.removeClass('selected');
+			}
+		}
+		else {
+			jQuery('[name='+jQuery(this).attr('name')+']').removeClass('selected');
+			if (!selected) {
+				$btn.addClass('selected');
+				val = $btn.val();
+			}
+		}
+	});
+
+	jQuery('.connector1-select, .connector2-select, .cabletype-select, .length-select, .connector-type-select, .opt-group input[type=radio]').click(function() {
+		var $btn = jQuery(this);
+		if ($btn.hasClass('disabled')) return;
+
+		var category = '--PFIND';
+		category += '--'+major;
+		if (minor) category += '+'+minor;
+
+		var action = '--find';
+		action += '--'+jQuery(this).attr('data-key');
+		if (jQuery(this).hasClass('selected')) action += '--select';
+		else action += '--unselect';
+
+		var label = '--option[';
+		if (jQuery(this).attr('data-desc')) label += jQuery(this).attr('data-desc');
+		else if (jQuery(this).attr('data-val')) label += jQuery(this).attr('data-val');
+		else if (jQuery(this).val()) label += jQuery(this).val();
+		label += ']';
+
+		ga('send', 'event', category, action, label);
+		//_gaq.push(['_trackEvent', category, action, label]);
+
+		add_selection();
+	});
+
+	jQuery('#clear-all').click(function(e) {
+		e.preventDefault();
+
+		jQuery('.find-val').each(function() {
+			let key = jQuery(this).attr('data-key').toLowerCase();
+			jQuery('#'+key+'-All').attr('checked', true);
+		});
+
+		jQuery('.connector1-select.selected').removeClass('selected').find('input').each(function() {
+			jQuery(this).attr('checked', false);
+		});
+		jQuery('.connector2-select.selected').removeClass('selected').find('input').each(function() {
+			jQuery(this).attr('checked', false);
+		});
+		jQuery('.connector-type-select.selected').removeClass('selected').find('input').each(function() {
+			jQuery(this).attr('checked', false);
+		});
+
+		jQuery('.cabletype-select.selected, .length-select.selected').removeClass('selected');
+
+		var category = '--PFIND';
+		category += '--'+major;
+		if (minor) category += '+'+minor;
+
+		action = '--find--clear';
+		label = '--all';
+
+		ga('send', 'event', category, action, label);
+		//_gaq.push(['_trackEvent', category, action, label]);
+
+		add_selection();
+	});
+
+	function manage_options(enabled_options) {
+		jQuery('.protected').removeClass('protected');
+
+		for (var i=0; i<enabled_options.length; i++) {
+			if (enabled_options[i].type == 'Connector1') {
+				jQuery('[data-key=Connector1][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Connector2') {
+				jQuery('[data-key=Connector2][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Cabletype') {
+				jQuery('[data-key=Cabletype][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Length') {
+				jQuery('[data-key=Length][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Connectortype') {
+				jQuery('[data-key=Connectortype][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else {
+				jQuery('[data-key='+enabled_options[i].type+'][value=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+		}
+
+		jQuery('a.find-val:not(.protected, .dont-disable), input.find-val:not(.protected, .dont-disable)').each(function() {
+			var key = jQuery(this).attr('data-key');
+			if (key == 'Connector1' || key == 'Connector2') {
+				jQuery(this).addClass('disabled');
+				jQuery(this).find('input').attr('disabled', true);
+			}
+			else if (key == 'Cabletype' || key == 'Length') {
+				jQuery(this).addClass('disabled');
+			}
+			else {
+				jQuery(this).attr('disabled', true);
+				jQuery('[data-key=\''+key+'\'][data-val=\''+jQuery(this).val()+'\']').addClass('disabled');
+			}
+		});
+	}
+
+	{{#finder.run_immediately?}}
+	jQuery(document).ready(function() {
+		add_selection();
+	});
+	{{/finder.run_immediately?}}
+</script>
+<div style="display:none;">
+	{{{debug}}}
+</div>

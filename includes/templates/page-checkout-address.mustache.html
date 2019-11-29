@@ -1,0 +1,381 @@
+<style>
+	.main-body-container { margin-bottom:15px; width:auto; }
+	.main-body-inner-container { margin:0px 0px 20px 0px; padding:20px; font-size:13px; line-height:1.5em; }
+
+	.main-body-header { display:inline-block; }
+
+	.sub-header { color:#777; font-size:18px; border-bottom:1px solid #ccc; margin:0px 0px 15px 0px; padding-bottom:7px; text-transform:capitalize; }
+
+	.main-body-inner-container a { font-weight:bold; color:#3f6b94; }
+
+	.template-basic .main-body-inner-container.error-stack { background-color:#fee; border-color:#c00; }
+
+	.addresses { font-size:14px; }
+
+	.address { border-radius:5px; padding:3px 8px; border:1px solid #fff; cursor:pointer; margin-bottom:5px; }
+	.addr .address-spacer { white-space:pre-wrap; }
+	.addr .address-spacer br { display:none; }
+	.address .address-id { position:relative; top:2px; margin-right:12px; }
+	.address a { margin-left:12px; }
+	.address.selected { background-color:#dfebff; border-color:#3f6b94; }
+	.address:hover { background-color:#ffffdf; border-color:#94943f; }
+
+	.add-new-address { display:none; background-color:#eef; border:1px solid #ccc; border-radius:5px; margin:15px 0px 5px 0px; font-size:14px; padding:7px; }
+	.add-new-address h3 { color:#777; font-size:16px; border-bottom:1px solid #ccc; margin:0px 0px 12px 0px; padding-bottom:4px; text-transform:capitalize; }
+	.add-new-address .address-field { margin-bottom:6px; display:inline-block; width:48%; min-width:320px; }
+	.add-new-address .address-field label { display:inline-block; width:120px; }
+
+	.add-new-address .new-address-state-block { display:inline; }
+
+	.add-new-address #address-err { background-color:#fee; border:1px solid #c00; padding:4px; display:none; }
+
+	.req { color:#f00; }
+
+	.po-box-notice { font-size:12px; text-align:center; color:black; background-color:#ff9; padding:3px; margin:5px 0px; }
+
+	.checkout-submit { text-align:right; margin-top:10px; }
+
+	.checkout-progress { margin:25px auto 0px auto; padding:0px; /*border-top:#bbc3d3 solid 1px;*/ position:relative; text-align:center; }
+	.checkout-progress li.bar { width:720px; margin:0px auto; height:7px; position:relative; border-style:solid; border-color:#bbc3d3; border-width:0px 1px; padding:0px; display:block; }
+	.checkout-progress li.bar hr { border-color:#bbc3d3; height:1px; position:relative; top:3px; }
+	.checkout-progress .bullet { position:absolute; top:-2px; }
+	.checkout-progress.shipping .bullet { left:-5px; }
+	.checkout-progress.payment .bullet { left:270px; }
+	.checkout-progress.confirmation .bullet { right:200px; }
+	.checkout-progress.success .bullet { right:-5px; }
+	.checkout-progress li { display:inline-block; list-style-type:none; margin:0px 80px; padding:8px 0px 0px 0px; text-align:center; font-size:12px; color:#8c8c8c; }
+	.checkout-progress.shipping li.shipping { color:#000; }
+	.checkout-progress.payment li.payment { color:#000; }
+	.checkout-progress.confirmation li.confirmation { color:#000; }
+	.checkout-progress.success li.success { color:#000; }
+
+	@media (max-width:980px) {
+		.address { border-bottom:1px solid #888; }
+
+		.checkout-progress { margin:10px auto; }
+		.checkout-progress li.bar { display:none; }
+		.checkout-progress li { margin:0px 40px; padding:3px 8px; }
+		.checkout-progress.shipping li.shipping { background-color:#cfc; }
+		.checkout-progress.payment li.payment { background-color:#cfc; }
+		.checkout-progress.confirmation li.confirmation { background-color:#cfc; }
+		.checkout-progress.success li.success { background-color:#cfc; }
+	}
+
+	@media (max-width:700px) {
+		.add-new-address { text-align:center; }
+	}
+
+	@media (max-width:500px) {
+		.address { padding-left:30px; }
+		.addr .address-spacer { white-space:normal; }
+		.addr .address-spacer br { display:initial; }
+
+		.add-new-address .address-field { width:200px; min-width:0px; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<div class="tools breadcrumbs">{{{breadcrumbs}}}</div>
+
+	{{#error}}
+	<div class="main-body-inner-container error-stack">
+		<h2 class="sub-header">Errors:</h2>
+		{{{.}}}
+	</div>
+	{{/error}}
+
+	<form action="/checkout_address.php" method="post">
+		<input type="hidden" name="action" value="select-address">
+		<input type="hidden" name="target" value="{{target}}">
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Choose {{target}} Address:</h2>
+
+			<div class="po-box-notice">***Please note: If your address is a P.O. Box we cannot ship to it, please provide a physical address. If you have any questions, please contact your <a href="mailto:{{contact_email}}" title="{{contact_phone}}">Sales Team</a>.</div>
+
+			<div class="addresses">
+				{{#addresses}}
+				<div class="address addr-{{address_id}} {{#selected?}}selected{{/selected?}}" data-address-id="{{address_id}}">
+					<input type="radio" class="address-id addr-{{address_id}}" name="address_id" value="{{address_id}}" required {{#selected?}}checked{{/selected?}} data-address-id="{{address_id}}" data-is-default="{{#is_default}}1{{/is_default}}" data-is-international="{{#is_international}}1{{/is_international}}"> <span class="addr">{{> partial-address-format.mustache.html}}</span>
+					<a href="#" class="edit-address" data-address-id="{{address_id}}">Edit</a>
+				</div>
+				{{/addresses}}
+
+				<a href="#" class="enter-new-address">Enter New Address</a>
+
+				<div class="add-new-address">
+					<h3>Add New Billing Address:</h3>
+					<p>Fields marked with <span class="req">(*)</span> are required</p>
+					<p id="address-err"></p>
+
+					<input type="hidden" id="edit-address-id" name="edit-address-id" value="">
+
+					<div class="address-field">
+						<label for="address-firstname" class="req">*First Name:</label> <input id="new-address-firstname" type="text" name="address-firstname">
+					</div>
+					<div class="address-field">
+						<label for="address-lastname" class="req">*Last Name:</label> <input id="new-address-lastname" type="text" name="address-lastname">
+					</div>
+					<div class="address-field">
+						<label for="address-company">Company:</label> <input id="new-address-company" type="text" name="address-company">
+					</div><br>
+					<div class="address-field">
+						<label for="address-street1" class="req">*Address:</label> <input id="new-address-street1" type="text" name="address-street1">
+					</div>
+					<div class="address-field">
+						<label for="address-street2">Suite/Unit:</label> <input id="new-address-street2" type="text" name="address-street2">
+					</div>
+					<div class="address-field">
+						<label for="address-city" class="req">*City:</label> <input id="new-address-city" type="text" name="address-city">
+					</div>
+					<div class="address-field">
+						<label for="address-state" class="req">*State/Province:</label>
+						<div class="new-address-state-block">
+							{{#states.0}}
+							<select id="new-address-state" name="address-state">
+								<option value="">Choose</option>
+								{{#states}}
+								<option value="{{zone_name}}" {{#selected?}}selected{{/selected?}}>{{zone_name}}</option>
+								{{/states}}
+							</select>
+							{{/states.0}}
+							{{^states.0}}
+							<input id="new-address-state" type="text" name="address-state">
+							{{/states.0}}
+						</div>
+					</div>
+					<div class="address-field">
+						<label for="address-postcode" class="req">*Zip Code:</label> <input id="new-address-postcode" type="text" name="address-postcode">
+					</div>
+					<div class="address-field">
+						<label for="address-country" class="req">*Country:</label>
+						<select id="new-address-country" name="address-country">
+							<option>Choose</option>
+							{{#countries}}
+							<option value="{{countries_id}}" {{#selected?}}selected{{/selected?}}>{{countries_name}}</option>
+							{{/countries}}
+						</select>
+					</div>
+					<div class="address-field">
+						<label for="address-phone" class="req">*Phone:</label> <input id="new-address-phone" type="text" name="address-phone">
+					</div>
+
+					<hr>
+					<button type="button" id="add-address-submit">Add Address</button>
+					<button type="button" class="enter-new-address">Close</button>
+				</div>
+			</div>
+
+			<div class="checkout-submit">
+				<input type="image" src="//media.cablesandkits.com/static/img/continue-button.png" alt="Continue" title=" Continue ">
+			</div>
+		</div>
+	</form>
+
+	<ul class="checkout-progress {{target}}">
+		<li class="bar"><hr><img class="bullet" src="//media.cablesandkits.com/checkout_bullet.gif"></li>
+		<li class="shipping">Delivery Information</li>
+		<li class="payment">Payment Information</li>
+		<li class="confirmation">Confirmation</li>
+		<li class="success">Finished!</li>
+	</ul>
+</div>
+<script>
+	jQuery('#new-address-country').change(reload_zones);
+
+	function reload_zones(zone) {
+		jQuery.ajax({
+			url: '/checkout_payment.php',
+			type: 'get',
+			dataType: 'json',
+			data: { action: 'reload-zones', ajax: 1, countries_id: jQuery('#new-address-country').val() },
+			timeout: 8000,
+			success: function(data) {
+				if (data.states.length > 0) {
+					let $select = jQuery('<select id="new-address-state" name="address-state"><option value="">Choose</option></select>');
+
+					for (var i=0; i<data.states.length; i++) {
+						$select.append('<option value="'+data.states[i].zone_code+'" '+(data.states[i].zone_code==zone?'selected':'')+'>'+data.states[i].zone_name+'</option>');
+					}
+
+					jQuery('.new-address-state-block').html($select);
+				}
+				else {
+					jQuery('.new-address-state-block').html('<input id="new-address-state" type="text" name="address-state">');
+				}
+			}
+		});
+	}
+
+	jQuery('.enter-new-address').click(function(e) {
+		e.preventDefault();
+
+		jQuery('.add-new-address h3').html('Add New {{target}} Address');
+		jQuery('.add-new-address #add-address-submit').html('Add Address');
+
+		jQuery('#edit-address-id').val('');
+		jQuery('#new-address-firstname').val('');
+		jQuery('#new-address-lastname').val('');
+		jQuery('#new-address-company').val('');
+		jQuery('#new-address-street1').val('');
+		jQuery('#new-address-street2').val('');
+		jQuery('#new-address-city').val('');
+		jQuery('#new-address-state').val('');
+		jQuery('#new-address-postcode').val('');
+		jQuery('#new-address-country').val({{default_country}});
+		jQuery('#new-address-phone').val('');
+
+		jQuery('#address-err').html('').hide();
+
+		jQuery('.address.editing').removeClass('editing');
+		jQuery('.address').show();
+
+		jQuery('.add-new-address').toggle();
+		jQuery('.checkout-submit input').toggle();
+	});
+
+	jQuery('#add-address-submit').click(function(e) {
+		jQuery('#address-err').html('').hide();
+
+		let fields = { action: 'save-address', ajax: 1, edit_address_id: jQuery('#edit-address-id').val() };
+
+		fields.first_name = jQuery('#new-address-firstname').val();
+		fields.last_name = jQuery('#new-address-lastname').val();
+		fields.company = jQuery('#new-address-company').val();
+		fields.address1 = jQuery('#new-address-street1').val();
+		fields.address2 = jQuery('#new-address-street2').val();
+		fields.city = jQuery('#new-address-city').val();
+		fields.state = jQuery('#new-address-state').val();
+		fields.postcode = jQuery('#new-address-postcode').val();
+		fields.country_id = jQuery('#new-address-country').val();
+		fields.phone = jQuery('#new-address-phone').val();
+
+		if (!fields.first_name) {
+			jQuery('#address-err').html('Please enter first name.').show();
+			return;
+		}
+		if (!fields.last_name) {
+			jQuery('#address-err').html('Please enter last name.').show();
+			return;
+		}
+		if (!fields.address1) {
+			jQuery('#address-err').html('Please enter address.').show();
+			return;
+		}
+		if (!fields.city) {
+			jQuery('#address-err').html('Please enter city.').show();
+			return;
+		}
+		if (!fields.state) {
+			jQuery('#address-err').html('Please enter state.').show();
+			return;
+		}
+		if (!fields.postcode) {
+			jQuery('#address-err').html('Please enter zip code.').show();
+			return;
+		}
+		if (!fields.country_id) {
+			jQuery('#address-err').html('Please enter country.').show();
+			return;
+		}
+		if (!fields.phone) {
+			jQuery('#address-err').html('Please enter phone.').show();
+			return;
+		}
+
+		jQuery.ajax({
+			url: '/checkout_address.php',
+			type: 'post',
+			dataType: 'json',
+			data: fields,
+			timeout: 8000,
+			success: function(data) {
+				if (data.error) {
+					jQuery('#address-err').html(data.error).show();
+					return;
+				}
+
+				let $address = jQuery('<div class="address addr-'+data.address_id+'" data-address-id="'+data.address_id+'"><input type="radio" class="address-id addr-'+data.address_id+'" name="address_id" value="'+data.address_id+'" required data-address-id="'+data.address_id+'" data-is-default="" data-is-international="'+data.is_international+'"> <span class="addr">'+data.address+'</span><a href="#" class="edit-address" data-address-id="'+data.address_id+'">Edit</a></div>');
+				if (data.edit) {
+					jQuery('.addr-'+data.address_id).replaceWith($address);
+				}
+				else {
+					jQuery('.addresses').prepend($address).show();
+				}
+				select_address.call($address);
+
+				jQuery('.add-new-address').hide();
+				jQuery('#edit-address-id').val('');
+				jQuery('#new-address-firstname').val('');
+				jQuery('#new-address-lastname').val('');
+				jQuery('#new-address-company').val('');
+				jQuery('#new-address-street1').val('');
+				jQuery('#new-address-street2').val('');
+				jQuery('#new-address-city').val('');
+				jQuery('#new-address-state').val('');
+				jQuery('#new-address-postcode').val('');
+				jQuery('#new-address-country').val({{default_country}});
+				jQuery('#new-address-phone').val('');
+
+				jQuery('#address-err').hide();
+
+				jQuery('.address.editing').removeClass('editing');
+				jQuery('.address').show();
+
+				jQuery('.checkout-submit input').show();
+			},
+			error: function() {
+				alert('There was a problem recording this address to your account; please contact your sales team.');
+			}
+		});
+	});
+
+	jQuery('.addresses').on('click', '.address', select_address);
+	jQuery('.addresses').on('click', '.edit-address', function(e) {
+		e.preventDefault();
+
+		jQuery('.addr-'+jQuery(this).attr('data-address-id')).addClass('editing');
+		jQuery('.address:not(.editing)').hide();
+		jQuery('.checkout-submit input').hide();
+
+		jQuery.ajax({
+			url: '/checkout_address.php',
+			type: 'get',
+			dataType: 'json',
+			data: {
+				action: 'get-address-data',
+				ajax: 1,
+				address_id: jQuery(this).attr('data-address-id')
+			},
+			timeout: 8000,
+			success: function(data) {
+				jQuery('.add-new-address h3').html('Edit {{target}} Address');
+				jQuery('.add-new-address #add-address-submit').html('Edit Address');
+				jQuery('.add-new-address').show();
+				jQuery('#edit-address-id').val(data.address_id);
+				jQuery('#new-address-firstname').val(data.address.first_name);
+				jQuery('#new-address-lastname').val(data.address.last_name);
+				jQuery('#new-address-company').val(data.address.company_name);
+				jQuery('#new-address-street1').val(data.address.address1);
+				jQuery('#new-address-street2').val(data.address.address2);
+				jQuery('#new-address-city').val(data.address.city);
+				jQuery('#new-address-postcode').val(data.address.postcode);
+				jQuery('#new-address-country').val(data.address.countries_id);
+				jQuery('#new-address-phone').val(data.address.telephone);
+
+				reload_zones(data.address.state_region_code);
+			}
+		});
+	});
+
+	function select_address() {
+		let address_id = jQuery(this).attr('data-address-id');
+
+		$inp = jQuery('input.addr-'+address_id+'');
+
+		$inp.attr('checked', true);
+		jQuery('.address').removeClass('selected');
+
+		$addr = jQuery('.address.addr-'+address_id);
+		$addr.addClass('selected');
+	}
+</script>

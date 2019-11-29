@@ -1,0 +1,20 @@
+{{#schema}}
+<div itemscope itemtype="http://schema.org/Product">
+	<meta itemprop="mpn" content="{{mpn}}">
+	<meta itemprop="name" content="{{name}}">
+	<meta itemprop="sku" content="{{sku}}">
+	{{#description}}<meta itemprop="description" content="{{.}}">{{/description}}
+	<meta itemprop="url" content="https:{{domain}}{{url}}">
+	<meta itemprop="image" content="https:{{cdn}}/{{image}}">
+	<meta itemprop="brand" content="{{brand}}">
+	<meta itemprop="weight" content="{{weight}}">
+	<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+		<meta itemprop="price" content="{{price}}">
+		<meta itemprop="priceCurrency" content="{{price_currency}}">
+		<meta itemprop="availability" content="http://schema.org/{{availability}}">
+		<meta itemprop="itemCondition" content="http://schema.org/{{condition}}">
+		<meta itemprop="inventoryLevel" content="{{inventory_level}}">
+		<meta itemprop="warranty" content="{{warranty}}">
+	</div>
+</div>
+{{/schema}}

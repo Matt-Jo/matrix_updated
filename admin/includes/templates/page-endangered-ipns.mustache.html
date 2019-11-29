@@ -1,0 +1,86 @@
+<script src="/images/static/js/ck-j-table-manager.max.js?v=0.47"></script>
+<style>
+	#page-body { width:100%; }
+
+	#page-body h3 { color:#555; text-decoration:underline; margin:10px 5px; }
+
+	#sales-commission-report { margin-top:20px; }
+	#sales-commission-report .money { text-align:right; }
+	#sales-commission-report tbody tr:hover td { background-color:#cff; }
+	#sales-commission-report tfoot td { border-width:0px; }
+	#sales-commission-report tfoot td.label { text-align:right; }
+
+	#sales-commission-report .negative td:not(.row-idx) { padding:0px; }
+	#sales-commission-report .negative .indicator { padding:2px 6px; border:2px solid #c00; color:#f00; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Endangered IPNs</h3>
+	<table cellpadding="0" cellspacing="0" border="0" id="endangered-ipns-report" class="ck-table-manager">
+		<thead>
+			<tr>
+				<th>IPN</th>
+				<th>Vendor</th>
+				<th>Lead Time</th>
+				<th>On Order</th>
+				<th>On Hand</th>
+				<th>Available</th>
+				<th>Minimum Qty</th>
+				<th>Days Supply</th>
+				<th>Minimum Days</th>
+				<th>Severity</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#ipns}}
+			<tr>
+				<td><a href="/admin/ipn_editor.php?selected_box=inventory&ipnId={{ipn}}" target="_blank">{{ipn}}</a></td>
+				<td>{{vendor}}</td>
+				<td>{{lead_time}}</td>
+				<td title="this amount is slated to arrive within the lead time window">{{on_order}}</td>
+				<td>{{on_hand}}</td>
+				<td>{{available}}</td>
+				<td>{{minimum_qty}}</td>
+				<td>{{days_supply}}</td>
+				<td>{{minimum_days}}</td>
+				<td>{{severity}}</td>
+			</tr>
+			{{/ipns}}
+			{{^ipns}}
+			<tr>
+				<td colspan="10" style="text-align:center;font-weight:bold;padding:8px;">No Endangered IPNs Found</td>
+			</tr>
+			{{/ipns}}
+		</tbody>
+	</table>
+</td>
+<script>
+	var severity_map = {};
+	{{#severity_map}}
+	severity_map["{{severity}}"] = {{severity_sort}};
+	{{/severity_map}}
+
+	jQuery('#endangered-ipns-report').table_manager({
+		color_rows: true,
+		sortable: true,
+		sort_methods: {
+			//0: 'text',
+			//1: 'text',
+			2: 'integer',
+			3: 'integer',
+			4: 'integer',
+			5: 'integer',
+			6: 'integer',
+			7: 'integer',
+			8: 'integer',
+			9: function(val1, val2) {
+				if (severity_map[val1] == severity_map[val2]) return 0;
+				else return severity_map[val1]<severity_map[val2]?-1:1;
+			},
+		},
+	});
+</script>

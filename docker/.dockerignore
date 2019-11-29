@@ -1,0 +1,12 @@
+*/.git/*
+*/.DS_Store/*
+*/.idea/*
+*/.vscode/*
+*/.terraform/*
+
+../includes/engine/vendor/*
+../documentation/*
+*.md
+./
+
+../guille/*

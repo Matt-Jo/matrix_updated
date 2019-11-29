@@ -1,0 +1,54 @@
+div.left_80{
+        float:left; 
+        width:80px; 
+        height:30px;
+}
+div.left_100{
+        float:left; 
+        width:100px; 
+        height:30px;
+}
+div.left_120{
+        float:left; 
+        width:120px; 
+        height:30px;
+}
+div.left_140{
+        float:left; 
+        width:140px; 
+        height:30px;
+}
+div.left_150{
+        float:left; 
+        width:150px; 
+        height:30px;
+}
+div.left_160{
+        float:left; 
+        width:160px; 
+        height:30px;
+}
+div.left_180{
+        float:left; 
+        width:180px; 
+        height:30px;
+}
+div.left_250{
+        float:left; 
+        width:250px; 
+        height:30px;
+}
+div.left_350{
+        float:left; 
+        width:350px; 
+        height:30px;
+}
+div.customer_orders{
+        clear:left;
+        float:left;
+        width:900px; 
+        margin-top:3px;
+}
+div.monetary {
+    text-align: right;
+}

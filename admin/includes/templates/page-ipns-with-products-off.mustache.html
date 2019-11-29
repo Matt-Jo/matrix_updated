@@ -1,0 +1,146 @@
+<style>
+    #page-body { width:100%; }
+    .ipns-with-no-products { border-collapse:separate; border-spacing:2px; width:900px !important; }
+    .ipns-with-no-products th, .ipns-with-no-products td { padding:2px 5px; border-color:black; }
+    .ipns-with-no-products th { padding-right:20px; }
+    .ipns-with-no-products tbody tr:nth-child(even) td { background-color:#e6eeee; }
+    .ipns-with-no-products tbody tr:nth-child(odd) td { background-color:#fff; }
+	#filters label { font-size:12px; margin-left:10px; }
+	#filters fieldset { display:inline-block; border:1px solid #000; padding:5px; margin:5px; }
+	.default-filter { display:none; }
+
+	#loader { display:none; height:100%; }
+	#loader tr td { background-color:#fff; text-align:center; }
+	#loader-image { margin:0 auto; border:16px solid #f3f3f3; border-top:16px solid #3498db; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; }
+
+	@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+<td id="page-body">
+    {{#has_errors?}}
+        <br>Errors:</br>
+        {{#errors}}{{{.}}}<br>{{/errors}}
+    {{/has_errors?}}
+    <h3>IPN's With Products Off (<span id="ipn-count">{{ipn_count}}</span>)</h3>
+    <main>
+		<div id="filters">
+			<fieldset>
+				<legend>Inventory Filter:</legend>
+				<label for="all-quantity-filter">All</label>
+				<input type="radio" name="has_inventory" id="all-quantity-filter" class="table-filter" value="default">
+				
+				<label for="on-hand-only-filter">On Hand</label>
+				<input type="radio" name="has_inventory" id="on-hand-only-filter" class="table-filter" value="1" checked>
+				
+				<label for="zero-on-hand-filter">Out Of Stock</label>
+				<input type="radio" name="has_inventory" id="zero-on-hand-filter" class="table-filter" value="0">
+			</fieldset>
+			<fieldset>
+				<legend>Product Filter:</legend>
+				<label for="all-product-filter">All</label>
+				<input type="radio" name="has_products" id="all-product-filter" class="table-filter" value="default">
+				
+				<label for="active-product-only-filter">Product Only</label>
+				<input type="radio" name="has_products" id="active-product-only-filter" class="table-filter" value="1">
+
+				<label for="no-active-products-filter">No Active Products / No Products</label>
+				<input type="radio" name="has_products" id="no-active-products-filter" class="table-filter" value="0" checked>
+			</fieldset>
+			<fieldset>
+				<legend>IPN Status Filter:</legend>
+				<label for="default-ipn-filter">All</label>
+				<input type="radio" name="is_discontinued" id="default-ipn-filter" class="table-filter" value="default" value="default" checked>
+				
+				<label for="discontinued-only-filter">Discontinued</label>
+				<input type="radio" name="is_discontinued" id="discontinued-only-filter" class="table-filter" value="1">
+				
+				<label for="active-only-filter">Active</label>
+				<input type="radio" name="is_discontinued" id="active-only-filter" class="table-filter" value="0">
+			</fieldset>
+		</div>
+        <table class="tablesorter ipns-with-no-products">
+            <thead>
+                <tr>
+                    <th>IPN [# On]</th>
+                    <!--th>Model #</th-->
+                    <!--th>[ERR?]</th-->
+                    <th title="On hand quantity * average cost">Estimated Total Cost</th>
+                    <th title="On hand quantity">Qty</th>
+                    <th>Info</th>
+                </tr>
+            </thead>
+			<tbody id="loader">
+				<tr>
+					<td colspan="5">
+						<div id="loader-image"></div>
+					</td>
+				</tr>
+			</tbody>
+            <tbody id="ipn-results">
+                {{#ipns}}
+                <tr class="filterable-row" data-has-inventory="{{has_inventory}}" data-is-discontinued="{{is_discontinued}}" data-has-products="{{has_products}}">
+                    <td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{ipn}}</a> <b>{{onprod}}</b></td>
+                    <!--td class="products-model">{{products_model}}</td-->
+                    <!--td style="text-align:center; padding:2px 0; margin:0;"><b>{{err}}</b></td-->
+                    <td>{{estimated_total_cost}}</td>
+                    <td class="stock-quantity">{{stock_quantity}}</td>
+                    <td>{{{info}}}</td>
+                </tr>
+                {{/ipns}}
+            </tbody>
+        </table>
+    </main>
+</td>
+<script>
+	jQuery('.tablesorter').tablesorter({
+        widgets: ['zebra'],
+        headers: {
+            3: { sorter: 'digit' }
+        }
+    });
+
+	jQuery('.table-filter').on('click', function () {
+		load_ipns();
+	});
+		
+	load_ipns();
+	
+	function load_ipns () {
+		jQuery('#loader').slideDown();
+		jQuery('#loader-body').slideDown();
+
+		//filters
+		var has_inventory = jQuery('input[name=has_inventory]:checked').val();
+		var has_products = jQuery('input[name=has_products]:checked').val();
+		var is_discontinued = jQuery('input[name=is_discontinued]:checked').val();
+		
+		console.log(has_inventory, has_products, is_discontinued);
+		
+		setTimeout(function () {
+			var ipn_count = 0;
+			jQuery('.filterable-row').each(function () {
+				jQuery(this).show();
+			
+				var data = {
+					has_inventory: jQuery(this).attr('data-has-inventory'),
+					is_discontinued: jQuery(this).attr('data-is-discontinued'),
+					has_products: jQuery(this).attr('data-has-products')
+				};
+				console.log(has_inventory, has_products, is_discontinued);
+				if (has_inventory == 1 && data.has_inventory == 0 || has_inventory == 0 && data.has_inventory == 1) jQuery(this).hide();
+				
+				if (has_products == 1 && data.has_products == 0 || has_products == 0 && data.has_products == 1) jQuery(this).hide();
+				
+				if (is_discontinued == 1 && data.is_discontinued == 0 || is_discontinued == 0 && data.is_discontinued == 1) jQuery(this).hide();
+
+				if (jQuery(this).is(':visible')) ipn_count++;
+			});
+
+			jQuery('#ipn-count').html(ipn_count);
+			
+		}, 500);
+		
+		jQuery('#loader').slideUp();
+		jQuery('#loader-body').slideUp();
+	}
+	
+</script>

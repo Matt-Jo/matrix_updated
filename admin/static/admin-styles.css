@@ -1,0 +1,10 @@
+h3.page-heading { color:#727272; margin:3px 0px 6px 0px; }
+h4.section-heading { margin:10px 0px 10px 0px; color:#727272; padding:3px 3px 3px 10px; border-top:1px solid #727272; border-bottom:1px solid #727272; background-color:#337272; color:#fff; }
+
+input[required], select[required], textarea[required] { border:1px solid #f55; }
+input::placeholder { color:#aaa; }
+
+button[disabled] { color:#c99; }
+
+.helper[title] { text-decoration:underline dashed; }
+.helper[title]::after { content:" [?]"; cursor:pointer; }

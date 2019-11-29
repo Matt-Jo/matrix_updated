@@ -1,0 +1,809 @@
+{{^product}}
+<section>
+	<div style="text-align:center;">Product not found!</div>
+	<div style="text-align:right;margin:0px 10px 10px 0px;">
+		<a href="/index.php"><img src="{{static_files}}/img/button_continue.gif" border="0" alt="Continue" title="Continue"></a>
+	</div>
+</section>
+{{/product}}
+{{#product}}
+<!-- link to cloud-zoom.css file -->
+<link href="/includes/javascript/simplemodal.css" rel="stylesheet" type="text/css" media="screen"/>
+<link href="/includes/javascript/cloud-zoom.css" rel="stylesheet" type="text/css" media="screen"/>
+<link href="/includes/javascript/jcarousel/skin.css" rel="stylesheet" type="text/css" media="screen"/>
+<!-- link to cloud-zoom.js file -->
+{{! MMD - modified cloud-zoom to require the simplemodal plugin as well }}
+<script src="/includes/javascript/jquery-ui-1.8.custom.min.js" type="text/javascript"></script>
+<script src="/includes/javascript/jquery.scrollTo.min.js" type="text/javascript"></script>
+<script src="/includes/javascript/jquery.simplemodal.1.4.3.min.js" type="text/javascript"></script>
+<script src="/includes/javascript/cloud-zoom.js?v=1.0.1" type="text/javascript"></script>
+<script src="/includes/javascript/jquery.jcarousel.min.js" type="text/javascript"></script>
+
+<style>
+	#product_image_div { text-align:center;  }
+	#product_hero { margin-left:20px; margin-top:5px; margin-right:5px; text-align:center; padding:2px; }
+	#img_carousel { text-align:center; }
+	#product_info_contact_us a { color:#325b6f; text-decoration:underline; }
+
+	#wrap { z-index:999 !important; }
+
+	.clear { clear:both; }
+
+	.model-box { text-align:left; font-size:14px; }
+	#item_name { font-size:28px; font-weight:bold; color:#325b6f; margin:0px; }
+
+	#review-q-holder { text-align:left; white-space:nowrap; overflow:auto; }
+	#review-q-holder .yotpo { float:left; clear:none; padding:1px; }
+	.QABottomLine { margin-left:20px; }
+
+	#item_description { font-size:14px; margin-top:8px; }
+	.prices { font-weight:bold; margin:10px 0px 4px 0px; }
+	#productPrice { line-height:28px; font-size:32px; font-weight:bold; color:#d22842; }
+	#regPrice { text-decoration:line-through; color:#000; font-size:24px; }
+	.productSpecialPrice { font-size:11px; font-weight:normal; color:#d22842; margin:5px 0px; }
+
+	#configButton { margin-top:25px; border:0px;}
+
+	#product-options { /*float:left;*/ width:100%; }
+	#options_dropdown { /*float:left;*/ border:1px solid #cecece; background-color:white; padding:8px; margin:0px; text-align:left; }
+	#included_box { color:#777; font-style:italic; }
+	#included_options { display:inline; padding:0px; margin:0px; }
+	#included_options li { display:inline; list-style-type:none; margin-right:3px; }
+	#included_options li a { color:#777; text-decoration:underline; }
+	#extra_options { margin-top:10px; width:100%; }
+	#extra_options th { padding:7px; }
+	#extra_options td { padding:7px; text-align:center; vertical-align:top; }
+	.extopt_recommended { font-size:12px; color:green; font-weight:bold; }
+	.extopt_description { font-size:12px; color:#777777; font-style:italic; }
+	.extopt_price { text-align:right; color:#d22842; font-weight:bold; font-size:18px; }
+	#opts_subtotal { margin-top:10px; text-align:right; font-weight:bold; }
+	#subtotal { color:#d22842; font-size:24px; font-weight:bold; }
+
+	#cart-control { margin:7px 0px 0px 0px; font-weight:bold; /*text-align:center;*/ }
+	#qty-label { margin-left:18px; }
+	#productQuantity { font-size:16px; font-weight:bold; height:51px; width:40px; border:3px solid #8BAD1E; border-radius:3px; position:relative; padding-left:10px; margin-right: 10px; vertical-align: top; margin-top: 10px; }
+	#add-to-cart { position:relative; max-width: 100%; margin-top: 10px;}
+
+	.qtyHolder {display: inline-block; float: left; vertical-align: bottom}
+	.qtyHolder span {display: block}
+
+	#product_additional_info { margin-top:16px; margin-bottom:20px; border-top-right-radius:0px;}
+
+	.pai_header { display:block; padding-bottom:3px; margin-bottom:3px; border-bottom:1px solid #ccc; }
+
+	.warranty-subhead { display:block; font-size:1.17em; margin:1em 0; }
+
+	.pinfo-block { font-size:14px; }
+
+	#pinfo-details th, #pinfo-details td { text-align:left; font-size:14px; border:0px}
+	#pinfo-details td { padding-left:15px; }
+
+	.info-avail { /*color:#090;*/ }
+	.info-avail.outofstock { color:#d22842; }
+	.info-avail.always-available { color:#000; }
+	.info-ships { color:#090; }
+	.info-ships.always-available { color:#ff8500; }
+
+	.pinfo-separator { margin:15px 0px; }
+
+	#pinfo-addtl {}
+	#pinfo-addtl th, #pinfo-addtl td { font-size:14;  border:0px }
+	#pinfo-addtl th { text-align:left; }
+	#pinfo-addtl td { text-align:right; }
+	#pinfo-addtl .included { padding-left:45px; }
+	#pinfo-addtl .included.header { padding-left:15px; }
+	#pinfo-addtl .included.desc { color:#777; font-style:italic; text-align:left; }
+
+	.rel-product { padding:25px; font-size:12px; font-weight:bold; font-family:Arial, Verdana, sans-serif; }
+	.rel-product .orig-price, .rel-product .spec-price, .rel-product .disp-price { color:#e62345; }
+	.rel-product .orig-price { text-decoration:line-through; }
+
+	/* modals */
+	#admin_info_box { border:1px solid #000; padding:10px; display:none; }
+
+	.ciInfo .modal-header { display:block; font-size:1.17em; margin:1em 0; color:#84b8d9; }
+
+	/* the follow css was provided by yotpo to hide the star rating when no reviews exist*/
+	@keyframes nodeInserted {
+		from { outline-color:#fff; }
+		to { outline-color:#000; }
+	}
+	div.yotpo.bottomLine .star-clickable {
+		animation-duration: 0.01s;
+		animation-name:nodeInserted;
+	}
+</style>
+	{{> partial-product-schema.mustache.html }}
+<section>
+	<div class="grid">
+		<div class="col-1-1 show-on-mobile">
+			<div class="model-box">
+				Model #:
+				{{#admin?}}
+				<a href="#" class="admin_model_info">{{model_num}}</a>
+				{{/admin?}}
+				{{^admin?}}
+				<span class="model" data-product-id="{{id}}">{{model_num}}</span>
+				{{/admin?}}
+			</div>
+			<h1 class="itemDescription" id="item_name">{{name}}</h1>
+
+			<div class="clear"></div>
+
+			<div id="review-q-holder">
+				<div class="yotpo bottomLine" onclick="jQuery.scrollTo('#reviews', 800);" data-appkey="{{yotpo.appkey}}" data-domain="cablesandkits.com" data-product-id="{{id}}" data-product-models="{{model_num}}" data-name="{{name_attr}}" data-url="{{url}}" data-image-url="{{cdn}}/{{img}}" data-description="{{safe_short_description}}" data-bread-crumbs="{{safe_breadcrumbs}}"></div>
+				<div class="yotpo QABottomLine" data-appkey="{{yotpo.appkey}}" data-product-id="{{id}}"></div>
+			</div>
+		</div>
+		<div class="col-7-12">
+			<div id="product_image_div">
+				{{#has_img?}}
+				<div class="ck_rounded_box_content_with_border" id="product_hero">
+					<a href="{{cdn}}/{{img}}" class="cloud-zoom" id="Zoomer" rel="zoomWidth: 450, zoomHeight: 333, adjustX: 13"><img src="{{cdn}}/{{img}}" width="500px" title="{{name_attr}}" alt="{{name_attr}}" style="margin:0px auto"></a>
+				</div>
+					{{#has_carousel?}}
+				<br>
+				<div id="img_carousel">
+					<a href="{{cdn}}/{{img}}" class="cloud-zoom-gallery" rel="useZoom: 'Zoomer', smallImage: '{{cdn}}/{{img}}'"><img src="{{cdn}}/{{thumb}}" title="{{name_attr}}" alt="{{name_attr}}"></a>
+						{{#img_thumbs}}
+					<a href="{{cdn}}/{{large_img}}" class="cloud-zoom-gallery" rel="useZoom: 'Zoomer', smallImage: '{{cdn}}/{{large_img}}'"><img src="{{cdn}}/{{thumb_img}}" title="{{name_attr}}" alt="{{name_attr}}"></a>
+						{{/img_thumbs}}
+				</div>
+					{{/has_carousel?}}
+				{{/has_img?}}
+				{{^has_img?}}
+				<strong>No Image</strong>
+				{{/has_img?}}
+				<div id="product_info_contact_us">
+					Questions?
+					<a href="/contact_us.php">Click here</a> to contact us.
+				</div>
+			</div>
+		</div>
+
+		<div class="col-5-12">
+
+			<div id="product_information">
+				<div class="hide-on-mobile">
+					<div class="model-box">
+						Model #:
+						{{#admin?}}
+						<a href="#" class="admin_model_info">{{model_num}}</a>
+						{{/admin?}}
+						{{^admin?}}
+						<span class="model" data-product-id="{{id}}">{{model_num}}</span>
+						{{/admin?}}
+					</div>
+					<h1 class="itemDescription" id="item_name">{{name}}</h1>
+
+					<div class="clear"></div>
+
+					<div id="review-q-holder">
+						<div class="yotpo bottomLine" onclick="jQuery.scrollTo('#reviews', 800);" data-appkey="{{yotpo.appkey}}" data-domain="cablesandkits.com" data-product-id="{{id}}" data-product-models="{{model_num}}" data-name="{{name_attr}}" data-url="{{url}}" data-image-url="{{cdn}}/{{img}}" data-description="{{safe_short_description}}" data-bread-crumbs="{{safe_breadcrumbs}}"></div>
+						<div class="yotpo QABottomLine" data-appkey="{{yotpo.appkey}}" data-product-id="{{id}}"></div>
+					</div>
+				</div>
+
+				<div class="clear"></div>
+
+				<div id="item_description">{{short_description}}</div>
+
+				<div class="prices">
+					<span id="productPrice" price="{{price_num}}">{{#specials_price?}}<span id="regPrice">{{reg_price}}</span><br>{{/specials_price?}}{{price}}</span><br>
+				</div>
+
+				<div class="clear"></div>
+
+				{{#specials_notice?}}
+				<div class="productSpecialPrice">
+					Sale quantities are limited to in-stock quantities. If you need more than what is in-stock,<br>
+					click <a href="https://livechat.boldchat.com/aid/{{boldchat.key}}/bc.chat?resize=true&amp;cwdid={{boldchat.cwdid}}" target="_blank" onclick="window.open((window.pageViewer &amp;&amp; pageViewer.link || function(link) {return link;})(this.href + (this.href.indexOf('?')>=0 ? '&amp;' : '?') + 'url=' + escape(document.location.href)), 'Chat148782571958384204', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=640,height=480');return false;">here</a> to chat with a CK representative.
+				</div>
+				{{/specials_notice?}}
+
+				<div id="ci_yellow_highlight">
+					{{^stockavailable?}}
+						{{! If this is out of stock but is marked "always available", skip the first confidenceitem }}
+					<div class="confidenceitem2 conf-availability" id="available_qty_container">
+						<div>
+							{{#instock?}}
+							<img src="{{static_files}}/img/green_checkmark.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_in_stock" data-modal-height="240">
+							<span class="ci_text_link"><strong style="font-size:14px;">{{display_available}}</strong> <a href="#" class="ci-modal" data-modal-id="ci_in_stock" data-modal-height="240" title="Click for more information">in stock</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_in_stock" data-modal-height="240"><img src="{{static_files}}/img/question_mark_circle.png" alt="in stock click to learn more"></a></span>
+							{{/instock?}}
+							{{#outofstock?}}
+								{{#on_order?}}
+							<img src="{{static_files}}/img/exclamation.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_on_order" data-modal-height="260">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_on_order" data-modal-height="260" title="Click for more information">{{on_order}} on Order</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_on_order" data-modal-height="260"><img src="{{static_files}}/img/question_mark_circle.png" alt="On order click to learn more"></a></span>
+								{{/on_order?}}
+								{{^on_order?}}
+							<img src="{{static_files}}/img/exclamation.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_out_of_stock" data-modal-height="200">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_out_of_stock" data-modal-height="200" title="Click for more information">Out of Stock</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_out_of_stock" data-modal-height="200"><img src="{{static_files}}/img/question_mark_circle.png" alt="Out of stock click to learn more"></a></span>
+								{{/on_order?}}
+							{{/outofstock?}}
+						</div>
+					</div>
+					{{/stockavailable?}}
+					<div class="confidenceitem2 conf-ship-date">
+						<div>
+							{{#ships_today?}}
+							<img src="{{static_files}}/img/green_checkmark.png" class="ci-modal" aria-hidden="true" alt="" border="0" data-modal-id="ci_in_stock" data-modal-height="260">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_ships_today" data-modal-height="260" title="Click for more information">Ships Today</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_ships_today" data-modal-height="260"><img src="{{static_files}}/img/question_mark_circle.png" alt="Ships today click to learn more"></a></span>
+							{{/ships_today?}}
+							{{#ships_ondate?}}
+							<img src="{{static_files}}/img/exclamation.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_ships_future" data-modal-height="320">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_ships_future" data-modal-height="320" title="Click for more information">Ships {{ship_date}}</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_ships_future" data-modal-height="320"><img src="{{static_files}}/img/question_mark_circle.png" alt="Shipping date click to learn more"></a></span>
+							{{/ships_ondate?}}
+							{{#outofstock?}}
+								{{#on_order?}}
+							<img src="{{static_files}}/img/exclamation.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_verify_ship_date" data-modal-height="200">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_verify_ship_date" data-modal-height="200" title="Click for more information">Call for Details on Availability</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_verify_ship_date" data-modal-height="200"><img src="{{static_files}}/img/question_mark_circle.png" alt="Call for details on availability click to learn more"></a></span>
+								{{/on_order?}}
+								{{^on_order?}}
+							<img src="{{static_files}}/img/exclamation.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_verify_availability" data-modal-height="300">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_verify_availability" data-modal-height="300" title="Click for more information">Call to Verify Availability</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_verify_availability" data-modal-height="300"><img src="{{static_files}}/img/question_mark_circle.png" alt="Call to verify availability click to learn more"></a></span>
+								{{/on_order?}}
+							{{/outofstock?}}
+						</div>
+					</div>
+					<div class="confidenceitem2 conf-condition">
+						<div>
+							<img src="{{static_files}}/img/green_checkmark.png" aria-hidden="true" alt="">
+							<span class="ci_text_link" style="font-size:14px;">Condition: <span>{{condition}}</span>
+						</div>
+					</div>
+				</div>
+				<div id="ci_no_highlight">
+					{{#free_shipping?}}
+					<div class="confidenceitem2 conf-freeship">
+						<div>
+							<img src="{{static_files}}/img/green_checkmark.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_free_shipping" data-modal-height="240">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_free_shipping" data-modal-height="240" title="Click for more information">FREE Shipping</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_free_shipping" data-modal-height="240"><img src="{{static_files}}/img/question_mark_circle.png" alt="Free shipping click to learn more"></a></span>
+						</div>
+					</div>
+					{{/free_shipping?}}
+					{{#qualifies_free_shipping?}}
+					<div class="confidenceitem2 conf-freeship">
+						<div>
+							<img src="{{static_files}}/img/green_checkmark.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_qualifies_free_shipping" data-modal-height="240">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_qualifies_free_shipping" data-modal-height="240" title="Click for more information">Qualifies for FREE Shipping</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_qualifies_free_shipping" data-modal-height="240"><img src="{{static_files}}/img/question_mark_circle.png" alt="Qualifies for free shipping click to learn more"></a></span>
+						</div>
+					</div>
+					{{/qualifies_free_shipping?}}
+					<div class="confidenceitem2 conf-guarantee">
+						<div>
+							<img src="{{static_files}}/img/green_checkmark.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_guarantee" data-modal-height="240">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_guarantee" data-modal-height="240" title="Click for more information">100% Satisfaction Guaranteed</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_guarantee" data-modal-height="240"><img src="{{static_files}}/img/question_mark_circle.png" alt="Satisfaction guarantee click to learn more"></a></span>
+						</div>
+					</div>
+					{{#warranty?}}
+					<div class="confidenceitem2 conf-warranty">
+						<div>
+							<img src="{{static_files}}/img/green_checkmark.png" class="ci-modal" aria-hidden="true" alt="" data-modal-id="ci_warranty" data-modal-height="255">
+							<span class="ci_text_link"><a href="#" class="ci-modal" data-modal-id="ci_warranty" data-modal-height="255" title="Click for more information">Lifetime Warranty</a></span>
+							<span><a href="#" class="ci-modal" data-modal-id="ci_warranty" data-modal-height="255"><img src="{{static_files}}/img/question_mark_circle.png" alt="Lifetime warranty click to learn more"></a></span>
+						</div>
+					</div>
+					{{/warranty?}}
+				</div>
+				<form method="post" action="/cart-flyout" class="add-to-cart-form" id="add-product-{{products_id}}">
+					<input type="hidden" name="action" value="add-product">
+					<input type="hidden" id="products_id" name="products_id" value="{{id}}">
+					<input type="hidden" id="discontinued" value="{{discontinued}}" data-currentcart="{{cart_quantity}}" {{#is_discontinued?}}data-maxqty="{{display_available_num}}"{{/is_discontinued?}}>
+
+					{{#options?}}
+					<div id="product-options">
+
+						<a href="#" class="main-view-options" id="configButton">Included/Additional options for this product</a>
+
+						<div id="options_dropdown">
+							{{#included_options}}
+							<div id="included_box">
+								Included with this product:
+								<ul id="included_options">
+								{{#options}}
+									<li><a href="{{listing_url}}">{{name}}</a>{{#desc}} ({{.}}){{/desc}}{{^last}},{{/last}}</li>
+								{{/options}}
+								<ul>
+							</div>
+							{{/included_options}}
+
+							{{#extra_options}}
+							<table id="extra_options" border="0" cellspacing="0" cellpadding="0">
+								<thead>
+									<tr>
+										<th style="display:none;">QTY</th>
+										<th>ADD</th>
+										<th></th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#options}}
+									<tr>
+										<td style="display:none;"><input class="addonQuantity" type="text" size="1" maxlength="2" id="addon_{{products_id}}_quantity" name="addon_quantity[{{products_id}}]" {{#recommended?}}value="1"{{/recommended?}}{{^recommended?}}disabled{{/recommended?}}></td>
+										<td><input class="addonSelection" type="checkbox" id="addon_{{products_id}}" data-aid="{{products_id}}" name="addon_select[{{products_id}}]" {{#recommended?}}checked{{/recommended?}}></td>
+										<td style="text-align:left;">
+											<a href="{{listing_url}}"><strong>{{name}}</strong></a> {{#recommended?}}<span class="extopt_recommended">[recommended]</span>{{/recommended?}}<br>
+											<span class="extopt_description">{{desc}}</span>
+											{{#qty?}} - <strong>{{.}}</strong> in stock{{/qty?}}
+											{{^qty?}} - <strong style="color:#d22842;">out of stock</strong>{{/qty?}}
+										</td>
+										<td class="extopt_price" id="addon_{{products_id}}_price" price="{{price}}">{{display_price}}</td>
+									</tr>
+									{{/options}}
+								</tbody>
+							</table>
+							{{/extra_options}}
+							<div id="opts_subtotal">
+								Subtotal: <span id="subtotal"></span>
+							</div>
+						</div>
+					</div>
+					{{/options?}}
+
+					<div id="cart-control">
+						<span id="qty-label">Qty</span><br>
+						<input type="text" maxlength="4" name="quantity" value="1" id="productQuantity" aria-label="Quantity">
+						<input type="image" src="{{static_files}}/img/add-to-cart-v2.png" alt="Add To Cart" id="add-to-cart">
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="clear"></div>
+
+		<div id="product_additional_info" class="ck_rounded_box nomargin">
+			<ul class="pai_nav">
+				<li><a href="#" class="pinfo-tab" data-tab-id="desc">Description</a></li>
+				<li><a href="#" class="pinfo-tab" data-tab-id="details">Details</a></li>
+				{{#warranty?}}
+				<li><a href="#" class="pinfo-tab" data-tab-id="warranty" id="warTab">Warranty</a></li>
+				{{/warranty?}}
+				<li><a href="#" class="pinfo-tab" data-tab-id="reviews" id="revTab">Reviews</a></li>
+				<li><a href="#" class="pinfo-tab" data-tab-id="qanda" id="revTab">Q & A</a></li>
+			</ul>
+			<div class="clear"></div>
+			<div class="ck_rounded_box_content_with_border_953" style="padding:25px;">
+				<div id="desc">
+					<strong class="pai_header">Description</strong>
+					<div class="tab_details">
+						<a href="#" data-tab-id="product_additional_info" class="pai_back"><img src="{{static_files}}/img/blue_top_arrow.png" aria-hidden="true" alt=""> Back to top</a>
+						<div class="clear"></div>
+						<div class="pinfo-block">{{{description}}}</div>
+					</div>
+				</div>
+				<div id="details">
+					<strong class="pai_header">Details</strong>
+					<div class="tab_details">
+						<a href="#" data-tab-id="product_additional_info" class="pai_back"><img src="{{static_files}}/img/blue_top_arrow.png" aria-hidden="true" alt=""> Back to top</a>
+						<div class="clear"></div>
+						<div class="pinfo-block">
+							<table id="pinfo-details">
+								<tr>
+									<th>Model #:</th>
+									<td>
+										{{#admin?}}
+										<a href="#" class="admin_model_info">{{model_num}}</a>
+										{{/admin?}}
+										{{^admin?}}
+										{{model_num}}
+										{{/admin?}}
+									</td>
+								</tr>
+								<tr>
+									<th>Availability:</th>
+									<td class="itemDescription"><strong class="info-avail {{#outofstock?}}outofstock{{/outofstock?}} {{#stockavailable?}}always-available{{/stockavailable?}}">{{info_availability}}</strong></td>
+								</tr>
+								{{#info_ships?}}
+								<tr>
+									<th>Ships:</th>
+									<td class="itemDescription"><strong class="info-ships {{#stockavailable?}}always-available{{/stockavailable?}}">{{.}}</strong></td>
+								</tr>
+								{{/info_ships?}}
+								{{#ships_addtl?}}
+								<tr>
+									<td colspan="2" class="itemDescription" style="font-size:11px;padding-left:0px;">{{{.}}}</td>
+								</tr>
+								{{/ships_addtl?}}
+								{{#warranty?}}
+								<tr>
+									<th>Warranty:</th>
+									<td class="itemDescription">Lifetime Warranty</td>
+								</tr>
+								{{/warranty?}}
+								<tr>
+									<th>Condition:</th>
+									<td class="itemDescription">{{condition}}</td>
+								</tr>
+								<tr>
+									<th>Weight:</th>
+									<td class="itemDescription">{{weight}} lbs</td>
+								</tr>
+								{{^free_shipping?}}
+									{{^qualifies_free_shipping?}}
+								<tr>
+									<td colspan="2"><em>This item is too heavy to qualify for FREE Shipping.</em></td>
+								</tr>
+									{{/qualifies_free_shipping?}}
+								{{/free_shipping?}}
+
+								{{#attributes}}
+								<tr>
+									<th>{{key_name}}</th>
+									<td>{{value}}</td>
+								</tr>
+								{{/attributes}}
+							</table>
+
+							<img src="//media.cablesandkits.com/m24_longer.gif" alt="" class="pinfo-separator">
+
+							<table id="pinfo-addtl">
+								<tr>
+									<th>{{name}}</th>
+									<td>{{price}}</td>
+								</tr>
+								{{#included_options}}
+								<tr>
+									<th class="included header" colspan="2">Included with this product:</th>
+								</tr>
+									{{#options}}
+								<tr>
+									<th class="included" colspan="2"><a href="{{listing_url}}">{{name}}</a></th>
+								</tr>
+										{{#desc}}
+								<tr>
+									<td class="included desc" colspan="2">({{.}})</td>
+								</tr>
+										{{/desc}}
+									{{/options}}
+								{{/included_options}}
+							</table>
+						</div>
+					</div>
+				</div>
+				{{#warranty?}}
+				<div id="warranty">
+					<strong class="pai_header">Warranty</strong>
+					<div class="tab_details">
+						<a href="#" data-tab-id="product_additional_info" class="pai_back"><img src="{{static_files}}/img/blue_top_arrow.png" aria-hidden="true" alt=""> Back to top</a>
+						<div class="clear"></div>
+						<div id="warrantyTab">
+							<strong class="warranty-subhead">Awesome is GUARANTEED.</strong>
+							<p>Risk Free Purchase, Hassle Free Returns. AWESOME is GUARANTEED </p>
+							<p>After receiving your order, take a full month to try it out. If you decide it's not right for you, or if you're not completely satisfied in every way - if it's not AWESOME, we'll take it back and refund your money. Your complete satisfaction is GUARANTEED or your money back. That's Awesome.</p>
+							<strong class="warranty-subhead">Awesome That Never Ends.</strong>
+							<p>Everything you purchase from CablesAndKits is covered by a LIFETIME Warranty including a LIFETIME Advance Replacement Guarantee. The AWESOME never ends.</p>
+							<p>We understand that in the event of a product malfunction or failure long downtimes are not an option. If you experience a malfunction or failure with a product at any point during your ownership we'll ship a replacement the same day you report the issue. We'll even expedite the shipment if requested, with an effort to provide a delivery date and time that meets your needs. That's Awesome.</p>
+							<p>Terms and Conditions apply. Click <a href="/info/terms-and-conditions" style="color: blue;">here</a> for details.</p>
+						</div>
+					</div>
+				</div>
+				{{/warranty?}}
+				<div id="reviews">
+					<strong class="pai_header">Reviews</strong>
+					<div class="tab_details">
+						<a href="#" data-tab-id="product_additional_info" class="pai_back"><img src="{{static_files}}/img/blue_top_arrow.png" aria-hidden="true" alt=""> Back to top</a>
+						<div class="clear"></div>
+						<div class="yotpo yotpo-main-widget" data-product-id="{{id}}" data-name="{{name_attr}}" data-url="{{url}}" data-image-url="{{cdn}}/{{img}}" data-description="{{safe_short_description}}"></div>
+					</div>
+				</div>
+				<div id="qanda">
+					<strong class="pai_header">Questions & Answers</strong>
+					<div class="tab_details">
+						<a href="#" data-tab-id="product_additional_info" class="pai_back"><img src="{{static_files}}/img/blue_top_arrow.png" aria-hidden="true" alt=""> Back to top</a>
+						<div class="clear"></div>
+						<div class="yotpo yotpo-main-widget" data-product-id="{{id}}" data-name="{{name_attr}}" data-url="{{url}}" data-image-url="{{cdn}}/{{img}}" data-description="{{safe_short_description}}" data-mode="questions"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="clear"></div>
+
+		{{#cross_sell_products}}
+
+		<div class="ck_rounded_box nomargin" style="margin-bottom:25px;">
+			<div class="ck_rounded_box_tab">We Also Recommend:</div>
+			<div class="clear"></div>
+			<div class="ck_rounded_box_content_with_border_953 grid grid-pad">
+				{{#products}}
+				<div class="col-1-3 alignCenter">
+					<a class="rel-product" href="{{url}}">
+						<img src="{{cdn}}/{{img}}" class="rel-img" alt="{{safe_name}}"><br>
+						<strong>{{name}}</strong><br>
+						{{#original_price?}}
+						<span class="orig-price">{{.}}</span><br>
+						<span class="spec-price">{{display_price}}</span>
+						{{/original_price?}}
+						{{^original_price?}}
+						<span class="disp-price">{{display_price}}</span>
+						{{/original_price?}}
+					</a>
+				</div>
+				{{/products}}
+			</div>
+		</div>
+		{{/cross_sell_products}}
+
+		{{#also_purchased_products}}
+		<div class="ck_rounded_box nomargin" style="margin-bottom:25px;">
+			<div class="ck_rounded_box_tab">Customers who bought this product also purchased:</div>
+			<div class="clear"></div>
+			<div class="ck_rounded_box_content_with_border_953 grid grid-pad">
+				{{#products}}
+				<div class="col-1-3 alignCenter">
+					<a class="rel-product" href="{{url}}">
+						<img src="{{cdn}}/{{img}}" class="rel-img" alt="{{safe_name}}"><br>
+						<strong>{{name}}</strong>
+					</a>
+				</div>
+				{{/products}}
+			</div>
+		</div>
+		{{/also_purchased_products}}
+	</div>
+</section>
+
+<!-- Modals -->
+{{#admin?}}
+<div id="admin_info_box" products_id="{{id}}" class="itemDescription"></div>
+{{/admin?}}
+
+{{#instock?}}
+<div id="ci_in_stock" class="ciInfo">
+	<strong class="modal-header">What does "In Stock" mean?</strong>
+	<p>We currently have <strong>{{display_available}}</strong> of this product (part number {{model_num}}) in inventory and ready to be shipped from our Buford, GA warehouse. The stock counts reflected for each of our products are real-time numbers.	We go through great lengths to keep these numbers as up to date as possible to be sure we have quantities on-hand and available to meet the needs of our customers.	It is extremely rare that the stock quantity reflected here is inaccurate.</p>
+</div>
+{{/instock?}}
+
+{{#stockavailable?}}
+<div id="ci_available" class="ciInfo">
+	<strong class="modal-header">What does "Available" mean?</strong>
+	<p>"Available" means that this is an item that is "always available" from one of our vendors. If we do not already have this item in stock, we know that it is generally available from a particular vendor and that we can order it and have it ready to ship within a certain time period. The lead time (how long it will take before it is ready to ship) is calculated and displayed as a date on the product page. If you are somewhat flexible on the delivery date of this item, go ahead and place your order and we will update you with a more firm ship date.</p>
+	<p>If you need to know exactly when you can expect to receive this item, or if you need it faster than the date displayed on the website, please call us; there are sometimes other options for getting items to you faster (like shipping directly from our vendor, offering you an alternative item, etc).</p>
+	<p>It looks like we can typically have this product (part number {{model_num}}) ordered and ready to ship in about {{lead_time}} days based on the information we have in our system. We are pretty good about keeping accurate info in our system as that helps us avoid mistakes, service our customers faster, and saves us time. In other words, this estimation is a pretty reliable one. HOWEVER, things do go sideways in the world we live in so we can't guarantee anything ("the fine print"). Our goal is to assist you any way possible, so if you have any questions or doubts just give us a call; we are more than happy to help!</p>
+</div>
+{{/stockavailable?}}
+
+{{#outofstock?}}
+	{{^on_order?}}
+<div id="ci_out_of_stock" class="ciInfo">
+	<strong class="modal-header">What does "Out of Stock" mean?</strong>
+	<p>"Out of Stock" means that we currently do not have this product (part number {{model_num}}) in stock, however it may be available for us to order for you. If you need a product that is currently out of stock, please contact us. We would love to be able to assist you with this product or in finding another available product that will meet your needs.</p>
+</div>
+	{{/on_order?}}
+{{/outofstock?}}
+
+{{#on_order?}}
+<div id="ci_on_order" class="ciInfo">
+	<strong class="modal-header">What does "On Order" mean?</strong>
+	<p>"On Order" means that we currently have this item on order with one of our suppliers. Our system shows that we currently have {{on_order}} of this product (part number {{model_num}}) on the way to our Buford, GA location. If you are in need of this item and either need it faster than we estimate it will be available, or have a question concerning a larger quantity, please contact us and we would be more than happy to give you an expected arrival date of the product, assist you with placing an order, or help you determine if another one of our products would meet your needs.</p>
+</div>
+{{/on_order?}}
+
+{{#ships_today?}}
+<div id="ci_ships_today" class="ciInfo">
+	<strong class="modal-header">What does "Ships Today" mean?</strong>
+	<p>If a product is listed as "Ships today", it means we have the product in stock and ready to be processed for shipping. If your order is placed <strong>before 8pm EST</strong> and you select to ship your order via UPS on a normal business day we will process and ship your order the same day, guaranteed.</p>
+	<p>Our goal is to be as helpful as possible to our customers, so if there is a special shipping request please mention it in your order notes or give us a call. We will do our best to accommodate any request and all order notes are reviewed before the order is processed.</p>
+</div>
+{{/ships_today?}}
+
+{{#ships_ondate?}}
+<div id="ci_ships_future" class="ciInfo">
+	<strong class="modal-header">What does a future ship date mean?</strong>
+	<p>When a product shows a future ship date it means one of two things. 1. If the product is in stock, it means our shipping deadline has passed and we will ship the product on the next business day. 2. If the product is not in stock, or is marked as "Available", it means we will order this product when we receive your order and ship as soon as possible. The date displayed is a pretty accurate estimation of when your order would ship, should you place it today. We typically meet or exceed all ship date estimations.</p>
+	<p>If you need to know exactly when you can expect to receive this item, or if you need it faster than the date displayed on the website, please call us; there are sometimes other options for getting items to you faster (like shipping directly from our vendor, offering you an alternative item, etc).</p>
+</div>
+{{/ships_ondate?}}
+
+{{^on_order?}}
+<div id="ci_verify_availability" class="ciInfo">
+	<strong class="modal-header">What does "Call to verify availability" mean?</strong>
+	<p>When an item requests that you call to verify availability it usually means that we do not have a source for this item that is 100% reliable. That doesn't mean that we cannot get this item for you quickly; it simply means we are not confident enough to say that with complete certainty here on the site. (If we were to feel that we were not able to source an item at all, it wouldn't even be listed on the website). So, we just ask that you give us a call, or contact us via email or live help to verify the availability of this item. We can typically have you an answer pretty quickly. Or, it may be that we have an alternate item that we are able to ship right away. We would love the opportunity to assist you with your needs and look forward to hearing from you.</p>
+</div>
+{{/on_order?}}
+
+{{#on_order?}}
+<div id="ci_verify_ship_date" class="ciInfo">
+	<strong class="modal-header">What does "Call for details on availability" mean?</strong>
+	<p>If an item requests that you call for details, it typically means that we do not yet have an estimation of when this product will arrive at our warehouse. Not to worry, if you need this item and need to know when it will ship, please give us a call, message us on live chat, or send us an email and we will find out for you.</p>
+</div>
+{{/on_order?}}
+
+{{#qualifies_free_shipping?}}
+<div id="ci_qualifies_free_shipping" class="ciInfo">
+	<strong class="modal-header">What does "Qualifies for FREE Shipping" mean?</strong>
+	<p>This product (part number {{model_num}}) qualifies for our FREE Standard Shipping offer. If your order total exceeds $99, and is made up of items that qualify for Free Standard Shipping, you will receive free shipping on the order, or those items. Basically, certain items in our store do not qualify for free shipping due to size or weight, and this is not one of them! As always, you are also free to upgrade to other shipping methods including Ground and Express services to have this item as quickly as 10am next business day.</p>
+</div>
+{{/qualifies_free_shipping?}}
+
+{{#free_shipping?}}
+<div id="ci_free_shipping" class="ciInfo">
+	<strong class="modal-header">What does "FREE Shipping" mean?</strong>
+	<p>Congrats! This product (part number {{model_num}}) has met the qualifications for our FREE Standard Shipping offer. When an item qualifies for "FREE shipping", it means this specific product has met the price, size, and weight criteria of the special offer. If you order this item today, Free Standard shipping will be an option during checkout. As always, you are also free to upgrade to other shipping methods including Ground and Express services to have this item as quickly as 10am next business day.</p>
+</div>
+{{/free_shipping?}}
+
+<div id="ci_guarantee" class="ciInfo">
+	<strong class="modal-header">Awesome is GUARANTEED.</strong>
+	<p>Risk Free Purchase, Hassle Free Returns. AWESOME is GUARANTEED.</p>
+	<p>After receiving your order, take a full month to try it out. If you decide it's not right for you, or if you're not completely satisfied in every way - if it's not AWESOME, we'll take it back and refund your money. Your complete satisfaction is GUARANTEED or your money back. That's Awesome.</p>
+	<p>Terms and Conditions apply. Click <a href="/warranty" style="color:blue;" target="_blank">here</a> for details.</p>
+</div>
+
+{{#warranty?}}
+<div id="ci_warranty" class="ciInfo">
+	<strong class="modal-header">Awesome That Never Ends.</strong>
+	<p>Everything you purchase from CablesAndKits is covered by a LIFETIME Warranty including a LIFETIME Advance Replacement Guarantee.</p>
+	<p>We understand that in the event of a product malfunction or failure long downtimes are not an option. If you experience a malfunction or failure with a product at any point during your ownership we'll ship a replacement the same day you report the issue. We.ll even expedite the shipment if requested, with an effort to provide a delivery date and time that meets your needs.</p>
+	For full terms and conditions click <a href="/info/terms-and-conditions" style="color:blue;" target="_blank">here</a>
+</div>
+{{/warranty?}}
+<script>
+	jQuery('.ci-modal').click(function(e) {
+		e.preventDefault();
+
+		ciModal('#'+jQuery(this).attr('data-modal-id'), jQuery(this).attr('data-modal-height'));
+	});
+	function ciModal(id, height) {
+		jQuery(id).modal({
+			containerCss:{
+				backgroundColor: '#ffffff',
+				color: '#000000',
+				maxWidth: 550,
+				height: height,
+				autoResize: true
+			},
+			overlayClose:true,
+			onClose: function(dialog) {
+				jQuery('#nav').css('z-index', '30000');
+				jQuery.modal.close();
+			}
+		});
+		jQuery('#wrap').css('z-index', '0');
+		jQuery('#nav').css('z-index', '0');
+	}
+
+	jQuery('.pinfo-tab, .pai_back').click(function(e) {
+		e.preventDefault();
+		jQuery.scrollTo('#'+jQuery(this).attr('data-tab-id'), 800);
+	});
+
+	jQuery('.main-view-options').click(function(e) {
+		e.preventDefault();
+		jQuery('#options_dropdown').toggle();
+		return false;
+	});
+	jQuery('#productQuantity, .addonQuantity').change(updateSubtotal);
+	jQuery('.addonSelection').click(function() {
+		if (jQuery(this).is(':checked')) {
+			jQuery('#'+jQuery(this).attr('id')+'_quantity').prop('disabled', false);
+			updateQty(jQuery(this).attr('data-aid'));
+		}
+		else {
+			jQuery('#'+jQuery(this).attr('id')+'_quantity').prop('disabled', true).val('');
+		}
+		updateSubtotal();
+	});
+
+	var doNotSubmit = false;
+	function updateSubtotal() {
+		updateAllSelectedQtys();
+
+		var subtotal = parseInt(jQuery('#productQuantity').val()) * parseFloat(jQuery('#productPrice').attr('price'));
+
+		jQuery('.addonSelection:checked').each(function() {
+			subtotal += parseInt(jQuery('#'+jQuery(this).attr('id')+'_quantity').val()) * parseFloat(jQuery('#'+jQuery(this).attr('id')+'_price').attr('price'));
+		});
+
+		if (isNaN(subtotal)) subtotal = 0;
+
+		jQuery('#subtotal').text('$'+subtotal.toFixed(2));
+	}
+
+	function updateQty(products_id) {
+		jQuery('#addon_'+products_id+'_quantity').val(jQuery('#productQuantity').val());
+	}
+
+	function updateAllSelectedQtys(){
+		var atLeastOneOptionSelected = false;
+		var quantity = jQuery('#productQuantity').val();
+
+		jQuery('.addonSelection:checked').each(function() {
+			jQuery('#'+jQuery(this).attr('id')+'_quantity').val(quantity);
+		});
+	}
+	//initialize subtotal
+	jQuery( document ).ready(function() {
+		updateSubtotal();
+	});
+
+	function check_discontinued() {
+		var $details = jQuery('#discontinued');
+		var current = parseInt($details.attr('data-currentcart'));
+		if ($details.val() == 1 && current + parseInt(jQuery('#productQuantity').val()) > parseInt($details.attr('data-maxqty'))) {
+			jQuery('#productQuantity').val($details.attr('data-maxqty')-current);
+			alert('We only have '+parseInt($details.attr('data-maxqty'))+' available for this item. You have ['+current+'] in your cart, you can add ['+($details.attr('data-maxqty')-current)+'] to reach the maximum available. The quantity has been adjusted automatically.');
+		}
+	}
+
+	/* this block hides the star rating from a product when no reviews exist */
+	document.addEventListener('animationstart', function (event) {
+		if (event.animationName == 'nodeInserted') {
+			var ratingContent = jQuery('.yotpo a.text-m').text();
+			if (ratingContent.includes('Write')) {
+				jQuery('.yotpo.bottomLine').hide();
+			}
+		}
+	}, true);
+
+	{{#admin?}}
+	jQuery('.admin_model_info').click(function(e) {
+		e.preventDefault();
+
+		// hide any other modals that might otherwise be up
+		jQuery('#wrap').css('z-index', '0');
+		jQuery('#nav').css('z-index', '0');
+
+		jQuery('#admin_info_box').css('z-index', '50000');
+		jQuery('#admin_info_box').modal({
+			containerCss: { backgroundColor:'#fff', borderColor:'#fff', height:340, padding:0, width:330 },
+			onClose: function(dialog) {
+				jQuery('#nav').css('z-index', '30000');
+				jQuery.modal.close();
+			},
+			overlayClose:true
+		});
+	});
+
+	function populateAdminInfoBox() {
+		jQuery.ajax({
+			url: '/admin/isAdmin.php',
+			type: 'GET',
+			dataType: 'html',
+			data: {},
+			success: function(data) {
+				// this just returns the logged in ID
+				if (parseInt(data) != data) {
+					alert('Could not confirm your permissions to access IPN info');
+					return;
+				}
+
+				jQuery.ajax({
+					url: '/admin/ipn_getIPNInfoForProduct.php',
+					type: 'GET',
+					dataType: 'html',
+					data: { products_id: jQuery('#products_id').val() },
+					success: function(data) {
+						jQuery('#admin_info_box').html(data);
+
+						if (jQuery('#par_avl_qty').html() != undefined && jQuery('#adj_avl_qty').html() != undefined) {
+							jQuery('#available_qty_container').height(60).append('<ul style="margin-top: 5px; list-style-type: none;"><li>Parent Available Qty: <b>'+jQuery('#par_avl_qty').html()+'</b></li><li>Adjusted Available Qty: <b>'+jQuery('#adj_avl_qty').html()+'</b></li></ul>');
+						}
+					},
+					error: function() {
+						alert('Could not contact CablesAndKits.com Administration');
+					}
+				});
+			},
+			error: function() {
+				alert('Could not contact CablesAndKits.com Administration');
+			}
+		});
+	}
+
+	populateAdminInfoBox();
+	{{/admin?}}
+</script>
+{{/product}}

@@ -1,0 +1,42 @@
+<style>
+	#hiddenSubmit { visibility:hidden; }
+	dialog { position:absolute; margin:auto; top:0; right:0; bottom:0; left:0; height:300px; width:280px; border:1px solid #dadada; font-family:sans-serif; padding:5px 10px 20px 20px; border-radius:3px; }  
+	.dlgButton button { color: blue; }
+	#btnList { list-style-type:none !important; margin:0; padding:0; }	
+	#btnList>li { display:inline !important; }
+	.errorMsg { border:1px solid red; background-color:yellow; color:black; padding:5px; margin:5px; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<div class="lookup">
+		<strong>Record ID #:</strong> <input type="text" id="record_id" name="record_id">
+	</div>
+
+	<div class="record-editor">
+	</div>
+</td>
+<script>
+	var record_ac = new ck.autocomplete('record_id', '/admin/accounting-edit-record.php', {
+		autocomplete_action: 'record-lookup',
+		autocomplete_field_name: 'record_id',
+		select_result: function(data) {
+		},
+		{{! gotta switch the mustache delimiters so we can build the template }}
+		{{=<% %>=}}
+		results_template: '<table cellpadding="0" cellspacing="0" border="0" class="autocomplete-results-table"><tbody>{{#results}}<tr class="table-entry" id="{{result_id}}"><td>{{{record_id}}}</td><td>{{record_type}}</td></tr>{{/results}}</tbody></table>',
+		<%={{ }}=%>
+		auto_select_single: false
+	});
+
+	ck.autocomplete.styles({
+		'.autocomplete-results.table-results': 'border:0px;',
+		'.autocomplete-results-table': 'border-collapse:collapse;',
+		'.autocomplete-results-table .table-entry td': 'margin:0px; padding:4px 6px 4px 3px; font-size:15px; white-space:nowrap; border-bottom:1px solid #999; border-right:1px dotted #000; cursor:pointer;',
+		'.autocomplete-results-table .table-entry:hover td': 'background:linear-gradient(#6ff, #7cf); color:#000;',
+		'.autocomplete-results-table .table-entry small': 'font-style:italic;margin-left:3px;'
+	});
+</script>

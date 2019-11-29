@@ -1,0 +1,228 @@
+<style>
+	#page-body { overflow-x:hidden; }
+	#customer-quote-table { font-size:10px; white-space:nowrap; }
+	#customer-quote-filters { width:100%; position:relative; }
+	#customer-quote-filters input[type="text"] { margin:10px; }
+
+	#search_customer_table { outline:0; text-align:left; line-height:1.21em; padding:.68em 1em; border:1px solid rgba(34, 36, 38, .15); color:rgba(0,0,0,0.87); border-radius:.285rem; width:300px; }
+
+	#search_customer_table thead:last-child { width:2em; }
+
+	.tiny-button, .contacted-button { background-color: rgba(100, 100, 100, 0.7); cursor:pointer; display:inline-block; min-height:1em; outline:none; border:none; vertical-align:baseline; color:rgba(255,255,255,0.6);  margin:0 .25em; padding:0.6em 1em; text-transform:none; text-shadow:none; font-weight:bold; line-height:.75em; font-style:normal; text-align:center; text-decoration:none; border-radius:.285rem; }
+
+	.tiny-button { background-color:rgba(125,0,0,0.6); }
+	
+	.tiny-button:hover { background-color:rgba(0,0,0,0.1); color:rgba(0,0,0,1); }
+	
+	.selected-yep-button { background-color:rgba(0,255,0,0.8); }
+	.selected-nope-button { background-color:rgba(255,0,0,0.8); }
+
+	.selected-yep-button, .selected-nope-button { color:#000; }
+
+	#customer-quote-table-container { display:block; width:100%; overflow-x:auto; margin-bottom:100px; }
+
+	.expired-checkbox { display:inline-block; font-size:12px; position:relative; backface-visibility:hidden; outline:0; vertical-align:baseline; }
+	.expired-checkbox input[type="checkbox"] { height:15px; width:15px; position:absolute; top:0; left:0; outline:0; cursor:pointer; margin:0!important; height:15px; width:15px; }
+	.expired-checkbox label { cursor:pointer; padding-left:1.8em; }
+
+	#customer-quote-table thead tr th { cursor:pointer; }
+
+	#results { font-size:10px; }
+	
+	#create-quote-button { width:1500px; overflow:hidden; }
+	#add-quote-button { font-size:1rem; cursor:pointer; display:inline-block; outline:0; border:none; background:#e0e1e2; padding:.45em .75em; text-transform:none; text-shadow:none; font-style:normal; text-align:center; text-decoration:none; border-radius:.2857rem; }
+	#create-customer-quote-button { position:absolute; right:0; margin:10px; }
+	
+</style>
+<td id="page-body">
+	<div id="customer-quote-filters">
+		<label for="search-customer-table"></label>
+		<input type="text" name="search_customer_table" id="search_customer_table" placeholder="Search...">
+		<div class="expired-checkbox">
+			<input type="checkbox" name="include_expired" id="include-expired">
+			<label for="include-expired">Expired</label>
+		</div>
+		<a href="/admin/customer_quote_dashboard.php?admin_action=create" id="create-customer-quote-button"><button id="add-quote-button">Create Quote</button></a>
+	</div>
+	<div id="results">
+		<span id="displayed-results">0</span> of <span id="total-results">0</span>
+	</div>
+	<div id="customer-quote-table-container">
+		<table id="customer-quote-table" class="ck-table-manager">
+			<thead>
+				<tr>
+					<th>quote id</th>
+					<th>sent to email</th>
+					<th>admin</th>
+					<th>status</th>
+					<th>created</th>
+					<th>expiration</th>
+					<th>total</th>
+					<th>order id</th>
+					<th>customer age</th>
+					<th>contacted</th>
+					<th>phone</th>
+					<th>assigned vs unassigned</th>
+					<th>actions</th>
+				</tr>
+			</thead>
+			<tbody id="customer-quote-data">
+			</tbody>
+		</table>
+	</div>
+</td>
+<script>
+	var lazy_load = true;
+	var previous_search_term;
+	var search_term;
+	
+	var customer_quote_request;
+
+	var customer_quote_status = ['unsent', 'sent', 'viewed', 'expired', 'ordered'];
+
+	function get_more_data(last_id = null, search_term = null, include_expired = null) {
+		var quote_ids = [];
+		if (customer_quote_request) customer_quote_request.abort();
+
+		customer_quote_request = jQuery.ajax({
+			method: 'get',
+			dataType: 'json',
+			url: '/admin/customer-quote-dashboard.php',
+			data: { action:'quote-search', ajax:1, last_id:last_id, quote_search:search_term, include_expired:include_expired },
+			success: function (data) {
+
+				jQuery('#total-results').html(data.result_count);
+
+				lazy_load = true;
+				//if (!data.paginate) lazy_load = false;
+
+				var data = data.results;
+				var new_data_set = '';
+
+				for (var i = 0; i < data.length; i++) {
+					//i was having an issue with duplicate data in some cases, so I'm recording the quote id and making sure we dont include it more than once
+					if (quote_ids.indexOf(data[i].customer_quote_id) == -1) {
+						quote_ids.push(data[i].customer_quote_id);
+
+						var customer_age = 'existing'
+						if (data[i].number_of_orders == 0) customer_age = 'new';
+						
+						var assigned_status = 'unassigned';
+						if (data[i].account_manager_id == 0) assigned_status = 'assigned';
+
+						var customer_contacted = '';
+						var customer_not_contacted = 'selected-nope-button';
+						
+						if (data[i].customer_contacted == 1) {
+							customer_contacted = 'selected-yep-button';
+							customer_not_contacted = '';
+						}
+
+						new_data_set +=
+						'<tr class="customer-quote-row" id="'+data[i].customer_quote_id+'">'+
+							'<td class="quote-id-td">'+data[i].customer_quote_id+'</td>'+
+							'<td>'+data[i].customer_email+'</td>'+
+							'<td>'+data[i].admin_email_address+'</td>'+
+							'<td>'+customer_quote_status[data[i].status]+'</td>'+
+							'<td>'+data[i].created+'</td>'+
+							'<td>'+data[i].expiration_date+'</td>'+
+							'<td>$'+Number(data[i].total).toFixed(2)+'</td>'+
+							'<td>'+(data[i].order_id==null?'':data[i].order_id)+'</td>'+
+							'<td>'+customer_age+'</td>'+
+							'<td>'+
+								'<button class="contacted-button yep-button '+customer_contacted+'" data-contacted="1" data-button-type="yep-button">yep</button>'+
+								'<button class="contacted-button nope-button '+customer_not_contacted+'" data-contacted="0" data-button-type="nope-button">nope</button>'+
+							'</td>'+
+							'<td>'+(data[i].customers_telephone==null?'':data[i].customers_telephone)+'</td>'+
+							'<td>'+assigned_status+'</td>'+
+							'<td>';
+								if (data[i].status != 4) new_data_set += '<a href="/admin/customer-quote.php?customer_quote_id='+data[i].customer_quote_id+'" target="_blank"><button class="tiny-button">Edit</button></a>'+'<a href="/admin/customer-quote-dashboard.php?action=delete&customer_quote_id='+data[i].customer_quote_id+'"><button class="tiny-button">Delete</button></a>';
+								
+								new_data_set += '<a href="/admin/customer-quote-dashboard.php?action=copy&customer_quote_id='+data[i].customer_quote_id+'"><button class="tiny-button">Copy</button></a>'+
+								'<a href="/custom_quote.php?key='+data[i].url_hash+'" target="_blank"><button class="tiny-button">View Cart</button></a>'+
+								'<a href="/quote.php?customer_quote_id='+data[i].customer_quote_id+'" target="_blank"><button class="tiny-button">View</button></a>'+
+							'</td>'+
+						'</tr>';
+					}
+				}
+				jQuery('#customer-quote-data').append(new_data_set);
+				jQuery('#displayed-results').html(jQuery('#customer-quote-data tr').length);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				customer_quote_request = undefined;
+				if (textStatus == 'abort') return;
+				alert('An error occured loading customer quote data');
+			}
+		});
+	}
+	
+	function search_available_results(search_term) {
+		var search_term = jQuery.trim(search_term);
+		
+		var include_expired = 0;
+		if (jQuery('#include-expired').is(':checked')) include_expired = 1;
+
+		jQuery('.customer-quote-row').remove();
+		
+		if (search_term == '') search_term = null;
+
+		get_more_data(last_id = null, search_term, include_expired);
+	}
+
+	//get initial data set
+	get_more_data();
+
+	jQuery('#search_customer_table').on('keyup', function () {
+		var current_search_term = search_term = jQuery(this).val();
+		if (current_search_term != previous_search_term) search_available_results(current_search_term);
+		previous_search_term = jQuery(this).val();
+	});
+
+	jQuery('#include-expired').change(function () {
+		search_available_results(jQuery('#search_customer_table').val()); 
+	});
+	
+	jQuery(window).on('scroll', function () {
+		if (lazy_load) {
+			if (jQuery(document).height() - jQuery(window).height() == jQuery(window).scrollTop()) {
+				var include_expired = 0;
+				if (jQuery('#include-expired').is(':checked')) include_expired = 1;
+				get_more_data(last_id = jQuery('tr').last().attr('id'), search_term = search_term, include_expired = include_expired);
+			}
+		}
+	});
+
+	jQuery('#customer-quote-table').table_manager({
+		color_rows: true,
+		sortable: false,
+		sort_methods: {
+			0: 'integer',
+			3: function(val1, val2) {
+				if (val1 == 'Y' && val2 == 'N') return -1;
+				if (val1 == 'N' && val2 == 'Y') return 1;
+				return 0;
+			},
+			4: 'date',
+		},
+	});
+
+	jQuery('.contacted-button').live('click', function () {
+		var contacted = jQuery(this).attr('data-contacted');
+		var row_id = jQuery(this).closest('tr').attr('id');
+		//if the button has already been clicked and is active then we won't execute again
+		if (jQuery(this).hasClass('yep-button') && !jQuery(this).hasClass('selected-yep-button') || jQuery(this).hasClass('nope-button') && !jQuery(this).hasClass('selected-nope-button')) {
+			jQuery.ajax({
+				method:'get',
+				url:'/admin/customer-quote-dashboard.php',
+				dataType: 'json',
+				data: { action:'update-customer-contacted-data', ajax:1, customer_contacted:contacted, customer_quote_id:row_id },
+				success: function (data) {
+					if (data.success == true) {
+						jQuery('#'+row_id).find('.yep-button').toggleClass('selected-yep-button');
+						jQuery('#'+row_id).find('.nope-button').toggleClass('selected-nope-button');
+					}
+				}
+			});
+		}
+	});
+</script>

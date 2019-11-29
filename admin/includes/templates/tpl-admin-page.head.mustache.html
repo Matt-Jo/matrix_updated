@@ -1,0 +1,70 @@
+<style>
+	#matrix-header { border-bottom:2px solid #000; font-size:12px; }
+
+	#header-logo { padding:10px 0px 2px 20px; vertical-align:top; }
+	#header-invoiced-stats { padding-left:20px; text-align:center; width:33%; min-width:400px; display:inline-block; }
+	#header-control { padding:10px 0px 0px 20px; text-align:center; width:33%; min-width:400px; display:inline-block; }
+
+	#header_margin_box { display:inline-block; font-family:arial; }
+	#matrix-header .container { text-align:left; display:inline-block; }
+	#header-links { margin-bottom:15px; }
+	#header-account { display:inline-block; margin-left:20px; }
+	#global-search { margin-bottom:10px; }
+</style>
+<header id="matrix-header">
+	<img id="header-logo" src="{{cdn}}/pop-the-top4.png" alt="CablesAndKits.com - The Network Accessory Superstore">
+
+	<div id="header-invoiced-stats">
+		<input type="hidden" id="show_invoiced_stats" value="{{show_invoiced_stats}}">
+		<div id="header_margin_box"></div>
+		<script>
+			if (jQuery('#show_invoiced_stats').val() == 1) {
+				jQuery.ajax({
+					url: "/admin/header_margin.php",
+					type: "GET",
+					dataType: "html",
+					success: function (data) {
+						jQuery('#header_margin_box').html(data);
+					},
+					error: function (xhr, status) {
+						//alert("Sorry, there was a problem with the header margin data!");
+					}
+				});
+			}
+		</script>
+	</div>
+
+	<div id="header-control">
+		<div class="container">
+			<div id="header-links">
+				<strong>Links:</strong>
+				<a href="/?admin=yes" class="headerLink" title="Catalog">Catalog</a> |
+				<a href="http://www.ebay.com" class="headerLink" title="Ebay">Ebay</a> |
+				<a href="http://www.paypal.com" class="headerLink" title="Paypal">Paypal</a> |
+				<a href="http://www.ups.com" class="headerLink" title="UPS">UPS</a> |
+				<a href="http://www.fedex.com" class="headerLink" title="Fedex">Fedex</a>
+				<div id="header-account">
+					<a href="/admin/logoff.php" title="Log Off">Log Off</a> |
+					<a href="/admin/admin-account-details" style="margin-right: 15px;">Settings</a>
+				</div>
+			</div>
+			<div id="global-search">
+				<strong>Search:</strong>
+				<select id="header_search_type">
+					<option value="order">Order ID</option>
+					<option value="ipn">IPN</option>
+					{{#show_po_search?}}						
+					<option value="po_number" {{#default_search_po?}}selected{{/default_search_po?}}>PO Number</option>
+					{{/show_po_search?}}
+					<option value="serial">Serial</option>
+					<option value="track_number">Track Number</option>
+					<option value="invoice">Invoice Number</option>
+					<option value="customer_email">Customer Email</option>
+				</select>
+				<input id="header_search_box">
+				<input type="checkbox" id="greedy-search" {{#greedy-search?}}checked{{/greedy-search?}} title="check this box to capture all keystrokes and put them in the search box">
+			</div>
+		</div>
+	</div>
+</header>
+{{{system_messages}}}

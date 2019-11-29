@@ -1,0 +1,17 @@
+<style>
+	#import-output-container { margin-top:20px; }
+</style>
+<td id="page-body">
+	<form method="POST" action="/admin/bundle-included-product-import" enctype="multipart/form-data">
+		<input type="hidden" name="action" value="bundle-included-product-import-upload">
+		<input type="file" name="bundle_included_product_upload_file" id="bundle-included-product-upload" accept=".xlsx">
+		<button type="submit">Upload File</button>
+	</form>
+	<div id="import-output-container">
+		{{{output}}}
+		{{message}}
+		{{#import_errors}}
+			{{.}}<br>
+		{{/import_errors}}
+	</div>
+</td>

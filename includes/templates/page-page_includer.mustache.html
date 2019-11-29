@@ -1,0 +1,11 @@
+<style>
+	#pi-container { position:relative; padding-bottom:{{height}}px; height:0px; overflow-y:hidden; overflow-x:scroll; }
+	#pi-container iframe { width:100%; height:100%; border:0px; position:absolute; top:0; left:0; }
+
+	@media screen and (max-width: 900px) {
+		#pi-container { padding-bottom:{{responsive-height}}px; }
+	}
+</style>
+<div id="pi-container">
+	<iframe src="{{page}}" width="980" height="{{height}}" scrolling="no"></iframe>
+</div>

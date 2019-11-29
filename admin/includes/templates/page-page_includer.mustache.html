@@ -1,0 +1,63 @@
+<style>
+	.page-includers { border-collapse:collapse; }
+	.page-includers th, .page-includers td { border:1px solid #000; padding:4px 8px; white-space:nowrap; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Page Includers</h3>
+	<section>
+		<form style="display:block;" action="/admin/page_includer.php" method="post">
+			<input type="hidden" name="action" value="manage_pages">
+			<table class="page-includers" cellpadding="0" cellspacing="0" border="0">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Label</th>
+						<th>Target</th>
+						<th>Page Height</th>
+						<th>Requests</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td colspan="5"><input type="submit" value="Submit"></td>
+					</tr>
+				</tfoot>
+				<tbody>
+					{{#pages}}
+					<tr>
+						<td>{{page_includer_id}}</td>
+						<td><input type="text" name="data[{{page_includer_id}}][label]" value="{{label}}"></td>
+						<td><input type="text" name="data[{{page_includer_id}}][target]" value="{{target}}"></td>
+						<td><input type="text" name="data[{{page_includer_id}}][page_height]" value="{{page_height}}">px</td>
+						<td class="piid-{{page_includer_id}}">
+							{{#requests}}
+							/<input type="text" name="data[{{page_includer_id}}][request][{{page_includer_request_map_id}}]" value="{{request}}"> [<input type="checkbox" name="delete[{{page_includer_id}}][request][{{page_includer_request_map_id}}]">]<br>
+							{{/requests}}
+							<a href="#" class="add-new-request" data-piid="{{page_includer_id}}">[+]</a>
+						</td>
+					</tr>
+					{{/pages}}
+					<tr>
+						<th>New</th>
+						<td><input type="text" name="data[new][label]"></td>
+						<td><input type="text" name="data[new][target]"></td>
+						<td><input type="text" name="data[new][page_height]">px</td>
+						<td class="piid-new">/<input type="text" name="data[new][request][new][]"> <a href="#" class="add-new-request" data-piid="new">[+]</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</section>
+</td>
+<script>
+	jQuery('.add-new-request').click(function(e) {
+		e.preventDefault();
+		var piid = jQuery(this).attr('data-piid');
+		jQuery('<br>/<input type="text" name="data['+piid+'][request][new][]"> ').insertBefore(this);
+	});
+</script>

@@ -1,0 +1,46 @@
+<style>
+	#page-body { width:100%; }
+	#zero-weight-table { width:80%; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>Errors</br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Zero Weight Report</h3>
+	<h4>Count: {{#count}}{{{.}}}{{/count}}</h4>
+	<a href="zero_weight_report.php?action=export" target="_blank" class="button-link" id="export-zero-weight-report">Export To Excel</a>
+	<table id="zero-weight-table" class="tablesorter">
+		<thead>
+			<tr>
+				<th>IPN</th>
+				<th>Category</th>
+				<th>On Hand Qty</th>
+				<th>Bin1</th>
+				<th>Bin2</th>
+				<th>Listing</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#data}}
+			<tr>
+				<td>{{ipn}}</td>
+				<td>{{category}}</td>
+				<td>{{on_hand}}</td>
+				<td>{{bin1}}</td>
+				<td>{{bin2}}</td>
+				<td>{{has_listing}}</td>
+			</tr>
+			{{/data}}
+		</tbody>
+	</table>
+</td>
+<script>
+    jQuery('.tablesorter').tablesorter({
+        widgets: ['zebra'],
+        headers: {
+            3: { sorter: 'digit' }
+        },
+    });
+</script>

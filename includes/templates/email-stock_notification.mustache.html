@@ -1,0 +1,64 @@
+<html>
+<head>
+	<title>Stock Notification Order #{{order_number}}</title>
+	<style>
+		body { max-width:600px; }
+		#out-of-stock-product-table { border-collapse: collapse; width:100%; }
+		#out-of-stock-product-table td { text-align:left; }
+		.missing-quantity-header { text-align:left; font-size:20px; }
+		.department { font-size:9.0pt; font-family:"Arial",sans-serif; color:#3B8BAA }
+		.company_name { font-size:10.0pt; font-family:"Arial",sans-serif; color:#C60C30 }
+		.phone_number { font-size:9.0pt; font-family:"Arial",sans-serif; color:gray }
+		.signature-spacer { font-size:9.0pt; font-family:"Arial",sans-serif; color:#A8AAAD }
+		.product-image-td { width:20%; padding-top:10px; }
+		.product-image-td img { width:100%; height:100%: margin-top:10px; }
+		.out-of-stock-product-table-header tr th { border-top: 2px solid grey; border-bottom: 2px solid grey; text-align:left; border-collapse:collapse; border-space:0; font-size:18px; font-weight:noraml; }
+		.product-model-text, .product-description-text { display:block; }
+		.product-model-text { text-decoration:none; color:#000; }
+		.out-of-stock-product-table-bottom-row { border-bottom: 2px solid grey; padding-bottom:5px; }
+	</style>
+</head>
+<body>
+	<p>Thank you for your order!</p>
+	<p>We wanted to give you an update on the following products:</p>
+	<br>
+	<table id="out-of-stock-product-table">
+		<thead class="out-of-stock-product-table-header">
+			<tr>
+				<th colspan="2">Product Description and Notes</th>
+				<th>QTY</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#out_of_stock_items}}
+			<tr>
+				<td class="product-image-td"><img src="{{media}}/{{product_image}}"></td>
+				<td>
+					<b><a href="{{fqdn}}{{item_listing}}" class="product-model-text">{{products_model}}</a></b>
+					<span class="product-description-text">{{products_name}}</span>
+				</td>
+				<td>{{item_quantity}}</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="out-of-stock-product-table-bottom-row">
+					<span>- <b style="color:green;">{{available_quantity}}</b> in stock and available.</span>
+					<br><span>- {{#show_est_ship_date}}<b style="color:red;">{{on_order_quantity}}</b>{{/show_est_ship_date}} Estimated Ship Date: {{expected_ship_date}}</span>
+				</td>
+			</tr>
+			{{/out_of_stock_items}}
+		</tbody>
+	</table>
+	<br>
+	<p>Rest assured that our Experts are working to get your items on or before the estimated ship date.</p><p>If you would like updates on your order or if you would like a parital shipment, simply respond to this email or call one of your sales team members at {{contact_phone}}</p><p>Thanks and have a great day!</p>
+	<p>
+		<b><span class="company_name">CablesAndKits</span></b>
+		<span style='font-size:9.0pt;font-family:\"Arial\",sans-serif;color:#A8AAAD'>| </span>
+		<b><i><span class="department">CK Sales Team</span></i></b>
+	</p>
+	<p>
+		<span class="signature-spacer">d) </span>
+		<b><span class="phone_number">{{contact_phone}}</span></b>
+	</p>
+
+</body>
+</html>

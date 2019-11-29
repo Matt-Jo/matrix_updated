@@ -1,0 +1,127 @@
+<style>
+	#fatal-error { font-size:1.3em; font-weight:bold; background-color:#fdd; border:2px solid #f00; margin:20px; padding:20px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; border-radius: 10px; }
+	#timer { background-color:#ffc; }
+	table.contact-us td { font-size:1.1em; padding:8px 0px; }
+</style>
+<div id="fatal-error">
+	<p>
+		Everybody wants our stuff!  We're experiencing a momentary service interruption.  Our server can't cope with the current level of traffic to our site.  Our crack support team has been alerted, but if you'll try again in a few moments, the issue will probably be resolved.  If you do nothing, you will automatically be redirected to the homepage in <span id="timer">2:00</span> (<input type="checkbox" id="pause-countdown"> pause)
+	</p>
+	<script>
+		function countdown() {
+			if ($('#pause-countdown').is(':checked')) return;
+
+			var time = $('#timer').html().split(':');
+			var minute = parseInt(time[0]);
+			var second = parseInt(time[1]);
+
+			second--;
+
+			if (second < 0) {
+				minute--;
+				second = 59;
+			}
+
+			if (minute < 0) {
+				window.location = "/";
+				return;
+			}
+
+			if (second < 10) {
+				$('#timer').html(minute+':0'+second);
+			}
+			else {
+				$('#timer').html(minute+':'+second);
+			}
+
+			setTimeout(countdown, 1000);
+		}
+		countdown();
+
+		$('#pause-countdown').click(countdown);
+	</script>
+	<p>
+		If you need immediate assistance, please:
+	</p>
+	<form name="contact_us" action="/outage_contact.php?action=send" method="post">
+		<table id="contact-us">
+			<tbody>
+				<tr>
+					<td colspan="2">
+						<font color="#d22842"><b>Contact Us by Phone</b></font>
+						<br>Contact Sales or Customer Care at <b>1-888-622-0223</b><br><br>
+					</td>
+				</tr>
+				<!--tr>
+					<td colspan="2">
+						<font color="#d22842"><b>Contact Us using Live Chat</b></font>
+						<br>Contact one of our representatives by
+						<a class="link" href="https://lc.chat/now/8165031/" onclick="return chat_popup(this.href)">Live Chat</a>.<br><br>
+					</td>
+				</tr-->
+				<tr>
+					<td colspan="2">
+						<font color="#d22842"><b>Contact Us Online</b></font>
+						<br>Please complete the fields below. More specific information from you allows us to provide a quick, accurate response.
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<select name="selection">
+							<option value="" SELECTED>Select a Topic</option>
+							<option value="Account & Password Assistance">Account & Password Assistance</option>
+							<option value="Orders">Orders</option>
+							<option value="Delivery">Delivery</option>
+							<option value="Returns / Exchanges">Returns / Exchanges</option>
+							<option value="Pricing Inquiries">Pricing Inquiries</option>
+							<option value="Product Assistance">Product Assistance</option>
+							<option value="General Questions">General Questions</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="main">*First Name</td>
+					<td class="main">*Last Name</td>
+					<td class="main" width="80%">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="main"><input type="text" name="fname"></td>
+					<td class="main"><input type="text" name="lname"> </td>
+					<td class="main" width="80%">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="main">*E-mail</td>
+				</tr>
+				<tr>
+					<td class="main"><input type="text" name="email" size="30" style="width: -80px"></td>
+				</tr>
+				<tr>
+					<td class="main">*Primary Phone</td>
+					<td class="main">Order Number (if applicable)</td>
+					<td class="main" width="80%">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="main"><input type="text" name="phone" size="30" style="width: -80px"></td>
+					<td class="main"><input type="text" name="order_no" size="30" style="width: -80px"></td>
+					<td class="main" width="80%">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2" class="main">Questions or Comments</td>
+				</tr>
+				<tr>
+					<td colspan="2"><textarea name="enquiry" wrap="soft" cols="50" rows="10"></textarea></td>
+				</tr>
+				<tr>
+					<td class="main" colspan="2">* Required Fields.</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td><input type="image" src="/templates/Pixame_v1/images/buttons/english/button_continue.gif" alt="Continue" title=" Continue "><br>(you will be redirected to the homepage after sending)</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+</div>

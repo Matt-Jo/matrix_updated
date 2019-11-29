@@ -1,0 +1,261 @@
+<style>
+	#opt-category, #opt-color, #opt-length, #opt-type { padding:0px; display:inline-block; }
+	#opt-category, #opt-type { margin:15px 0px 0px 0px; }
+	#opt-category.only { margin-top:45px; }
+	#opt-color { margin:20px 0px 0px 0px; width:175px; }
+	#opt-length { margin:10px 0px 0px 0px; width:250px; }
+	/*#opt-length option { line-height:100%; color:#000; }
+	#opt-length option.placeholder { color:#cacaca; }
+	#opt-length option[disabled] { /*display:none;* / color:#bbb; background-color:#dcdcdc; }*/
+
+	.category-select, .type-select { margin:3px 0px; color:#fff; display:block; border-radius:9px; padding:5px 0px; width:135px; background-color:#9b9b9b; font-size:1.3em; line-height:100%; }
+	.category-select:hover, .category-select.selected, .type-select:hover, .type-select.selected { text-decoration:none; color:#fff; background-color:#3b8baa; }
+	.category-select.selected, .type-select.selected { box-shadow:inset 5px 10px 20px -10px #27496d; }
+	.category-select.disabled, .type-select.disabled { color:#f3f3f3; background-color:#c3c3c3; cursor:default; }
+	.category-select.disabled:hover, .type-select.disabled:hover { color:#f3f3f3; background-color:#c3c3c3; }
+	.category-select input, .type-select input { margin:0px 12px 0px 10px; }
+
+	.color-select { display:block; height:25px; width:27px; margin:4px; border:2px solid #acacac; border-radius:9px; line-height:100%; position:relative; }
+	.color-select .chk { display:none; }
+	.color-select.selected { text-decoration:none; border-color:#000; box-shadow:0px 0px 6px #000; }
+	.color-select.selected .chk { display:inline; color:#fff; position:absolute; bottom:1px; right:1px; font-size:.8em; }
+	.color-select.selected.black .chk { color:#000; }
+	.color-select.disabled { opacity:0.25; cursor:default; }
+	.color-select .crss { display:none; }
+	.color-select.disabled .crss { display:inline; color:#000; position:absolute; bottom:1px; right:1px; font-size:.8em; }
+
+	.length-select { display:block; height:27px; width:34px; margin:0px; border-style:solid; border-color:#acacac; border-width:0px 1px 1px 0px; position:relative; font-weight:bold; color:#777; font-size:1.3em; text-align:center; text-decoration:none; }
+	.length-select:hover { text-decoration:none; }
+	.length-select.top { border-top-width:1px; }
+	.length-select.left { border-left-width:1px; }
+	.length-select .chk { display:none; }
+	.length-select.selected { background-color:#3b8baa; color:#fff; }
+	.length-select.selected .chk { display:inline; position:absolute; bottom:-1px; right:1px; font-size:.5em; }
+	.length-select.disabled { cursor:default; color:#ddd; }
+	.length-select .crss { display:none; }
+	.length-select.disabled .crss { display:inline; position:absolute; bottom:-1px; right:1px; font-size:.5em; }
+
+	/*#opt-length.selected { color:#000; }*/
+
+	#opt-category li, #opt-type li { list-style-type:none; margin:0px; padding:0px; }
+	#opt-color li { list-style-type:none; margin:0px; padding:0px; float:left; }
+	#opt-length li { list-style-type:none; margin:0px; padding:0px; float:left; }
+
+	.opt-group-title { font-size:18px; margin:3px; padding:0; }
+	#package-quantity-group { width:140px; }
+	.package-quantity-group-input { width:48.5%; display:inline-block; padding:0; margin:0; }
+
+	@media all and (max-width:1075px) {
+		.opt { background:none; }
+	}
+</style>
+<h2 class="pf-header">{{finder.main_category}} - Quick Order Tool</h2>
+<div class="pf-options-main">
+	<div class="col-3-12 opt alignLeftMd">
+		<h3 class="opt-header">1. Category</h3>
+		<ul id="opt-category" {{!class="{{^categories} }only{{/categories} }"}}>
+			{{#finder.categories}}
+			<li><a href="#" class="category-select find-val {{#selected?}}selected{{/selected?}}" data-key="Category" data-val="{{id}}" data-desc="{{{name}}}"><input type="radio" name="category" {{#selected?}}checked{{/selected?}}> {{{name}}}</a></li>
+			{{/finder.categories}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+	<div class="col-3-12 opt alignLeftMd">
+		<h3 class="opt-header">2. Boot Type</h3>
+		<ul id="opt-type">
+			{{#finder.boottypes}}
+			<li><a href="#" class="type-select find-val {{#selected?}}selected{{/selected?}}" data-key="Boottype" data-val="{{.}}"><input type="radio" name="boottype" {{#selected?}}checked{{/selected?}}> {{{.}}}</a></li>
+			{{/finder.boottypes}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+	<div class="col-3-12 opt alignLeftMd" id="colorOptHolder">
+		<h3 class="opt-header">3. Color</h3>
+		<ul id="opt-color">
+			{{#finder.colors}}
+			<li><a href="#" class="color-select find-val {{selhex}} {{^enabled?}}disabled{{/enabled?}}" style="background-color:{{hex}}; color:{{hex}}" data-key="Color" data-val="{{color}}" title="{{color}}"><div class="chk">&#x2714;</div><div class="crss">&#x2716;</div></a></li>
+			{{/finder.colors}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+	<div class="col-3-12 alignLeftMd">
+		<h3 class="opt-header">4. Length in Feet</h3>
+		<ul id="opt-length">
+			{{#finder.lengths}}
+			<li><a href="#" class="length-select find-val {{#top?}}top{{/top?}} {{#left?}}left{{/left?}}" data-key="Length" data-val="{{length}}" title="{{length}}">{{display_length}}<div class="chk">&#x2714;</div><div class="crss">&#x2716;</div></a></li>
+			{{/finder.lengths}}
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+</div>
+<div class="pf-options-advanced">
+	<div class="pf-options-clear">
+		<a href="#" id="clear-all">[ Clear Selections ]</a>
+	</div>
+	<div class="pf-options">
+		<div class="opt-group">
+			<h6 class="opt-group-title">Shield Options</h6>
+			<input type="radio" class="find-val selected" name="Shielded" value="No" checked data-key="Shielded"> <span class="advanced-opt-label" data-key="Shielded" data-val="No">Non-Shielded</span><br>
+			<input type="radio" class="find-val" name="Shielded" value="Yes" data-key="Shielded"> <span class="advanced-opt-label" data-key="Shielded" data-val="Yes">Shielded</span><br>
+		</div>
+		<div class="opt-group">
+			<h6 class="opt-group-title">Pin Options</h6>
+			<input type="radio" class="find-val selected" name="Crossover" value="No" checked data-key="Crossover"> <span class="advanced-opt-label" data-key="Crossover" data-val="No">Straight Through</span><br>
+			<input type="radio" class="find-val" name="Crossover" value="Yes" data-key="Crossover"> <span class="advanced-opt-label" data-key="Crossover" data-val="Yes">Crossover</span><br>
+		</div>
+		<div class="opt-group" id="package-quantity-group">
+			<h6 class="opt-group-title">Package Options</h6>
+			{{#finder.packagequantities}}
+			<span class="package-quantity-group-input">
+				<input type="radio" id="packagequantity-{{quantity}}" class="find-val {{#default}}selected{{/default}}" name="Packagequantity" value="{{quantity}}" data-key="Packagequantity" {{#default}}checked{{/default}}>
+				<label for="packagequantity-{{quantity}}" class="advanced-opt-label" data-key="Packagequantity" data-val="{{quantity}}">{{quantity}}</label>
+			</span>
+			{{/finder.packagequantities}}
+		</div>
+	</div>
+</div>
+<script>
+	// some of these could be generalized, but for now we'll make them specific
+	jQuery('.category-select, .color-select, .length-select, .type-select, .opt-group input[type=radio]').click(function(e) {
+		var rb = e.target.nodeName.toLowerCase()=='input';
+		if (!rb) e.preventDefault();
+		var $btn = jQuery(this);
+		var selected = $btn.hasClass('selected');
+		
+		if ($btn.hasClass('disabled')) return;
+
+		var val; // I don't think we need this
+
+		if ($btn.hasClass('category-select')) {
+			jQuery('.category-select').removeClass('selected');
+		
+			$btn.find('input').each(function() {
+				jQuery(this).attr('checked', !selected);
+
+				if (!selected) {
+					$btn.addClass('selected');
+					val = $btn.attr('data-val');
+
+					cPath = val;
+				}
+				else cPath = default_cPath;
+			});
+		}
+		else if ($btn.hasClass('type-select')) {
+			jQuery('.type-select').removeClass('selected');
+
+			$btn.find('input').each(function() {
+				jQuery(this).attr('checked', !selected);
+
+				if (!selected) {
+					$btn.addClass('selected');
+					val = $btn.attr('data-val');
+
+					cPath = val;
+				}
+				else cPath = default_cPath;
+			});
+		}
+		else if ($btn.hasClass('color-select') || $btn.hasClass('length-select')) {
+			//jQuery('.color-select').removeClass('selected');
+			if (!selected) {
+				$btn.addClass('selected');
+				val = $btn.attr('data-val');
+			}
+			else {
+				$btn.removeClass('selected');
+			}
+		}
+		else {
+			jQuery('[name='+jQuery(this).attr('name')+']').removeClass('selected');
+			if (!selected) {
+				$btn.addClass('selected');
+				val = $btn.val();
+			}
+		}
+	});
+
+	jQuery('.category-select, .color-select, .length-select, .type-select, .opt-group input[type=radio]').click(function() {
+		var $btn = jQuery(this);
+		if ($btn.hasClass('disabled')) return;
+
+		var category = '--PFIND';
+		category += '--'+major;
+		if (minor) category += '+'+minor;
+
+		var action = '--find';
+		action += '--'+jQuery(this).attr('data-key');
+		if (jQuery(this).hasClass('selected')) action += '--select';
+		else action += '--unselect';
+
+		var label = '--option[';
+		if (jQuery(this).attr('data-desc')) label += jQuery(this).attr('data-desc');
+		else if (jQuery(this).attr('data-val')) label += jQuery(this).attr('data-val');
+		else if (jQuery(this).val()) label += jQuery(this).val();
+		label += ']';
+
+		ga('send', 'event', category, action, label);
+		//_gaq.push(['_trackEvent', category, action, label]);
+
+		add_selection();
+	});
+
+	jQuery('#clear-all').click(function(e) {
+		e.preventDefault();
+
+		jQuery('.category-select.selected, .type-select.selected').removeClass('selected').find('input').each(function() {
+			jQuery(this).attr('checked', false);
+		});
+
+		jQuery('.color-select.selected, .length-select.selected').removeClass('selected');
+
+		var category = '--PFIND';
+		category += '--'+major;
+		if (minor) category += '+'+minor;
+
+		action = '--find--clear';
+		label = '--all';
+
+		ga('send', 'event', category, action, label);
+		//_gaq.push(['_trackEvent', category, action, label]);
+
+		add_selection();
+	});
+
+	function manage_options(enabled_options) {
+		jQuery('.protected').removeClass('protected');
+
+		for (var i=0; i<enabled_options.length; i++) {
+			if (enabled_options[i].type == 'Category') {
+				jQuery('[data-key=Category][data-desc=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Color') {
+				jQuery('[data-key=Color][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Length') {
+				jQuery('[data-key=Length][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else if (enabled_options[i].type == 'Boottype') {
+				jQuery('[data-key=Boottype][data-val=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+			else {
+				jQuery('[data-key='+enabled_options[i].type+'][value=\''+enabled_options[i].value+'\']').addClass('protected');
+			}
+		}
+
+		jQuery('a.find-val:not(.protected), input.find-val:not(.protected)').each(function() {
+			var key = jQuery(this).attr('data-key');
+			if (key == 'Category') {
+				jQuery(this).addClass('disabled');
+				jQuery(this).find('input').attr('disabled', true);
+			}
+			else if (key == 'Color' || key == 'Length') {
+				jQuery(this).addClass('disabled');
+			}
+			else {
+				jQuery(this).attr('disabled', true);
+				jQuery('[data-key=\''+key+'\'][data-val=\''+jQuery(this).val()+'\']').addClass('disabled');
+			}
+		});
+	}
+</script>

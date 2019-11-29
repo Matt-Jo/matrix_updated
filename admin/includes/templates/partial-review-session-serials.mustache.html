@@ -1,0 +1,40 @@
+<table cellspacing="0" cellpadding="0" border="0" id="receiving-serials">
+	<thead>
+		<!--tr class="overhead">
+			<th colspan="9">Previously Entered Serials:</th>
+		</tr-->
+		<tr>
+			<th>Serial #</th>
+			<th>Condition</th>
+			<th>DRAM</th>
+			<th>Flash</th>
+			<th>IOS</th>
+			<th>Mac</th>
+			<th>Ver.</th>
+			<th>Bin #</th>
+			<th>Edit</th>
+			<th>[X]</th>
+		</tr>
+	</thead>
+	<tbody class="serials-list">
+		{{#serials}}
+		<tr id="session-serial-history-id-{{serial_history_id}}">
+			<td>{{serial_number}}</td>
+			<td>{{condition}}</td>
+			<td>{{dram}}</td>
+			<td>{{flash}}</td>
+			<td>{{ios}}</td>
+			<td>{{mac_address}}</td>
+			<td>{{version}}</td>
+			<td>{{bin_location}}</td>
+			<td><a href="#" class="edit-serial-record" data-serials-history-id="{{serial_history_id}}">(edit)</a></td>
+			<td><a href="#" class="del-serial-record" data-serials-history-id="{{serial_history_id}}">(delete)</a></td>
+		</tr>
+		{{/serials}}
+		{{^serials}}
+		<tr class="no-res">
+			<td colspan="10">No Serials Received Yet</td>
+		</tr>
+		{{/serials}}
+	</tbody>
+</table>

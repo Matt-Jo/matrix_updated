@@ -1,0 +1,62 @@
+/* stylesheet for orderlist */
+body, html {
+margin: 0;
+
+text-align: center;
+font-family: tahoma, sans-serif;
+font-size: 99%;
+}
+
+table.pickList {
+
+border-collapse: collapse;
+width: 100%;
+font-size: 1em;
+}
+td.pickList {
+padding: 0.2em 0.3em;
+font-size: 1em;
+}
+tr.picklist {
+
+
+color: black;
+
+}
+tr.headers td {
+color: black;
+
+
+font-weight: bold;
+font-size: 120%;
+text-align: center;
+}
+
+h1 {
+color: #000;
+font-size: 2.5em;
+background: #eee;
+border: solid #e00 1px;
+border-width: 2px  0;
+width: 6em;
+margin: 0 auto;
+}
+
+h2 {
+color: #000;
+font-size: 1.5em;
+}
+
+/* column width's (should add up to 100%) */
+td.orderNr {
+width: 5%;
+}
+td.date {
+width: 15%;
+}
+td.name {
+width: 30%;
+}
+td.details {
+width: 50%;
+}

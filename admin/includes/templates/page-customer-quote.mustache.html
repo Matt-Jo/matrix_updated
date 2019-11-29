@@ -1,0 +1,505 @@
+<style>
+	#page-body { min-width:800px; font-size:12px; }
+	.quote-products { border-collapse:collapse; font-size:10px; width:100%; margin-top:15px; }
+
+	.quote-remove { text-align:center; }
+	.quote-remove a { color:#4d7cbc; }
+	.quote-product { text-align:left; }
+	.quote-model { text-align:left; }
+	.quote-qty { text-align:center; }
+	.quote-price { text-align:right; }
+	.quote-total { text-align:right; font-weight:bold; }
+
+	.option .quote-product, .more-info .quote-product { padding-left:30px; }
+
+	.more-info .quote-qty { text-align:left; }
+	.more-info .quote-price { text-align:left; }
+
+	.more-info strong { margin-right:10px; }
+
+	.quote-products th { padding:5px 7px; }
+	.quote-products .quote-row td { padding:8px 7px 4px 7px; }
+	.quote-products .quote-row.has-addons td { padding-bottom:0px; }
+
+	.quote-products thead th { border-width:2px 0px 1px 0px; border-style:solid; border-color:#000; background-color:#f1f1f1; }
+	.quote-products tbody tr:last-child td { border-width:0px 0px 1px 0px; border-style:solid; border-color:#ccc; }
+	.quote-products tbody:last-child tr:last-child td { border-bottom-width:0px; }
+
+	/*.quote-products tbody .quote-qty { vertical-align:top; padding-top:15px; }*/
+
+	.quote-products th:first-child { border-left-style:solid; border-left-width:2px; border-left-color:#000; }
+	.quote-products th:last-child { border-right-style:solid; border-right-width:2px; border-right-color:#000; }
+
+	.quote-products tfoot tr:first-child td { border-top:1px solid #000; }
+
+	.quote-row input[type=checkbox] { position:relative; top:3px; }
+
+	.quote-row.discontinued-line td { background-color:#fee; }
+
+	.included { color:#999; font-style:italic; padding-left:30px; }
+
+	.quote-products tbody tr.included td { color:#999; font-style:italic; padding:2px 7px; }
+	.quote-products tbody tr.optional td { padding:2px 7px; }
+	/*.quote-products tbody tr.included.last td, .quote-products tbody tr.optional.last td { border-bottom-width:1px; padding-bottom:10px; }*/
+	.quote-products .line-total td { /*border-bottom:1px solid #ccc;*/ padding:2px 7px 10px 7px; }
+	.quote-products .line-total .quote-total { border-top:1px solid #000; }
+
+	.undo td { background-color:#c3c3bb; text-align:center; padding:10px; font-weight:bold; }
+	.undo a { color:#4d7cbc; font-size:14px; }
+
+	.quote-input { width:60px; padding-left:3px; }
+
+	.stock-status td { text-align:center; font-weight:bold; font-size:14px; padding:0px 7px 5px 7px; }
+
+	.freeship-eligible td { text-align:center; color:#d22842; font-weight:bold; font-size:16px; padding-top:10px; }
+
+	.product-total-label { font-size:14px; text-align:right; white-space:nowrap; }
+	.product-total { text-align:right; font-size:14px; font-weight:bold; padding-right:7px; }
+
+	.quote-total-label { text-align:right; font-weight:bold; }
+
+	.more-info { display:none; }
+
+	#customer-details { padding-left:40px; }
+	#assignment { margin-top:7px; }
+
+	#templates { display:none; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	{{#bad_quote?}}
+	<div>
+		No quote could be found to match that ID
+	</div>
+	{{/bad_quote?}}
+
+	<a href="/admin/customer-quote-dashboard.php" class="button-link">&larr; Back to List</a><br><br>
+
+	<form action="/admin/customer-quote.php?customer_quote_id={{customer_quote_id}}" id="customer-quote" method="post">
+		<input type="hidden" name="action" value="update-quote">
+		<input type="hidden" id="customer_quote_id" name="customer_quote_id" value="{{customer_quote_id}}">
+
+		{{^editable?}}
+			{{#customer_quote_id}}
+		<input type="hidden" name="unrelease" value="1">
+		<input type="submit" name="quote-update-action" value="Lock for Editing"><br><br>
+			{{/customer_quote_id}}
+		{{/editable?}}
+
+		<strong>Customer Email:</strong>
+		{{#editable?}}
+		<input type="text" name="customer_email_address" id="customer_email_address" value="{{email_address}}">
+		{{#remove_customers_id?}}[<input type="checkbox" name="remove_customers_id"> Remove Customer ID]{{/remove_customers_id?}}
+		{{/editable?}}
+		{{^editable?}}
+		{{email_address}}
+		{{/editable?}}
+
+		<div id="customer-details">
+			Customer ID:
+			{{#customer_quote_id}}
+				{{#customers_id}}<a href="/admin/customers_list.php?action=quicksearch&amp;customers_id={{.}}" id="customers_id_link" target="_blank">{{.}}</a>{{/customers_id}}
+				{{^customers_id}}Not an active customer{{/customers_id}}
+			{{/customer_quote_id}}
+			<br>
+
+			Extra Login?: {{#customer_quote_id}}<span id="cel">{{#cel?}}Y{{/cel?}}{{^cel?}}N{{/cel?}}</span>{{/customer_quote_id}}
+
+			<input type="hidden" name="customers_id" id="customers_id" value="{{customers_id}}">
+			<input type="hidden" name="customers_extra_logins_id" id="customers_extra_logins_id" value="{{customers_extra_logins_id}}">
+		</div>
+
+		<div id="assignment">
+			Order Rep of Record: <!-- span id="assigned-account-manager">{{account_manager}}</span -->
+			{{!#change_account_manager}}
+			<select class="account-manager-select">
+				<option value="">Default</option>
+				{{#account_managers}}
+				<option value="{{admin_id}}" {{#selected?}}selected{{/selected?}}>{{name}}</option>
+				{{/account_managers}}
+			</select>
+			<button type="button" class="account-manager-select">Submit</button>
+			<script>
+				jQuery('button.account-manager-select').click(function() {
+					var admin_id = jQuery('select.account-manager-select').val();
+
+					jQuery.ajax({
+						url: '/admin/customer-quote.php',
+						method: 'post',
+						dataType: 'json',
+						data: { action: 'assign-account-manager', ajax: 1, customer_quote_id: jQuery('#customer_quote_id').val(), admin_id: admin_id },
+						success: function(data) {
+							if (data.success) window.location.reload();
+							else if (data.errors) alert(data.errors);
+							else alert('There was a problem changing assigned account manager.');
+						}
+					});
+				});
+			</script>
+			{{!/change_account_manager}}
+		</div>
+
+		<div>
+			<label for="prepared-by-select">Prepared By:</label>
+			<select id="prepared-by-select">
+				{{#prepared_by}}
+				<option value="{{admin_id}}" {{#selected?}}selected{{/selected?}}>{{name}} // {{email}} // {{phone_number}}</option>
+				{{/prepared_by}}
+			</select>
+			<button type="button" id="prepared-by-button">Change</button>
+			<script>
+				jQuery('#prepared-by-button').click(function() {
+					var admin_id = jQuery('#prepared-by-select').val();
+
+					jQuery.ajax({
+						url: '/admin/customer-quote.php',
+						method: 'post',
+						dataType: 'json',
+						data: {
+							action:'update-prepared-by',
+							ajax:1,
+							customer_quote_id:jQuery('#customer_quote_id').val(),
+							admin_id:admin_id
+						},
+						success: function(data) {
+							if (data.success) window.location.reload();
+							else if (data.errors) alert(data.errors);
+							else alert('There was a problem changing prepared by value.');
+						}
+					});
+				});
+			</script>
+		</div>
+
+		<br>
+		{{#editable?}}
+		<strong>Unreleased / Editable</strong>
+		<input type="submit" name="quote-update-action" value="Release" style="margin-left:20px;">
+		<input type="submit" name="quote-update-action" value="Release &amp; Email" style="margin-left:30px;">
+		{{/editable?}}
+		{{^editable?}}
+		<strong>Released / Uneditable</strong>
+		<a href="/quote.php?customer_quote_id={{customer_quote_id}}" class="button-link" style="margin-left:20px;">Email to Customer</a>
+		{{/editable?}}
+		<a href="/custom_quote.php?key={{url_hash}}" class="button-link">View Quote In Shopping Cart</a>
+		<br><br>
+
+		<strong>Expiration Date:</strong>
+		{{#customer_quote_id}}
+			{{#editable?}}
+		<input type="date" name="expiration_date" id="expiration_date" value="{{expiration_date}}"> <a href="#" id="auto-expiration" class="button-link">+7 Days</a>
+				{{#inactive?}}
+		<strong style="color:#c33;">Quote is inactive - update expiration date to re-activate</strong>
+				{{/inactive?}}
+			{{/editable?}}
+			{{^editable?}}
+		{{expiration_date_formatted}}
+			{{/editable?}}
+		{{/customer_quote_id}}
+		<br><br>
+
+		<strong>Products:</strong>
+		{{#editable?}}
+		<div class="add-product">
+			Add: <input type="text" name="product" id="product">
+		</div>
+		{{/editable?}}
+		<table class="quote-products">
+			<thead>
+				<tr>
+					<th class="quote-remove">[X]</th>
+					<th class="quote-product">Product(s)</th>
+					<th class="quote-model">Model #</th>
+					<th class="quote-qty">Qty</th>
+					<th class="quote-price">Price</th>
+					<th class="quote-total">Total</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td colspan="5" class="quote-total-label">Total:</td>
+					<td class="quote-total">{{quote_total}}</td>
+				</tr>
+			</tfoot>
+			{{#products}}
+			<tbody>
+				<tr class="quote-row {{#discontinued?}}discontinued-line{{/discontinued?}}">
+					<td class="quote-remove">
+						{{#editable?}}
+						[<input type="checkbox" name="delete_quoted[{{quote_product_id}}]">]<br>
+						{{/editable?}}
+						<a href="#" class="show-more-info" id="info-{{quote_product_id}}">More Info</a>
+					</td>
+					<td class="quote-product">
+						<a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank"><strong>{{name}}</strong></a>
+						{{#included_options?}}
+						<div class="included">{{name}} - included</div>
+						{{/included_options?}}
+					</td>
+					<td class="quote-model"><a href="{{url}}" target="_blank">{{model_num}}</strong></a></td>
+					<td class="quote-qty">
+						{{#editable?}}
+						<input type="text" name="quote_quantity[{{quote_product_id}}]" value="{{quantity}}" class="quote-input">
+						{{/editable?}}
+						{{^editable?}}
+						{{quantity}}
+						{{/editable?}}
+					</td>
+					<td class="quote-price">
+						{{#editable?}}
+						<input type="text" name="quote_price[{{quote_product_id}}]" value="{{price}}" class="quote-input">
+						{{/editable?}}
+						{{^editable?}}
+						${{price}}
+						{{/editable?}}
+					</td>
+					<td class="quote-total">{{total_price}}</td>
+				</tr>
+				{{#optional_addons}}
+				<tr class="quote-row option">
+					<td class="quote-remove">
+						{{#editable?}}
+						[<input type="checkbox" name="delete_quoted[{{quote_product_id}}]">]
+						{{/editable?}}
+					</td>
+					<td class="quote-product"><strong>Option:</strong> {{name}}</td>
+					<td class="quote-model">{{model_num}}</td>
+					<td class="quote-qty">
+						{{#editable?}}
+						<input type="text" name="quote_quantity[{{quote_product_id}}]" value="{{quantity}}" class="quote-input">
+						{{/editable?}}
+						{{^editable?}}
+						{{quantity}}
+						{{/editable?}}
+					</td>
+					<td class="quote-price">
+						{{#editable?}}
+						<input type="text" name="quote_price[{{quote_product_id}}]" value="{{price}}" class="quote-input">
+						{{/editable?}}
+						{{^editable?}}
+						${{price}}
+						{{/editable?}}
+					</td>
+					<td class="quote-total">{{total_price}}</td>
+				</tr>
+				{{/optional_addons}}
+				<tr class="more-info more-info-{{quote_product_id}}">
+					<td class="quote-product" colspan="2">
+						Additional Options:<br>
+						{{#product_optional_addons}}
+							{{#editable?}}
+						<a href="/admin/customer-quote.php?customer_quote_id={{customer_quote_id}}&amp;action=add-product&amp;products_id={{products_id}}&amp;parent_products_id={{parent_products_id}}{{#recommended?}}&amp;recommended=1{{/recommended?}}" class="add-option">[Add]</a> |
+							{{/editable?}}
+						<a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{name}}</a> |
+						{{price}} |
+						Avl: {{available}}
+						{{#recommended?}}
+						| REC
+						{{/recommended?}}
+						{{/product_optional_addons}}
+						{{^product_optional_addons}}
+						No Additional Options
+						{{/product_optional_addons}}
+					</td>
+					<td class="quote-qty" colspan="2">
+						<strong>Available:</strong> {{product_available}}<br>
+						<strong>On Hand:</strong> {{product_on_hand}}<br>
+						<strong>Allocated:</strong> {{product_allocated}}<br>
+						<strong>Conditioning:</strong> {{product_conditioning}}<br>
+						<strong>On Order:</strong> {{product_on_order}}<br>
+					</td>
+					<td class="quote-price" colspan="2">
+						<strong>Retail:</strong> {{product_stock_price}}<br>
+						<strong>Reseller:</strong> {{product_dealer_price}}<br>
+						<strong>Wholesale High:</strong> {{wholesale_high_price}}<br>
+						<strong>Wholesale Low:</strong> {{wholesale_low_price}}<br>
+						<strong>Special Price:</strong> {{product_special_price}}<br>
+						{{#product_customer_price}}<strong>Customer Price:</strong> {{.}}<br>{{/product_customer_price}}
+					</td>
+				</tr>
+				<tr class="more-info more-info-{{quote_product_id}}">
+					<td colspan="6">
+						{{#drop_ship?}}DROP SHIP | {{/drop_ship?}}
+						{{#non_stock?}}NON STOCK | {{/non_stock?}}
+						{{#freight?}}FREIGHT | {{/freight?}}
+						{{#discontinued?}}DISCONTINUED{{/discontinued?}}
+					</td>
+				</tr>
+				{{#has_options?}}
+				<tr class="">
+					<td colspan="5"></td>
+					<td class="quote-total">{{whole_total_price}}</td>
+				</tr>
+				{{/has_options?}}
+				<tr class="stock-status">
+					<td colspan="6" style="color:#{{stock_status_color}};">{{{stock_status_message}}}</td>
+				</tr>
+				{{#stock_status_message_2?}}
+				<tr class="stock-status">
+					<td colspan="6" style="color:#{{stock_status_color}};">{{{.}}}</td>
+				</tr>
+				{{/stock_status_message_2?}}
+			</tbody>
+			{{/products}}
+		</table>
+
+		{{#editable?}}
+		<div class="form-controls">
+			<input type="submit" name="quote-update-action" value="Update">
+			{{! we only want to create an order if the customer exists }}
+			{{#customer_quote_id}}
+				{{#customers_id}}
+					<input type="submit" name="create_order_action" value="Create Order">
+				{{/customers_id}}
+			{{/customer_quote_id}}
+			{{#has_any_discontinued}}
+			<br><br>
+			<span title="This quote has discontinued items on it; please confirm we can still fulfill all requested qtys of discontinued items.">[<input type="checkbox" name="confirm_qtys" required> Confirm Discontinued Qtys]</span>
+			{{/has_any_discontinued}}
+		</div>
+		{{/editable?}}
+	</form>
+	<div id="templates">
+		{{! gotta switch the mustache delimiters so we can build the template }}
+		{{=<% %>=}}
+		<!-- same as normal, but allow HTML in the result_label -->
+		<div id="customer-results">
+			{{#results}}
+			<a href="#" class="entry" id="{{result_id}}">{{{result_label}}}</a>
+			{{/results}}
+		</div>
+
+		<div id="product-results">
+			<table class="autocomplete-results-table">
+				<thead>
+					<tr>
+						<th>IPN</th>
+						<th>Model #</th>
+						<th>Avail.</th>
+						<th>Retail</th>
+						<th>Reseller</th>
+						<th>W/S High</th>
+						<th>W/S Low</th>
+						<th>Special</th>
+						<th>DS</th>
+						<th>NS</th>
+						<th>Frt</th>
+						<th>Disc</th>
+						<th>Published</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!--{{#results}}-->
+					<tr class="table-entry" id="{{result_id}}">
+						<td>{{{ipn}}}</td>
+						<td>{{{model}}}</td>
+						<td>{{available}}</td>
+						<td class="price">{{price}}</td>
+						<td class="price">{{dealer_price}}</td>
+						<td class="price">{{wholesale_high_price}}</td>
+						<td class="price">{{wholesale_low_price}}</td>
+						<td class="price">{{special_price}}</td>
+						<td class="ac-result-flag {{#ds?}}on{{/ds?}}">{{drop_ship}}</td>
+						<td class="ac-result-flag {{#ns?}}on{{/ns?}}">{{non_stock}}</td>
+						<td class="ac-result-flag {{#f?}}on{{/f?}}">{{freight}}</td>
+						<td class="ac-result-flag {{#disc?}}on{{/disc?}}">{{discontinued}}</td>
+						<td class="ac-result-flag {{^on?}}on{{/on?}}">{{status}}</td>
+					</tr>
+					<!--{{/results}}-->
+				</tbody>
+			</table>
+		</div>
+		<%={{ }}=%>
+	</div>
+</td>
+<script>
+	var customer_ac = new ck.autocomplete('customer_email_address', '/admin/customer-quote.php', {
+		preprocess: function() {},
+		autocomplete_action: 'customer-lookup',
+		autocomplete_field_name: 'email',
+		select_result: function(data) {
+			jQuery('#customers_id').val(data.customers_id);
+			jQuery('#customers_extra_logins_id').val(data.customers_extra_logins_id);
+			jQuery('#customer-quote').append('<input type="hidden" name="quote-update-action" value="Update">');
+			jQuery('#customer-quote').submit();
+		},
+		results_template: jQuery('#customer-results').html(),
+		auto_select_single: false
+	});
+
+	var product_ac = new ck.autocomplete('product', '/admin/customer-quote.php', {
+		preprocess: function() {},
+		autocomplete_action: 'product-lookup',
+		autocomplete_field_name: 'product',
+		select_result: function(data) {
+			var link = '/admin/customer-quote.php?customer_quote_id='+jQuery('#customer_quote_id').val();
+			jQuery.ajax({
+				url: link,
+				dataType: 'json',
+				data: { ajax: 1, action: 'add-product', products_id: data.products_id },
+				type: 'POST',
+				timeout: 800,
+				success: function(data) {
+					jQuery('#customer-quote').submit();
+					//window.location.reload(true);
+				},
+				error: function() {
+					window.location = link;
+				}
+			});
+		},
+		results_template: jQuery('#product-results').html(),
+		auto_select_single: false
+	});
+
+	ck.autocomplete.styles({
+		'.autocomplete-results .entry': 'font-size:12px;',
+		'.autocomplete-results.table-results': 'border:0px;',
+		'.autocomplete-results-table': 'border-collapse:collapse;', // margin-right:20px;',
+		'.autocomplete-results-table th': 'font-size:12px; white-space:nowrap; border:1px solid #999; background-color:#9cf; padding:2px 3px;',
+		'.autocomplete-results-table .table-entry td': 'margin:0px; padding:4px 3px; font-size:12px; white-space:nowrap; border:1px solid #999; cursor:pointer;',
+		'.autocomplete-results-table .table-entry:hover td': 'background:linear-gradient(#6ff, #7cf);',
+		'.autocomplete-results-table .ac-result-flag': 'background-color:#cfc;',
+		'.autocomplete-results-table .ac-result-flag.on': 'background-color:#ccf;',
+		'.autocomplete-results-table .price': 'text-align:right;'
+	});
+
+	jQuery('#auto-expiration').click(function(e) {
+		e.preventDefault();
+
+		var expiration = new Date();
+		expiration.setDate(expiration.getDate() + 7);
+
+		jQuery('#expiration_date').val(moment().add(7, 'day').format('YYYY-MM-DD'));
+	});
+
+	jQuery('.show-more-info').click(function(e) {
+		e.preventDefault();
+		jQuery('.more-'+jQuery(this).attr('id')).toggle();
+	});
+
+	jQuery('.add-option').click(function(e) {
+		e.preventDefault();
+
+		var link = jQuery(this).attr('href');
+
+		jQuery.ajax({
+			url: link,
+			dataType: 'json',
+			data: { ajax: 1 },
+			type: 'POST',
+			timeout: 800,
+			success: function(data) {
+				jQuery('#customer-quote').submit();
+				//window.location.reload(true);
+			},
+			error: function() {
+				window.location = link;
+			}
+		});
+	});
+</script>

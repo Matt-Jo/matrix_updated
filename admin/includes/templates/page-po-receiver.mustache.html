@@ -1,0 +1,1175 @@
+<style>
+	#page-body h3 { color:#727272; border-bottom:1px solid #727272; }
+
+	.optimized .optimize-hide { display:none; }
+
+	#floating-lookup { position:fixed; top:60px; right:15px; background-color:#fff; padding:8px; opacity:0.7; }
+	#floating-lookup.show { opacity:9.0; border:1px solid #000; }
+	#lookup-bar { display:none; }
+	#lookup-bar.none { background-color:#fcc; }
+	#floating-lookup.show #lookup-bar { display:inline-block; }
+	#lookup-control { font-weight:bold; font-size:14px; }
+
+	#page-body { font-size:12px; }
+	.page-errors, .page-messages { text-align:center; }
+
+	/*#receiving-top { margin-bottom:40px; }*/
+	#receiving-header { border-collapse:collapse; width:1000px; margin-top:8px; }
+	#receiving-header th { border-bottom:2px outset #eee; text-align:left; padding:4px 30px 12px 0px; }
+	#receiving-header td { padding:12px 30px 4px 0px; white-space:nowrap; vertical-align:top; }
+
+	#receiving-context { margin:15px 0px; }
+
+	#receiving-body { border-bottom:1px outset #eee; padding-bottom:25px; margin-bottom:35px; }
+	#products-table { border-collapse:collapse; width:1000px; margin-bottom:5px; }
+	#products-table th, #products-table td { vertical-align:top; text-align:left; }
+	#products-table th { padding:7px; border-bottom:1px solid #bbb; background-color:#777; color:#fff; }
+	#products-table td { padding:10px 5px; border-bottom:1px dashed #bbb; }
+	#products-table tr:hover td { background-color:#ffd; }
+	#products-table tr.unexpected td { background-color:#fcc; }
+	#products-table tr.unexpected:hover td { background-color:#c00; color:#fff; }
+	#products-table tr.unexpected:hover .item_popup:not(.pop) .spcr { color:#fff; }
+	#products-table td:first-child { padding-left:0px; }
+	#products-table td:last-child { padding-right:0px; }
+	#products-table tr:last-child td { border-bottom-width:0px; }
+	#products-table .product-details { border-right:2px solid #65ccff; padding-right:10px; }
+	.optimized #products-table .product-details { border-right-width:0px; }
+	#products-table .receive-control { padding-left:10px; }
+
+	/*.ipn-desc { margin-top:-10px; }*/
+	/*.item_popup, .item_popup_details,*/ .image_popup_flow { margin-bottom:-12px; }
+
+	.vendor-pn { white-space:nowrap; }
+
+	.unavailable { color:red; font-weight:bold; }
+	.allocated { color:#f00; }
+	.order_qty { font-size:10px; clear:right; }
+
+	.receive-ipn { font-weight:bold; }
+	#products-table .receive-qty { text-align:right; padding-left:25px; }
+	#products-table .receive-srlzd { font-weight:bold; color:red; }
+	.hide-remaining .receive-ipn, .hide-remaining .receive-qty, .hide-remaining .receive-btn, .hide-remaining .receive-srlzd { visibility:hidden; }
+
+	#receiving-form { border-bottom:1px outset #eee; padding-bottom:25px; margin-bottom:35px; width:1000px; }
+
+	.add-unexpected-product { float:right; }
+
+	.current-session-details { margin:0px 0px 15px 15px; }
+	.current-session-details.none { display:none; }
+
+	.current-session-details th { text-align:left; font-weight:normal; padding:5px; }
+	.current-session-details td { padding:5px; border-bottom:1px dashed #bbb; }
+	.current-session-details tr:hover td { background-color:#ffd; }
+	.current-session-details tr:last-child td { border-bottom-width:0px; }
+	.review-control { min-width:40px; }
+	.review-ipn { min-width:150px; }
+	.review-qty { min-width:60px; }
+
+	.current-session-details strong { text-decoration:none; }
+
+	.current-session-control { text-align:right; }
+
+	.session-unexpected { color:#f00; }
+
+	#save_button { width:250px; height:50px; background-color:#cc6; color:white; font-size:15px; border-radius:2px; }
+	.selecting #save_button { background-color:green; }
+	#save_button[disabled] { background-color:#575757; }
+
+	#receiving-notes-block { background-color:#ececec; border:2px solid #ababab; padding:5px 10px; width:1000px; }
+	#receiving-notes-list th, #receiving-notes-list td { padding:5px 20px 5px 0px; vertical-align:top; text-align:left; }
+	#receiving-notes-list th { border-bottom:1px solid #999; }
+	#receiving-notes-list td { border-bottom:1px dashed #999; }
+	.note-date { white-space:pre; }
+
+	.receiving-serials-left { float:left; }
+	.receiving-dialog-control { float:right; }
+
+	#nonserials-dialog-form { display:block; }
+	#nonserials-dialog table { width:100%; }
+	#nonserials-dialog td { padding:6px; }
+	#nonserials-dialog-rows input { width:45px; }
+
+	#serials-dialog-form { display:block; padding:0px 4px; }
+
+	.tab-shared { display:inline-block; margin:0px 10px 8px 0px; }
+
+	#bulk-serial-entry { margin:2px 5px 0px 5px; padding:0px 5px; height:19px; width:691px; /*border:1px solid #a9a9a9; background-color:#fff; padding:2px; margin:0px 5px; height:19px;*/ }
+	#bulk-serial-entry-result { border:1px solid #a9a9a9; padding:2px; margin:0px 5px 5px 5px; height:19px; }
+
+	#received-serials-block { margin:0px 4px 10px 4px; }
+
+	#receiving-serials { border-collapse:collapse; width:100%; }
+	#receiving-serials th, #receiving-serials td { border:1px solid #000; padding:3px 5px; }
+	#receiving-serials th { background-color:#eee; }
+	#receiving-serials .overhead th { border-width:0px; background-color:transparent; }
+	#receiving-serials .no-res td { text-align:center; font-weight:bold; }
+
+	#serial_dialog_tabs-body { margin-bottom:5px; }
+
+	#unexpected-dialog-form { padding:5px; }
+	#unexpected-details { display:none; margin-top:6px; }
+
+	.dialog-note { font-size:8px; padding:5px; }
+
+	#nonserials-dialog, #serials-dialog, #unexpected-dialog { display:none; }
+
+	.review-session { width:100%; margin-bottom:10px; }
+	.review-session caption { text-align:left; background-color:#eee; color:#666; font-weight:bold; padding:4px 8px; }
+	.review-session .review-ipn { width:100%; }
+	.review-session.reviewing td { background-color:#fdd; }
+	.review-session .review-reviewing { display:none; }
+	.review-session.reviewing .review-reviewing { display:table-cell; }
+	.review-session.reviewing .review-control { display:none; }
+	.review-session th.review-qty { border-right-color:#000; }
+	.review-session.reviewing th.review-qty { border-right-color:#fff; }
+	.review-session.reviewing .review-ipn { border-left-color:#000; }
+	.review-session .no-products { font-weight:bold; text-align:center; }
+	.review-session .on-hold { background-color:#ccc; }
+	.review-session.ck-table-manager.color-rows tbody tr.unexpected td { background-color:#fcc; }
+	.review-session .complete-reviews { display:none; }
+	.selecting .review-session:not(.reviewing) .complete-reviews { display:initial; }
+	.ipn-weight { width:40px; }
+
+	/*.ajax-sending { background-color:#fa0; }*/
+</style>
+<td id="page-body" class="{{#optimized}}optimized{{/optimized}}">
+	<input type="hidden" id="po_id" value="{{po.id}}">
+	<div id="floating-lookup">
+		{{#upcs}}
+		<input type="hidden" class="lookup-value" value="{{lookup}}" data-stock-id="{{stock_id}}">
+		{{/upcs}}
+		<input type="text" id="lookup-bar">
+		<a href="#" id="lookup-control">[+]</a>
+		<script>
+			jQuery('#lookup-control').click(function(e) {
+				e.preventDefault();
+				jQuery('#floating-lookup').toggleClass('show');
+				if (jQuery('#floating-lookup').hasClass('show')) {
+					jQuery(this).html('[-]');
+					jQuery('#lookup-bar').val('').focus();
+				}
+				else jQuery(this).html('[+]');
+			});
+
+			jQuery('#lookup-bar').focus(function(e) {
+				jQuery(this).select();
+			});
+
+			var lookups = {};
+
+			jQuery('#lookup-bar').keyup(function(e) {
+				jQuery(this).removeClass('none');
+				var key = e.keyCode || e.which;
+				if (key === 13) {
+					if (lookups[jQuery(this).val().toLowerCase().trim()] != undefined) {
+						window.location.hash = ''; // gotta clear it first just in case it's the same hash
+						window.location.hash = 'ipn-'+lookups[jQuery(this).val().toLowerCase().trim()];
+						jQuery('#lookup-control').click();
+					}
+					else jQuery(this).addClass('none');
+				}
+			});
+
+			jQuery(document).ready(function() {
+				jQuery('.lookup-value').each(function() {
+					lookups[jQuery(this).val().toLowerCase().trim()] = jQuery(this).attr('data-stock-id');
+				});
+			});
+		</script>
+	</div>
+	{{#has_errors?}}
+	<div class="page-errors">
+		{{#errors}}<div>Error: {{{.}}}</div>{{/errors}}
+	</div>
+	{{/has_errors?}}
+	{{#has_messages?}}
+	<div class="page-messages">
+		{{#messages}}<div>{{{.}}}</div>{{/messages}}
+	</div>
+	{{/has_messages?}}
+
+	<div id="receiving-top">
+		<a href="/admin/po_list.php" class="button-link">&lt;&lt; Back to PO List</a>
+		<a href="/admin/po_receiver.php?poId={{po.id}}&amp;{{#optimized}}de{{/optimized}}optimize-receiving=1">{{#optimized}}De-{{/optimized}}Optimize Receiving</a>
+		<br>
+		<table cellpadding="0" cellspacing="0" border="0" id="receiving-header">
+			<thead>
+				<tr>
+					<th>PO Number:</th>
+					<th>Status:</th>
+					<th>Vendor:</th>
+					<th>Created:</th>
+					<th>Expected:</th>
+					<th>Shipping Method:</th>
+					<th>Administered By:</th>
+					<th>Terms:</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><a href="/admin/po_viewer.php?poId={{po.id}}" target="_blank">{{po.purchase_order_number}}</a></td>
+					<td>
+						{{^can_be_closed?}}
+						{{po.po_status}}
+						{{/can_be_closed?}}
+						{{#can_be_closed?}}
+						<select id="close-this-po">
+							<option value="0">{{po.po_status}}</option>
+							<option value="1">Received</option>
+						</select>
+						<script>
+							jQuery('#close-this-po').on('change', function(e) {
+								if (!confirm('Are you certain you want to manually close this PO?')) {
+									e.preventDefault();
+									return false;
+								}
+								window.location = '/admin/po_receiver.php?poId={{po.id}}&action=manually-close';
+							});
+						</script>
+						{{/can_be_closed?}}
+					</td>
+					<td>{{po.vendor}}</td>
+					<td>{{po.creation_date}}</td>
+					<td>{{po.expected_date}}</td>
+					<td>{{po.po_shipping_method}}</td>
+					<td>{{po.administrator_name}}</td>
+					<td>{{po.po_terms}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div id="receiving-context" style="width:300px; max-height:30px;">
+		Receive to Tracking # Session:
+		<select id="receiving-tracking-context" data-target-modal="">
+			<option value="">Select...</option>
+			{{#tracking_numbers}}
+			<option value="{{po_tracking_id}}">{{tracking_number}}</option>
+			{{/tracking_numbers}}
+			<option value="0">NONE</option>
+		</select>
+		<script>
+			jQuery('#receiving-tracking-context').change(function() {
+				if (jQuery('#receiving-context').hasClass('ck-modal')) {
+					jQuery('#receiving-context').removeClass('ck-modal').css('padding', '').css('margin-left', '');
+					//if (jQuery(this).data('target-modal') == 'serial') s_modal.open_modal();
+					//else ns_modal.open_modal();
+				}
+			});
+		</script>
+	</div>
+	<div id="receiving-body">
+		<table cellpadding="0" cellspacing="0" border="0" id="products-table">
+			<colgroup>
+				<col span="6">
+				<col class="product-details">
+				<col class="receive-control">
+				<col span="2">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>
+						{{#optimized}}IPN{{/optimized}}{{^optimized}}&Xi; IPN &Xi;{{/optimized}}<br>
+						Description
+					</th>
+					<th>Stock Weight</th>
+					<th>Vendor PN</th>
+					<th class="optimize-hide">Available</th>
+					<th>Ordered</th>
+					<th>Received</th>
+					<th class="optimize-hide">Orders</th>
+					<th class="optimize-hide">Need Pic</th>
+					<th colspan="3">Remaining</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#po_products}}
+				<tr id="ipn-{{stock_id}}" class="pop_id-{{po_product_id}} {{^remaining?}}hide-remaining optimize-hide{{/remaining?}} {{#unexpected?}}unexpected{{/unexpected?}}">
+					<td>
+						{{#optimized}}
+						<a href="/admin/ipn_editor.php?ipnId={{stock_name_safe}}" target="_blank">{{stock_name}}</a>
+						{{/optimized}}
+						{{^optimized}}
+						{{{stock_name_images}}}
+						{{/optimized}}
+						{{#unexpected?}}<span style="margin-left:5px;">UNEXPECTED</span>{{/unexpected?}}<br>
+						<div class="ipn-desc">{{{description}}}</div>
+					</td>
+					<td><input type="text" id="ipn-weight-{{stock_id}}" data-stock-id="{{stock_id}}" class="ipn-weight" value="{{stock_weight}}"></td>
+					<td class="vendor-pn">{{vendors_pn}}</td>
+					<td class="{{#unavailable?}}unavailable{{/unavailable?}} optimize-hide">{{available}}</td>
+					<td>{{quantity}}</td>
+					<td>{{received}}</td>
+					<td class="optimize-hide">
+						{{#orders}}
+						<a href="/admin/orders_new.php?selected_box=orders&oID={{orders_id}}&action=edit" class="{{#allocated?}}allocated{{/allocated?}}">{{orders_id}}</a>
+						{{#qty}}<span class="order_qty">({{.}})</span>{{/qty}}
+						{{/orders}}
+					</td>
+					<td class="optimize-hide">{{#need_photo?}}Need Photo{{/need_photo?}}</td>
+					<td class="receive-qty">{{remaining_display}}</td>
+					<td class="receive-btn">
+						<a href="#" class="button-link receive-product" data-stock_id="{{stock_id}}" data-po_product_id="{{po_product_id}}">receive</a>
+					</td>
+					<td class="receive-srlzd">{{#serialized?}}S{{/serialized?}}</td>
+				</tr>
+				{{/po_products}}
+			</tbody>
+		</table>
+		<div>
+			<a href="#" class="button-link add-unexpected-product">Add Unexpected IPN</a>
+		</div>
+	</div>
+	<div id="receiving-form">
+		<form id="receiving-session" action="/admin/po_receiver.php" method="post">
+			<input type="hidden" name="poId" value="{{po.id}}">
+			<input type="hidden" name="action" value="complete-receiving-session">
+			<h3>Active Receiving Sessions</h3>
+			<div id="review-sessions">NO RECEIVING SESSIONS LOADED</div>
+			<div class="current-session-control">
+				<input type="submit" value="Select Receiving Session(s)" id="save_button" disabled>
+				<br><br>
+				Station:
+				<select id="receiving_station_select">
+					{{#receiving_stations}}
+					<option value="{{value}}" {{#selected?}}selected{{/selected?}}>{{label}}</option>
+					{{/receiving_stations}}
+				</select>
+			</div>
+		</form>
+	</div>
+	<div id="receiving-notes" class="optimize-hide">
+		<h3>Notes</h3>
+		<div id="receiving-notes-block">
+			<table id="receiving-notes-list" class="noPrint">
+				<thead>
+					<tr>
+						<th>Created On</th>
+						<th>Created By</th>
+						<th>Note</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>
+							<form action="/admin/po_receiver.php" method="post" id="notes-form">
+								<input type="hidden" name="action" value="add_note">
+								<input type="hidden" name="poId" value="{{po.id}}">
+								<textarea name="notes" id="notes" rows="6" cols="45"></textarea>
+								<input type="submit" value="Add">
+							</form>
+						</td>
+					</tr>
+				</tfoot>
+				<tbody id="notes-display">
+					{{#po_notes}}
+					<tr>
+						<td class="note-date">{{note_created}}</td>
+						<td>{{admin_firstname}} {{admin_lastname}}</td>
+						<td>{{{note_text}}}</td>
+					</tr>
+					{{/po_notes}}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<input type="hidden" id="set_receiving_station" value="{{set_receiving_station}}">
+
+	<div id="nonserials-dialog">
+		<header>Receive Non-Serialized IPN</header>
+		<main>
+			<form action="/admin/po_receiver.php" method="post" id="nonserials-dialog-form">
+				<input type="hidden" name="action" value="receive-product">
+				<input type="hidden" name="poId" value="{{po.id}}">
+				<input type="hidden" name="po_review_id" class="po_review_id">
+				<input type="hidden" name="po_product_id" class="po_product_id">
+
+				<table cellpadding="0" cellspacing="0" border="0">
+					<thead>
+						<tr>
+							<td>IPN</td>
+							<td>Qty</td>
+							<!--td>Weight</td-->
+							<td>Disposition</th>
+						</tr>
+					</thead>
+					<tbody id="nonserials-dialog-rows">
+						<tr>
+							<td class="ipn-location"></td>
+							<td><input type="text" name="receiving-qty" class="receiving-qty"></td>
+							<!--td><input type="text" name="receiving-weight" class="receiving-weight" required></td-->
+							<td>
+								<select name="disposition" id="nonserial-disposition">
+									<option value="0">-- None --</option>
+									{{#nonserial_dispositions}}
+									<option value="{{id}}" class="{{#selected?}}default{{/selected?}}">{{text}}</option>
+									{{/nonserial_dispositions}}
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="receiving-dialog-control">
+					<input type="submit" class="modal-form-submit" value="OK">
+					<input type="button" class="modal-close" value="Done">
+				</div>
+			</form>
+		</main>
+	</div>
+
+	<div id="serials-dialog">
+		<header>Receive Serial #</header>
+		<main>
+			<div id="received-serials-block">
+			</div>
+
+			<form action="/admin/po_receiver.php" method="post" id="serials-dialog-form">
+				<input type="hidden" name="action" value="receive-product">
+				<input type="hidden" name="poId" value="{{po.id}}">
+				<input type="hidden" name="po_review_id" class="po_review_id">
+				<input type="hidden" name="po_product_id" class="po_product_id">
+				<input type="hidden" name="serial_history_id" class="serial_history_id">
+
+				<ul id="serial_dialog_tabs">
+					<li id="serial_dialog_bulk">Bulk Entry</li>
+					<li id="serial_dialog_single">Single Entry</li>
+				</ul>
+				<div id="serial_dialog_tabs-body">
+					<span class="tab-shared serial-input">
+						Condition:
+						<select name="conditions" id="serial-conditions" data-constant="1">
+							{{#conditions}}
+							<option value="{{id}}" {{#selected?}}selected{{/selected?}}>{{text}}</option>
+							{{/conditions}}
+						</select>
+					</span>
+					<span class="tab-shared serial-input">
+						Disposition:
+						<select name="disposition" id="serial-disposition" data-constant="1">
+							<option value="0">-- None --</option>
+							{{#serial_dispositions}}
+							<option value="{{id}}" {{#selected?}}selected{{/selected?}}>{{text}}</option>
+							{{/serial_dispositions}}
+						</select>
+					</span>
+					<span class="tab-shared serial-input">
+						Bin #: <input type="text" name="bin_location" id="serial-bin_location" data-constant="1" required>
+					</span>
+					<span class="tab-shared serial-input">
+						<label for="tester-admin-id">Tester:</label>
+						<select id="tester-admin-id" name="tester_admin_id">
+							{{#testers}}
+							<option value="{{admin_id}}" {{#selected?}}selected{{/selected?}}>{{admin_firstname}} {{admin_lastname}}</option>
+							{{/testers}}
+						</select>
+					</span>
+					<div id="serial_dialog_bulk-content">
+						Entry:<br>
+						<input type="text" name="bulk-serial-entry" id="bulk-serial-entry">
+					</div>
+					<div id="serial_dialog_single-content">
+						<table id="serial_entry_table">
+							<tr>
+								<td>Serial:</td>
+								<td><input type="text" size="35" name="serial_number" id="single-serial-entry"></td>
+								<td rowspan="7" valign="top" style="white-space:nowrap;">Hold Notes:</td>
+								<td rowspan="7" valign="top"><textarea name="hold_notes" rows="8" cols="35" id="serial-hold_notes"></textarea></td>
+							</tr>
+							<tr>
+								<td>IOS:</td>
+								<td><input type="text" size="35" name="ios" id="serial-ios"></td>
+							</tr>
+							<tr>
+								<td>Version:</td>
+								<td><input type="text" size="35" name="version" id="serial-version"></td>
+							</tr>
+							<tr>
+								<td>DRAM:</td>
+								<td><input type="text" size="35" name="dram" id="serial-dram"></td>
+							</tr>
+							<tr>
+								<td>FLASH:</td>
+								<td><input type="text" size="35" name="flash" id="serial-flash"></td>
+							</tr>
+							<tr>
+								<td>Mac Address:</td>
+								<td><input type="text" size="35" name="mac_address" id="serial-mac_address"></td>
+							</tr>
+							<tr>
+								<td>Show Version:</td>
+								<td><textarea name="show_version" rows="8" cols="35" id="serial-show_version"></textarea></td>
+							</tr>
+							<tr>
+								<td>Short Notes:</td>
+								<td><textarea name="short_notes" rows="2" cols="35" id="serial-short_notes"></textarea></td>
+							</tr>
+						</table>
+						<div id="notes_ac" class="autocomplete" style="display:none; background-color:#FFFFFF; border: 1px solid #000; z-index:100;"></div>
+					</div>
+				</div>
+				<div style="float:none; clear:both;"></div>
+				<div class="receiving-serials-left">
+					Qty Not Yet Received: <span class="qty_remaining"></span>
+				</div>
+				<div class="receiving-dialog-control">
+					<input type="submit" class="modal-form-submit" value="OK">
+					<input type="button" class="modal-close" value="Done">
+				</div>
+			</form>
+		</main>
+	</div>
+
+	<div id="unexpected-dialog">
+		<header>Add Unexpected IPN</header>
+		<main>
+			IPN:
+			<input type="text" id="receive-unexpected-ipn-lookup" name="ipn">
+			<form action="/admin/po_receiver.php" method="post" id="unexpected-dialog-form">
+				<input type="hidden" name="poId" value="{{po.id}}">
+				<input type="hidden" name="action" value="add-unexpected-ipn">
+				<input type="hidden" name="expected" value="0">
+				<input type="hidden" name="type" id="unexpected-ipn-type">
+
+				<div id="unexpected-details">
+					<span class="tab-shared">
+						Stock ID: <span id="unexpected-stock-id-display"></span>
+						<input type="hidden" name="stock_id" id="unexpected-stock-id">
+					</span>
+					<span class="tab-shared">
+						Qty: <input type="text" size="10" name="qty" id="unexpected-qty">
+					</span>
+					<span class="tab-shared">
+						<!-- Cost: <input type="text" name="cost" size="10" id="unexpected-cost" disabled> [ -->
+						Freebie <input type="checkbox" name="freebie" id="unexpected-is-freebie">
+						<!-- ] -->
+					</span>
+					<br>
+					<span class="tab-shared">
+						Notes:<br>
+						<textarea name="notes" cols="40" rows="6" id="unexpected-notes"></textarea>
+					</span>
+
+					<div class="receiving-dialog-control">
+						<input type="submit" value="OK">
+						<input type="button" class="modal-close" value="Close">
+					</div>
+				</div>
+			</form>
+			<p class="dialog-note">Adding a product will automatically flag this P.O. for review, preventing it from being completed.</p>
+		</main>
+	</div>
+</td>
+<script>
+	function getParameterByName(name, url) {
+		// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+</script>
+<script>
+	/*-----------------------------
+	// Helper function, and general controls
+	-----------------------------*/
+
+	ck.button_links();
+	ck.colgroups(jQuery('#products-table'));
+
+	/*-----------------------------
+	// Select a receiving station for automated printing
+	-----------------------------*/
+
+	if (jQuery('#set_receiving_station').val() == 1) {
+		jQuery.get('/admin/po_receiver.php?ajax=1&action=update_receiving_station&receiving_station='+jQuery('#receiving_station_select').val());
+	}
+
+	jQuery('#receiving_station_select').change(function() {
+		jQuery.get('/admin/po_receiver.php?ajax=1&action=update_receiving_station&receiving_station='+jQuery(this).val());
+	});
+
+	/*-----------------------------
+	// Complete the receiving session
+	-----------------------------*/
+
+	ck.ajaxify.form(jQuery('#receiving-session'),
+		function(data) { //success
+			if (data.error) alert(data.error);
+
+			refresh_reviews();
+
+			//window.location.reload();
+		},
+		function() {}, //error
+		null, //beforeSend
+		function(e, send) { // send wrapper
+			if (jQuery('#save_button').val() == 'Select Receiving Session(s)') {
+				jQuery(this).addClass('selecting');
+				jQuery('#save_button').val('Complete Selected Sessions');
+				if (jQuery('.complete-reviews').size() == 1) {
+					// auto check and send if we only have one review session
+					jQuery('.complete-reviews').prop('checked', true);
+				}
+				else {
+					e.preventDefault();
+					return false;
+				}
+			}
+
+			if (jQuery('.complete-reviews:checked').size() <= 0) {
+				e.preventDefault();
+				return false;
+			}
+
+			jQuery(this).removeClass('selecting');
+			jQuery('#save_button').attr('disabled', true);
+			send.call(this, e);
+		}
+	);
+
+	/*-----------------------------
+	// Add a note to the PO
+	-----------------------------*/
+
+	jQuery('#notes-form').submit(function(e) {
+		e.preventDefault();
+
+		jQuery.ajax({
+			url: jQuery(this).attr('action'),
+			type: jQuery(this).attr('method'),
+			dataType: 'json',
+			data: jQuery(this).serialize(),
+			success: function(data) {
+				jQuery('#notes-display').append('<tr><td>'+data.created_on+'</td><td>'+data.created_by+'</td><td>'+data.note+'</td></tr>');
+				jQuery(this)[0].reset();
+			}
+		});
+	});
+
+	/*-----------------------------
+	// Receive IPN
+	-----------------------------*/
+
+	var modal_context = 'products';
+
+	function select_next_product(po_product_id) {
+		if (modal_context != 'reviews') jQuery('.pop_id-'+po_product_id).next(':not(.hide-remaining)').find('.receive-product').focus();
+	}
+
+	function refresh_state(data) {
+		if (!data.po_product_id) return;
+
+		// manage product list
+		jQuery('.pop_id-'+data.po_product_id+' .receive-qty').html(data.remaining);
+		if (parseInt(data.remaining) <= 0) jQuery('.pop_id-'+data.po_product_id).addClass('hide-remaining').addClass('optimize-hide');
+		else jQuery('.pop_id-'+data.po_product_id).removeClass('hide-remaining').removeClass('optimize-hide');
+	}
+
+	var ns_modal = new ck.modal({
+		modal_id: 'nonserials-dialog',
+		sticky: true,
+		width: 400,
+		height: 150
+	});
+	ns_modal.after_open(function() {
+		jQuery('#nonserials-dialog-form .receiving-qty').select();
+		jQuery('#receiving-tracking-context').prop('disabled', true);
+		jQuery('#nonserials-dialog-form .modal-form-submit').prop('disabled', false);
+	});
+	ns_modal.after_close(function() {
+		var po_product_id = jQuery('#nonserials-dialog-form .po_product_id').val();
+
+		jQuery('#nonserials-dialog-form .po_review_id').val('');
+		jQuery('#nonserials-dialog-form .po_product_id').val('');
+
+		jQuery('#nonserials-dialog-form .ipn-location').html('');
+
+		jQuery('#nonserials-dialog-form .receiving-qty').val('');
+		jQuery('#nonserials-dialog-form .receiving-weight').val('');
+
+		jQuery('#receiving-tracking-context').prop('disabled', false);
+
+		select_next_product(po_product_id);
+	});
+	ck.ajaxify.form(jQuery('#nonserials-dialog-form'),
+		function(data) { // success
+			if (!data) return;
+
+			if (data.error) {
+				alert(data.error);
+				return;
+			}
+
+			refresh_state(data);
+
+			// manage reviews
+			refresh_reviews();
+			ns_modal.close_modal();
+		},
+		function() { // error
+			jQuery('#nonserials-dialog-form .modal-form-submit').prop('disabled', false);
+		},
+		function(jqXHR, settings) { //beforeSend
+			jQuery('#nonserials-dialog-form .modal-form-submit').prop('disabled', true);
+		}
+	);
+
+	var s_tabs = new ck.tabs({
+		tabs_id: 'serial_dialog_tabs',
+		tab_bodies_id: 'serial_dialog_tabs-body',
+		default_tab_index: 0,
+		content_suffix: '-content'
+	});
+	var s_modal = new ck.modal({
+		modal_id: 'serials-dialog',
+		sticky: true,
+		width: 760,
+		top: '10%',
+		height: 'auto',
+		bottom: 'auto'
+	});
+	s_modal.after_open(function() {
+		jQuery('#bulk-serial-entry').select();
+		jQuery('#receiving-tracking-context').prop('disabled', true);
+	});
+	s_modal.after_close(function() {
+		var po_product_id = jQuery('#nonserials-dialog-form .po_product_id').val();
+
+		jQuery('#nonserials-dialog-form .po_review_id').val('');
+		jQuery('#nonserials-dialog-form .po_product_id').val('');
+
+		jQuery('#serial_dialog_tabs-body').find('input:not([type=hidden]):not([type=submit]), select, textarea').val('');
+		jQuery('#serial_dialog_tabs-body').find('select option[selected]').prop('selected', true);
+
+		jQuery('#received-serials').html('');
+
+		s_tabs.tabs[s_tabs.opts.default_tab_index].click();
+
+		jQuery('#receiving-tracking-context').prop('disabled', false);
+
+		select_next_product(po_product_id);
+	});
+	ck.ajaxify.form(jQuery('#serials-dialog-form'),
+		function(data) { //success
+			if (!data) return;
+
+			if (data.error) {
+				alert(data.error);
+				return;
+			}
+
+			refresh_state(data);
+
+			// manage reviews
+			refresh_reviews();
+
+			jQuery('#serials-dialog .qty_remaining').html(data.remaining);
+
+			var disabled = parseInt(data.remaining) <= 0;
+			jQuery('#serial_dialog_bulk-content, #serial_dialog_single-content').find('input:not([type=hidden]):not([type=submit]), select, textarea').val('').prop('disabled', disabled);
+			jQuery('.serial_history_id').val('');
+
+			refresh_serials(data.po_tracking_id, data.po_product_id);
+
+			jQuery('#'+data.serial_field).focus();
+		},
+		null, // error
+		function(jqXHR, settings) {
+			// beforeSend
+			if (jQuery('#serial-bin_location').val() == '') {
+				alert('You must specify a bin.');
+				return false;
+			}
+
+			var shid = getParameterByName('serial_history_id', settings.data);
+
+			if (shid == '') {
+				var sernum = getParameterByName('serial_number', settings.data)!=''?getParameterByName('serial_number', settings.data):getParameterByName('bulk-serial-entry', settings.data);
+				if (sernum.length <= 3) return jqXHR.abort();
+				var serial_number = jQuery('<td></td>').text(sernum);
+			}
+			var status = jQuery('<td colspan="9" class="send-status">Sending...</td>');
+			jQuery('<tr class="serial-sending-'+getParameterByName('serials-counter', settings.data)+'"></tr>').append(serial_number).append(status).appendTo('#receiving-serials .serials-list').css('background-color', '#fcfcac');
+			jQuery('#serials-counter').val(parseInt(jQuery('#serials-counter').val()) + 1);
+
+			jQuery('#serial_dialog_tabs-body').find('input:not([type=hidden]):not([type=submit]):not([data-constant=1]), select:not([data-constant=1]), textarea:not([data-constant=1])').val('');
+			jQuery('#serial_dialog_tabs-body').find('select:not([data-constant=1]) option[selected]').prop('selected', true);
+		}
+	);
+	jQuery('#bulk-serial-entry').keyup(function(e) {
+		var key = e.keyCode || e.which;
+		if (key == 13) jQuery('#serials-dialog-form').submit();
+	});
+
+	var edit_serial_record = function(e) {
+		e.preventDefault();
+		var shid = jQuery(this).attr('data-serials-history-id');
+		jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			type: 'get',
+			dataType: 'json',
+			data: { ajax: 1, action: 'edit-serial-history-data', serial_history_id: shid, poId: jQuery('#po_id').val() },
+			success: function(data) {
+				jQuery('.serial_history_id').val(shid);
+
+				jQuery('#serial-conditions').val(data.condition_code).prop('disabled', false);
+				jQuery('#serial-disposition').val(data.hold_reason_id).prop('disabled', false);
+				jQuery('#serial-bin_location').val(data.bin_location).prop('disabled', false);
+				jQuery('#tester-admin-id').val(data.tester_admin_id).prop('disabled', false);
+				jQuery('#single-serial-entry').val(data.serial_number).prop('disabled', true);
+				jQuery('#serial-hold_notes').val(data.notes).prop('disabled', false);
+				jQuery('#serial-ios').val(data.ios).prop('disabled', false);
+				jQuery('#serial-version').val(data.version).prop('disabled', false);
+				jQuery('#serial-dram').val(data.dram).prop('disabled', false);
+				jQuery('#serial-flash').val(data.flash).prop('disabled', false);
+				jQuery('#serial-mac_address').val(data.mac_address).prop('disabled', false);
+				jQuery('#serial-show_version').val(data.show_version).prop('disabled', false);
+				jQuery('#serial-short_notes').val(data.short_notes).prop('disabled', false);
+
+				jQuery('#serial_dialog_single').click();
+			},
+			error: function() {
+				alert('Failed to get serial details to edit');
+			}
+		});
+	};
+
+	var delete_serial_record = function(e) {
+		e.preventDefault();
+		var shid = jQuery(this).attr('data-serials-history-id');
+		jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			type: 'post',
+			dataType: 'json',
+			data: { ajax: 1, action: 'delete-session-serial', serial_history_id: shid, poId: jQuery('#po_id').val() },
+			success: function(data) {
+				if (!data) {
+					alert('Error: could not remove serial');
+					return;
+				}
+
+				if (data.error) {
+					alert(data.error);
+					return;
+				}
+
+				refresh_state(data);
+
+				// manage reviews
+				refresh_reviews();
+
+				jQuery('#serials-dialog .qty_remaining').html(data.remaining);
+
+				var disabled = parseInt(data.remaining) <= 0;
+				jQuery('#serial_dialog_bulk-content, #serial_dialog_single-content').find('input:not([type=hidden]):not([type=submit]), select, textarea').val('').prop('disabled', disabled);
+				jQuery('.serial_history_id').val('');
+
+				refresh_serials(data.po_tracking_id, data.po_product_id);
+			}
+		});
+	};
+
+	var receive_ajax;
+
+	jQuery(document).on('click', '.receive-product', function(e) {
+
+		// check weight
+		let stock_weight = jQuery('#ipn-weight-'+jQuery(this).attr('data-stock-id')).val();
+		if (stock_weight == 0.00) {
+			alert('Enter a weight for the product first!');
+			e.preventDefault();
+			return false;
+		}
+
+		e.preventDefault();
+		var self = this;
+
+		if (s_modal.is_open()) s_modal.close_modal();
+		if (ns_modal.is_open()) ns_modal.close_modal();
+
+		if (receive_ajax) receive_ajax.abort();
+
+		var tracking_id = jQuery(self).data('tracking_id');
+		if (!tracking_id) tracking_id = jQuery('#receiving-tracking-context').val();
+
+		if (!tracking_id) {
+			//alert('You must select a tracking number to receive this product to.');
+			jQuery('#receiving-context').addClass('ck-modal').addClass('sticky').css('padding', '8px').css('margin-left', '40%').show();
+			return false;
+		}
+
+		if (jQuery(this).data('context')) modal_context = jQuery(this).data('context');
+		else modal_context = 'products';
+
+		receive_ajax = jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			type: 'get',
+			dataType: 'json',
+			data: {
+				ajax: 1,
+				poId: jQuery('#po_id').val(),
+				action: 'start-receiving-product',
+				po_product_id: jQuery(self).data('po_product_id'),
+				po_tracking_id: tracking_id
+			},
+			success: function(data) {
+				if (data.error) {
+					alert(data.error);
+					return;
+				}
+
+				if (data.serialized) {
+					populate_serialized_modal(data);
+					s_modal.open_modal();
+					s_tabs.tabs[s_tabs.opts.default_tab_index].click();
+				}
+				else {
+					populate_nonserialized_modal(data);
+					ns_modal.open_modal();
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				receive_ajax = undefined;
+				if (textStatus == 'abort') return;
+				alert('There was a problem receiving this IPN; please contact Dev.');
+			}
+		});
+	});
+
+	function populate_nonserialized_modal(details) {
+		jQuery('#nonserials-dialog-form .po_review_id').val(details.po_review_id);
+		jQuery('#nonserials-dialog-form .po_product_id').val(details.po_product_id);
+
+		jQuery('#nonserials-dialog-form .ipn-location').html(details.ipn);
+		if (details.bin1) jQuery('#nonserials-dialog-form .ipn-location').append('<br>'+details.bin1);
+		if (details.bin2) jQuery('#nonserials-dialog-form .ipn-location').append('<br>'+details.bin2);
+
+		if (details.receiving_qty) jQuery('#nonserials-dialog-form .receiving-qty').val(details.receiving_qty);
+		//if (details.receiving_weight && details.receiving_weight != 0.00) jQuery('#nonserials-dialog-form .receiving-weight').val(details.receiving_weight);
+		if (details.receiving_disposition) jQuery('#nonserials-dialog-form #nonserial-disposition').val(details.receiving_disposition);
+	}
+
+	function populate_serialized_modal(details) {
+		jQuery('#serials-dialog-form .po_review_id').val(details.po_review_id);
+		jQuery('#serials-dialog-form .po_product_id').val(details.po_product_id);
+
+		jQuery('#serials-dialog .qty_remaining').html(details.qty_remaining);
+
+		var disable = parseInt(details.qty_remaining) <= 0;
+		jQuery('#serial_dialog_tabs-body').find('input:not([type=hidden]):not([type=submit]), select, textarea').prop('disabled', disable);
+
+		jQuery('#serial_dialog_tabs-body').find('select option[selected]').prop('selected', true);
+
+		refresh_serials(details.po_tracking_id, details.po_product_id);
+	}
+
+	jQuery(document).on('click', '.delete-review-product', function(e) {
+		e.preventDefault();
+		if (!confirm('Are you sure you want to delete this ipn from the review session?')) return;
+
+		var $self = jQuery(this);
+
+		jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			type: 'post',
+			dataType: 'json',
+			data: { ajax: 1, action: 'delete-receiving-session-ipn', poId: jQuery('#po_id').val(), po_product_id: $self.data('po_product_id'), po_tracking_id: $self.data('tracking_id') },
+			success: function(data) {
+				if (!data) return;
+
+				if (data.error) alert(data.error);
+
+				if (data.remaining == undefined) return;
+
+				refresh_state(data);
+
+				// manage reviews
+				refresh_reviews();
+			}
+		});
+	});
+
+	/*-----------------------------
+	// Add Unexpected IPN Modal
+	-----------------------------*/
+
+	var ap_modal = new ck.modal({
+		modal_id: 'unexpected-dialog',
+		sticky: true,
+		width: 760,
+		top: '30%',
+		height: 'auto',
+		bottom: 'auto'
+	});
+	ap_modal.add_link(jQuery('.add-unexpected-product'));
+	jQuery('#unexpected-dialog').on('modal:close', function() {
+		jQuery('#receive-unexpected-ipn-lookup').val('');
+		jQuery('#unexpected-ipn-type').val('');
+		jQuery('#unexpected-stock-id-display').html('');
+		jQuery('#unexpected-stock-id').val('');
+		jQuery('#unexpected-qty').val('');
+		//jQuery('#unexpected-cost').val('').attr('disabled', true);
+		jQuery('#unexpected-is-freebie').attr('checked', false);
+		jQuery('#unexpected-notes').val('');
+		jQuery('#unexpected-details').hide();
+	});
+	jQuery('#receive-unexpected-ipn-lookup').autocomplete({
+		delay: 200,
+		source: '/admin/serials_ajax.php?action=generic_autocomplete&search_type=ipn&get_ipn=1&search_all=1',
+		select: function(event, ui) {
+			event.preventDefault();
+
+			if (ui.item.serialized == '1') jQuery('#unexpected-ipn-type').val('serial');
+			else jQuery('#unexpected-ipn-type').val('nonserial');
+			jQuery('#unexpected-stock-id-display').html(ui.item.stock_id);
+			jQuery('#unexpected-stock-id').val(ui.item.stock_id);
+			jQuery('#unexpected-details').show();
+		}
+	}).keypress(function(event) {
+		var self = this;
+		var action = self.id;
+		var value = jQuery(self).val();
+		if ((event.which && event.which == 13) || (event.keyCode && event.keyCode == 13)) {
+			jQuery.ajax({
+				url: '/admin/serials_ajax.php',
+				dataType: 'json',
+				data: {
+					term: value,
+					action: 'generic_autocomplete',
+					search_type: 'ipn',
+					limit: '1',
+					get_ipn: 1,
+					search_all: 1
+				},
+				success: function(data) {
+					if (data != null) {
+						var label = data[0].label;
+						jQuery(self).val(label);
+						jQuery('#add_product_dialog_autocomplete_ipn').val(data[0].label);
+						jQuery('#add_product_stock_name').val(data[0].label);
+						jQuery('#add_product_stock_id').val(data[0].stock_id);
+						jQuery('#add_product_form').show();
+						jQuery('#add_product_stock_id_span').text(data[0].stock_id);
+						if (data[0].serialized=='1') {
+							jQuery('#add_product_serialized_row').show();
+							jQuery('#add_product_qty_row').hide();
+							jQuery('#add_product_serialized_bool').val(1);
+						}
+						else {
+							jQuery('#add_product_serialized_bool').val(0);
+							jQuery('#add_product_serialized_row').hide();
+							jQuery('#add_product_qty_row').show();
+						}
+						jQuery(self).autocomplete('close');
+					}
+				}
+			});
+		}
+	});
+
+	/*-----------------------------
+	// Manage existing recieving sessions
+	-----------------------------*/
+
+	var review_ajax_call, $review_target = jQuery('#review-sessions');
+
+	function refresh_reviews() {
+		review_ajax_call = jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			type: 'get',
+			dataType: 'html',
+			data: {
+				ajax: 1,
+				poId: jQuery('#po_id').val(),
+				action: 'retrieve-review-sessions'
+			},
+			success: function(data, textStatus, jqXHR) {
+				review_ajax_call = undefined;
+
+				if (data) {
+					$review_target.html(data);
+					jQuery('#save_button').val('Select Receiving Session(s)').prop('disabled', false);
+				}
+				else {
+					$review_target.html('NO ACTIVE RECEIVING SESSIONS');
+					jQuery('#save_button').val('Create Receiving Sessions').prop('disabled', true);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				review_ajax_call = undefined;
+				if (textStatus == 'abort') return;
+				$review_target.html('ERROR RETREIVING RECEIVING SESSIONS; CONTACT DEV');
+			}
+		});
+	}
+
+	jQuery(document).ready(function() {
+		refresh_reviews();
+	});
+
+	var review_serial_ajax_call, $review_serial_target = jQuery('#received-serials-block');
+
+	function refresh_serials(po_tracking_id, po_product_id) {
+		review_serial_ajax_call = jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			type: 'get',
+			dataType: 'html',
+			data: {
+				ajax: 1,
+				poId: jQuery('#po_id').val(),
+				action: 'retrieve-review-serials',
+				po_tracking_id: po_tracking_id,
+				po_product_id: po_product_id
+			},
+			success: function(data, textStatus, jqXHR) {
+				review_serial_ajax_call = undefined;
+
+				$review_serial_target.html(data);
+
+				jQuery('.edit-serial-record').on('click', edit_serial_record);
+				jQuery('.del-serial-record').on('click', delete_serial_record);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				review_ajax_call = undefined;
+				if (textStatus == 'abort') return;
+				$review_serial_target.html('ERROR RETREIVING SERIALS; CONTACT DEV');
+			}
+		});
+	}
+
+	/*----------------------------
+	// Update Product Weight
+	---------------------------*/
+
+	jQuery('.ipn-weight').on('change', function () {
+
+		let stock_id = jQuery(this).attr('data-stock-id');
+		let stock_weight = jQuery(this).val();
+
+		jQuery.ajax({
+			url: '/admin/po_receiver.php',
+			method: 'get',
+			dataType: 'json',
+			data: { ajax:1, action:'update-stock-weight', stock_weight:stock_weight, stock_id:stock_id },
+			success: function (data) {
+				if (data.success) jQuery('#ipn-weight-'+stock_id).css('background-color', '#77FF33');
+				else alert('Error updating weight for this product. Refresh the page and try again. If that doesn\'t work contact an administrator');
+			}
+		});
+	});
+
+	//// to do
+
+	// for unserialized:
+	//don't allow editing a receiving session line - if you must change it, delete and recreate
+	//if you receive more of the same IPN on the same receiving session, it creates a new receiving line in the DB/on the page
+	//when receiving more of an IPN that has already been received that session, show what has already been received statically with an empty box to receive more - to create the new row
+	//When adding an unserialized IPN to a receiving session, create a hold record for that quantity. Tie the hold ID to the receiving session line. If the receiving session line gets deleted, delete the hold as well. This will temporarily create a hold for items that are not yet in stock.
+	//when the label spreadsheet is created, add the hold ID to the put-away label. Edit the label in Bartender to show the hold ID
+</script>

@@ -1,0 +1,137 @@
+{
+	"primary_unit": { "key": "velocity_stage", "label": "Velocity Stage" },
+	"primary_table": "ck_velocity_stages",
+	"administered_tables": [
+		"ck_velocity_actions"
+	],
+	"tables": {
+		"ck_velocity_stages": {
+			"key": "velocity_stage",
+			"label": "Stages",
+			"fields": {
+				"velocity_stage_id": { "type": "INT", "required": "NOT NULL", "default": "AUTO_INCREMENT" },
+				"identifier": { "type": "VARCHAR(255)", "required": "NOT NULL", "default": null, "comment": "COMMENT 'A descriptive name for the stage'" },
+				"description": { "type": "TEXT", "required": "NULL", "default": null, "comment": "COMMENT 'Any details that could be useful to remember about what is being accomplished'" },
+				"stock_days": { "type": "INT", "required": "NOT NULL", "default": null, "comment": "COMMENT 'Aging: stock age; Non-Aging: days of available inventory'" },
+				"use_aging": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 0" },
+				"ordinal": { "type": "INT", "required": "NOT NULL", "default": "DEFAULT 0", "comment": "COMMENT 'Order stages first by stock days, then ordinal, then DB ID'" },
+				"serialized": { "type": "TINYINT", "required": "NULL", "default": null, "comment": "COMMENT 'This applies only for serialized items, or all items'" },
+				"active": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 1" },
+				"entered": { "type": "TIMESTAMP", "required": "NOT NULL", "default": "DEFAULT CURRENT_TIMESTAMP" }
+			},
+			"indexes": [
+				{
+					"index_type": "PRIMARY KEY",
+					"fields": ["velocity_stage_id"]
+				},
+				{
+					"index_type": "UNIQUE INDEX",
+					"fields": ["identifier"]
+				}
+			],
+			"options": { "engine": "ENGINE=INNODB", "charset": "CHARACTER SET utf8", "collation": "COLLATE utf8_bin" }
+		},
+		"ck_velocity_actions": {
+			"key": "velocity_action",
+			"label": "Actions",
+			"fields": {
+				"velocity_action_id": { "type": "INT", "required": "NOT NULL", "default": "AUTO_INCREMENT" },
+				"velocity_stage_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"ordinal": { "type": "INT", "required": "NOT NULL", "default": "DEFAULT 0", "comment": "COMMENT 'Order actions first by ordinal, then DB ID'" },
+				"action": { "type": "ENUM('Discount', 'Special', 'Ebay')", "required": "NOT NULL", "default": null, "comment": "COMMENT 'The type of adjustment that occurs'" },
+				"details": { "type": "TEXT", "required": "NULL", "default": null, "comment": "COMMENT 'The details of the adjustment. The keys will be interpreted by the action'" },
+				"auto_run": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 0", "comment": "COMMENT 'Whether this action will run or go into a queue'" },
+				"active": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 1" },
+				"entered": { "type": "TIMESTAMP", "required": "NOT NULL", "default": "DEFAULT CURRENT_TIMESTAMP" }
+			},
+			"indexes": [
+				{
+					"index_type": "PRIMARY KEY",
+					"fields": ["velocity_action_id"]
+				}
+			],
+			"relationships": {
+				"ck_velocity_stages": { "relationship": "MANY", "key": "velocity_stage_id" }
+			},
+			"options": { "engine": "ENGINE=INNODB", "charset": "CHARACTER SET utf8", "collation": "COLLATE utf8_bin" }
+		},
+		"ck_velocity_units": {
+			"key": "velocity_unit",
+			"label": "Units",
+			"fields": {
+				"velocity_unit_id": { "type": "INT", "required": "NOT NULL", "default": "AUTO_INCREMENT" },
+				"stock_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"ipn": { "type": "VARCHAR(255)", "required": "NOT NULL", "default": null },
+				"quantity": { "type": "INT", "required": "NOT NULL", "default": 1 },
+				"days_supply": { "type": "INT", "required": "NOT NULL", "default": null },
+				"serial_id": { "type": "INT", "required": "NULL", "default": null },
+				"serial_number": { "type": "VARCHAR(255)", "required": "NULL", "default": null },
+				"receipt_date": { "type": "DATE", "required": "NULL", "default": null },
+				"age": { "type": "INT", "required": "NULL", "default": null },
+				"velocity_stage_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"manual_date": { "type": "DATE", "required": "NULL", "default": null },
+				"manual_fallback": { "type": "TINYINT", "required": "NULL", "default": null },
+				"entered": { "type": "TIMESTAMP", "required": "NOT NULL", "default": "DEFAULT CURRENT_TIMESTAMP" }
+			},
+			"indexes": [
+				{
+					"index_type": "PRIMARY KEY",
+					"fields": ["velocity_unit_id"]
+				}
+			],
+			"relationships": {
+				"ck_velocity_stages": { "relationship": "MANY", "key": "velocity_stage_id" },
+				"products_stock_control": { "relationship": "ONE", "key": "stock_id" }
+			},
+			"options": { "engine": "ENGINE=INNODB", "charset": "CHARACTER SET utf8", "collation": "COLLATE utf8_bin" }
+		},
+		"ck_velocity_action_queue": {
+			"key": "velocity_action_queue",
+			"label": "Action Queue",
+			"fields": {
+				"velocity_action_queue_id": { "type": "INT", "required": "NOT NULL", "default": "AUTO_INCREMENT" },
+				"velocity_unit_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"velocity_action_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"queued_date": { "type": "DATE", "required": "NOT NULL", "default": null },
+				"status": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 0" },
+				"entered": { "type": "TIMESTAMP", "required": "NOT NULL", "default": "DEFAULT CURRENT_TIMESTAMP" }
+			},
+			"indexes": [
+				{
+					"index_type": "PRIMARY KEY",
+					"fields": ["velocity_action_queue_id"]
+				}
+			],
+			"relationships": {
+				"ck_velocity_units": { "relationship": "ONE", "key": "velocity_unit_id" },
+				"ck_velocity_actions": { "relationship": "MANY", "key": "velocity_action_id" }
+			},
+			"options": { "engine": "ENGINE=INNODB", "charset": "CHARACTER SET utf8", "collation": "COLLATE utf8_bin" }
+		},
+		"ck_velocity_action_log": {
+			"key": "velocity_action_log",
+			"label": "Action Log",
+			"fields": {
+				"velocity_action_log_id": { "type": "INT", "required": "NOT NULL", "default": "AUTO_INCREMENT" },
+				"velocity_unit_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"velocity_action_id": { "type": "INT", "required": "NOT NULL", "default": null },
+				"action_date": { "type": "DATE", "required": "NOT NULL", "default": null },
+				"details": { "type": "TEXT", "required": "NULL", "default": null },
+				"removed": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 0" },
+				"remove_date": { "type": "DATE", "required": "NULL", "default": null },
+				"entered": { "type": "TIMESTAMP", "required": "NOT NULL", "default": "DEFAULT CURRENT_TIMESTAMP" }
+			},
+			"indexes": [
+				{
+					"index_type": "PRIMARY KEY",
+					"fields": ["velocity_action_log_id"]
+				}
+			],
+			"relationships": {
+				"ck_velocity_units": { "relationship": "MANY", "key": "velocity_unit_id" },
+				"ck_velocity_actions": { "relationship": "MANY", "key": "velocity_action_id" }
+			},
+			"options": { "engine": "ENGINE=INNODB", "charset": "CHARACTER SET utf8", "collation": "COLLATE utf8_bin" }
+		}
+	}
+}

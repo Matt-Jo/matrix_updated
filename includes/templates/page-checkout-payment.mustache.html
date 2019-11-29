@@ -1,0 +1,1025 @@
+<link href="includes/javascript/simplemodal.css?v=1.01" rel="stylesheet" type="text/css" media="screen">
+<style>
+	button[disabled] { color:#aaa; }
+
+	.main-body-container { margin-bottom:15px; width:auto; }
+	.main-body-inner-container { margin:0px 0px 20px 0px; padding:20px; font-size:13px; line-height:1.5em; }
+
+	.main-body-header { display:inline-block; }
+
+	.sub-header { color:#777; font-size:18px; border-bottom:1px solid #ccc; margin:0px 0px 15px 0px; padding-bottom:7px; }
+
+	.main-body-inner-container a { font-weight:bold; color:#3f6b94; }
+
+	.template-basic .main-body-inner-container.error-stack { background-color:#fee; border-color:#c00; }
+
+	.addresses { font-size:14px; margin-top:8px; }
+	.addresses.same { display:none; }
+
+	.address { border-radius:5px; padding:3px 8px; border:1px solid #fff; cursor:pointer; margin-bottom:5px; }
+	.addr .address-spacer { white-space:pre-wrap; }
+	.addr .address-spacer br { display:none; }
+	.address .shipping-address-id { position:relative; top:2px; margin-right:12px; }
+	.address a { margin-left:12px; }
+	.address.selected { background-color:#dfebff; border-color:#3f6b94; }
+	.address:hover { background-color:#ffffdf; border-color:#94943f; }
+
+	.other-addresses { margin:5px 0px; display:none; }
+
+	.enter-new-address { margin-top:10px; position:relative; top:8px; }
+	.add-new-address .enter-new-address { margin-top:0px; top:0px; }
+
+	.add-new-address { display:none; background-color:#eef; border:1px solid #ccc; border-radius:5px; margin:15px 0px 5px 0px; font-size:14px; padding:7px; }
+	.add-new-address h3 { color:#777; font-size:16px; border-bottom:1px solid #ccc; margin:0px 0px 12px 0px; padding-bottom:4px; }
+	.add-new-address .address-field { margin-bottom:6px; display:inline-block; width:48%; min-width:320px; }
+	.add-new-address .address-field label { display:inline-block; width:120px; }
+
+	.add-new-address .new-address-state-block { display:inline; }
+
+	.add-new-address #address-err { background-color:#fee; border:1px solid #c00; padding:4px; display:none; }
+
+	.payment-methods-holder.loading { text-align:center; font-size:18px; padding:10px; }
+
+	.payment-type { padding:10px 0px 16px 8px; border-bottom:1px solid #ccc; }
+	.payment-type.cc { padding-left:0px; padding-top:0px; }
+	.payment-type input[type=radio] { position:relative; top:2px; margin-right:8px; }
+	.net-po { padding-left:30px; }
+	.req { color:#f00; }
+	.paypal.directions { margin-left:8px; }
+	.net-po, .paypal.directions { display:none; }
+	.paypal-err { display:none; background-color:#fee; border-color:#933; padding:5px; margin-top:3px; margin-right:3px; }
+	.payment-type.paypal:not(.selected) .paypal-err { display:none !important; }
+
+	.credit-card-selector { width:100%; }
+	.credit-card-selector th, .credit-card-selector td { white-space:nowrap; padding:4px; }
+	.credit-card-selector th { /*background-color:#69969c;*/ background-color:#386881; border:0px; color:#fff; text-align:left; }
+	.credit-card-selector td { border-bottom:1px solid #000; }
+	.credit-card-selector tr.no-cards td { font-weight:bold; font-size:14px; text-align:center; padding:12px; }
+	.credit-card-selector td.card-add { border-bottom-width:0px; text-align:right; }
+	.credit-card-selector .selected td { background-color:#cfc; }
+
+	.card-type { width:35px; }
+
+	.add-new-cc-form { display:none; background-color:#eef; border:1px solid #ccc; border-radius:5px; margin:5px 0px; font-size:14px; padding:7px; }
+	.add-new-cc-form h3 { color:#777; font-size:16px; border-bottom:1px solid #ccc; margin:0px 0px 12px 0px; padding-bottom:4px; }
+	.add-new-cc-form .cc-field { margin-bottom:6px; display:inline-block; width:48%; min-width:360px; }
+	.add-new-cc-form .cc-field label { display:inline-block; width:120px; }
+
+	.add-new-cc-form #cc-err { background-color:#fee; border:1px solid #c00; padding:4px; display:none; }
+
+	.bt-hosted { display:inline-block; }
+
+	#bt-card-number { border:1px solid #a9a9a9; width:136px; height:15px; background-color:#fff; }
+	#bt-expiration-date { border:1px solid #a9a9a9; width:50px; height:15px; background-color:#fff; }
+	#bt-cvv { border:1px solid #a9a9a9; width:50px; height:15px; background-color:#fff; }
+	#bt-card-number.braintree-hosted-fields-focused { /*outline:none; border-color:#9ecaed; box-shadow:0 0 5px #9ecaed;*/ outline:2px auto -webkit-focus-ring-color; }
+	#bt-card-number.braintree-hosted-fields-invalid { border-color:tomato; }
+	#bt-card-number.braintree-hosted-fields-valid { border-color:limegreen; }
+	#bt-expiration-date.braintree-hosted-fields-focused { /*outline:none; border-color:#9ecaed; box-shadow:0 0 5px #9ecaed;*/ outline:2px auto -webkit-focus-ring-color; }
+	#bt-expiration-date.braintree-hosted-fields-invalid { border-color:tomato; }
+	#bt-expiration-date.braintree-hosted-fields-valid { border-color:limegreen; }
+	#bt-cvv.braintree-hosted-fields-focused { /*outline:none; border-color:#9ecaed; box-shadow:0 0 5px #9ecaed;*/ outline:2px auto -webkit-focus-ring-color; }
+	#bt-cvv.braintree-hosted-fields-invalid { border-color:tomato; }
+	#bt-cvv.braintree-hosted-fields-valid { border-color:limegreen; }
+
+	.payment-type.selected { background-color:#cfc; }
+
+	.payment-type.paypal.selected { background-color:#fcc; }
+	.payment-type.paypal.selected.complete { background-color:#cfc; }
+	.payment-type.terms.selected { background-color:#fcc; }
+	.payment-type.terms.selected.complete { background-color:#cfc; }
+
+	.payment-type.coupon-code { font-size:16px; }
+
+	.payment-type.disabled { background-color:#eee; color:#888; }
+
+	.payment-type .disabled-notice { display:none; }
+	.payment-type.disabled .disabled-notice { display:block; }
+
+	.selected .net-po, .selected .paypal.directions { display:inline; }
+	.payment-type.paypal.selected.complete .paypal.directions { display:none; }
+
+	.net-terms-warning { color:#f00; font-weight:bold; margin-top:5px; }
+
+	.order-comments { width:99%; }
+
+	.admin-block { background-color:#ffc; border-top:1px solid #bbb; margin:5px 0px 0px 0px; padding:5px; }
+	.admin-block textarea { background-color:#ffe; }
+
+	.checkout-submit { text-align:right; margin-top:10px; }
+
+	.checkout-progress { margin:25px auto 0px auto; padding:0px; /*border-top:#bbc3d3 solid 1px;*/ position:relative; text-align:center; }
+	.checkout-progress li.bar { width:720px; margin:0px auto; height:7px; position:relative; border-style:solid; border-color:#bbc3d3; border-width:0px 1px; padding:0px; display:block; }
+	.checkout-progress li.bar hr { border-color:#bbc3d3; height:1px; position:relative; top:3px; }
+	.checkout-progress .bullet { position:absolute; top:-2px; }
+	.checkout-progress.shipping .bullet { left:-5px; }
+	.checkout-progress.payment .bullet { left:270px; }
+	.checkout-progress.confirmation .bullet { right:200px; }
+	.checkout-progress.success .bullet { right:-5px; }
+	.checkout-progress li { display:inline-block; list-style-type:none; margin:0px 80px; padding:8px 0px 0px 0px; text-align:center; font-size:12px; color:#8c8c8c; }
+	.checkout-progress.shipping li.shipping { color:#000; }
+	.checkout-progress.payment li.payment { color:#000; }
+	.checkout-progress.confirmation li.confirmation { color:#000; }
+	.checkout-progress.success li.success { color:#000; }
+	.choose-other-address { display:none; }
+	#checkout-payment-breadcrumbs { top:5px; }
+
+	@media (max-width:980px) {
+		.address { border-bottom:1px solid #888; }
+
+		.checkout-progress { margin:10px auto; }
+		.checkout-progress li.bar { display:none; }
+		.checkout-progress li { margin:0px 40px; padding:3px 8px; }
+		.checkout-progress.shipping li.shipping { background-color:#cfc; }
+		.checkout-progress.payment li.payment { background-color:#cfc; }
+		.checkout-progress.confirmation li.confirmation { background-color:#cfc; }
+		.checkout-progress.success li.success { background-color:#cfc; }
+	}
+
+	@media (max-width:840px) {
+		.add-new-cc-form { text-align:center; }
+		.add-new-cc-form .cc-field { width:260px; min-width:0px; }
+	}
+
+	@media (max-width:700px) {
+		.add-new-address { text-align:center; }
+	}
+
+	@media (max-width:500px) {
+		.address { padding-left:30px; }
+		.addr .address-spacer { white-space:normal; }
+		.addr .address-spacer br { display:initial; }
+
+		.add-new-address .address-field { width:200px; min-width:0px; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<div class="tools breadcrumbs" id="checkout-payment-breadcrumbs">{{{breadcrumbs}}}</div>
+
+	{{{message_stack}}}
+
+	{{#error}}
+	<div class="main-body-inner-container error-stack">
+		<h2 class="sub-header">Errors:</h2>
+		{{{.}}}
+	</div>
+	{{/error}}
+
+	<form action="/checkout_payment.php" method="post" class="payment-form">
+		<input type="hidden" name="action" value="select-payment">
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Choose Billing Address:</h2>
+
+			<input type="checkbox" class="billing-same" name="billing_same_as_shipping" {{#billing_same}}checked{{/billing_same}}> Same as Shipping Address
+			<input type="hidden" class="shipping_address_id" value="{{shipping_address_id}}">
+
+			<div class="addresses {{#billing_same}}same{{/billing_same}}">
+				{{#default_address}}
+				<div class="address selected addr-{{address_id}}" data-address-id="{{address_id}}">
+					<input type="radio" class="billing-address-id addr-{{address_id}}" name="billing_address_id" value="{{address_id}}" {{^billing_same}}required{{/billing_same}} checked data-address-id="{{address_id}}" data-is-default="{{#is_default}}1{{/is_default}}" data-is-international="{{#is_international}}1{{/is_international}}"> <span class="addr">{{> partial-address-format.mustache.html}}</span>
+					{{! <a href="#" class="edit-address" data-address-id="{{address_id} }">Edit</a> }}
+				</div>
+				{{/default_address}}
+
+				<div><a href="#" class="choose-other-address">Choose Other Address</a></div>
+				<div class="other-addresses">
+					{{#addresses}}
+					<div class="address addr-{{address_id}}" data-address-id="{{address_id}}">
+						<input type="radio" class="billing-address-id addr-{{address_id}}" name="billing_address_id" value="{{address_id}}" {{^billing_same}}required{{/billing_same}} data-address-id="{{address_id}}" data-is-default="{{#is_default}}1{{/is_default}}" data-is-international="{{#is_international}}1{{/is_international}}"> <span class="addr">{{> partial-address-format.mustache.html}}</span>
+						{{! <a href="#" class="edit-address" data-address-id="{{address_id} }">Edit</a> }}
+					</div>
+					{{/addresses}}
+					{{#more?}}
+					Don't see your address here? <a href="/checkout_address.php?target=payment">Choose from all of your addresses</a>
+					{{/more?}}
+				</div>
+
+				<a href="#" class="enter-new-address">Enter New Address</a>
+
+				<div class="add-new-address">
+					<h3>Add New Billing Address:</h3>
+					<p>Fields marked with <span class="req">(*)</span> are required</p>
+					<p id="address-err"></p>
+
+					<input type="hidden" id="edit-address-id" name="edit-address-id" value="">
+
+					<div class="address-field">
+						<label for="use-this-address">Bill to this address:</label> <input id="new-address-use" type="checkbox" name="use-this-address">
+					</div><br>
+					<div class="address-field">
+						<label for="address-firstname" class="req">*First Name:</label> <input id="new-address-firstname" type="text" name="address-firstname">
+					</div>
+					<div class="address-field">
+						<label for="address-lastname" class="req">*Last Name:</label> <input id="new-address-lastname" type="text" name="address-lastname">
+					</div>
+					<div class="address-field">
+						<label for="address-company">Company:</label> <input id="new-address-company" type="text" name="address-company">
+					</div><br>
+					<div class="address-field">
+						<label for="address-street1" class="req">*Address:</label> <input id="new-address-street1" type="text" name="address-street1">
+					</div>
+					<div class="address-field">
+						<label for="address-street2">Suite/Unit:</label> <input id="new-address-street2" type="text" name="address-street2">
+					</div>
+					<div class="address-field">
+						<label for="address-city" class="req">*City:</label> <input id="new-address-city" type="text" name="address-city">
+					</div>
+					<div class="address-field">
+						<label for="address-state" class="req">*State/Province:</label>
+						<div class="new-address-state-block">
+							{{#states.0}}
+							<select id="new-address-state" name="address-state">
+								<option value="">Choose</option>
+								{{#states}}
+								<option value="{{zone_name}}" {{#selected?}}selected{{/selected?}}>{{zone_name}}</option>
+								{{/states}}
+							</select>
+							{{/states.0}}
+							{{^states.0}}
+							<input id="new-address-state" type="text" name="address-state">
+							{{/states.0}}
+						</div>
+					</div>
+					<div class="address-field">
+						<label for="address-postcode" class="req">*Zip Code:</label> <input id="new-address-postcode" type="text" name="address-postcode">
+					</div>
+					<div class="address-field">
+						<label for="address-country" class="req">*Country:</label>
+						<select id="new-address-country" name="address-country">
+							<option>Choose</option>
+							{{#countries}}
+							<option value="{{countries_id}}" {{#selected?}}selected{{/selected?}}>{{countries_name}}</option>
+							{{/countries}}
+						</select>
+					</div>
+					<div class="address-field">
+						<label for="address-phone" class="req">*Phone:</label> <input id="new-address-phone" type="text" name="address-phone">
+					</div>
+
+					<hr>
+					<button type="button" id="add-address-submit">Add Address</button>
+					<button type="button" class="enter-new-address">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Choose Payment Method:</h2>
+			<div class="payment-type cc">
+				<table class="credit-card-selector">
+					<thead>
+						<tr>
+							<th>Cards</th>
+							<th>Card Type</th>
+							<th>Ending In</th>
+							<th>Name on Card</th>
+							<th>Expiration</th>
+						</tr>
+					</thead>
+					<tbody class="cc-list">
+						{{#credit_cards}}
+						<tr class="cc-{{card_id}} {{#cc-selected?}}selected{{/cc-selected?}}">
+							<td><input type="radio" class="payment-method cc" name="payment_method" value="cc-{{card_id}}" required {{#cc-selected?}}checked{{/cc-selected?}} data-method-type="cc"></td>
+							<td><img class="card-type" src="{{card_img}}" alt="{{card_type}}" title="{{card_type}}"></td>
+							<td>****{{ending_in}}</td>
+							<td>{{name_on_card}}</td>
+							<td>{{expiration}}</td>
+						</tr>
+						{{/credit_cards}}
+						{{^credit_cards}}
+						<tr class="no-cards">
+							<td colspan="5">No Credit Cards On File</td>
+						</tr>
+						{{/credit_cards}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5" class="card-add"><button type="button" class="add-new-cc {{#default_address}}has-billing-address{{/default_address}}" disabled>Add New Credit Card</button></td>
+						</tr>
+					</tfoot>
+				</table>
+				<div class="add-new-cc-form">
+					<h3>Add New Credit Card:</h3>
+					<p>Fields marked with <span class="req">(*)</span> are required</p>
+					<p id="cc-err"></p>
+
+					<div class="cc-field">
+						<label for="customer-firstname" class="req">*First Name:</label> <input id="new-card-firstname" type="text" name="customer-firstname">
+					</div>
+					<div class="cc-field">
+						<label for="customer-lastname" class="req">*Last Name:</label> <input id="new-card-lastname" type="text" name="customer-lastname">
+					</div>
+					<div class="cc-field">
+						<label for="customer-email">Email:</label> <input id="new-card-email" type="text" name="customer-email" value="{{email_address}}" style="width:250px;">
+					</div><br>
+					<div class="cc-field">
+						<label for="card-number" class="req">*Card Number:</label> <div id="bt-card-number" class="bt-hosted"></div>
+					</div>
+					<div class="cc-field">
+						<label for="cvv" class="req">*CVV:</label> <div id="bt-cvv" class="bt-hosted"></div>
+					</div>
+					<div class="cc-field">
+						<label for="expiration-date" class="req">*Expiration Date:</label> <div id="bt-expiration-date" class="bt-hosted"></div>
+					</div>
+
+					<div>
+						<input type="checkbox" id="new-card-is-private" name="card-is-private"> Hide card from other users who can log in on this account.<br>
+					</div>
+					<hr>
+					<button type="button" id="add-card-submit">Add Card</button>
+					<button type="button" class="add-new-cc">Close</button>
+
+					<input id="payment_method_nonce" type="hidden" value="">
+				</div>
+			</div>
+			<div class="payment-type paypal disabled {{#payment_paypal?}}selected{{/payment_paypal?}} {{#paypal_nonce}}complete{{/paypal_nonce}}">
+				<input type="radio" class="payment-method paypal" name="payment_method" value="paypal" required {{#payment_paypal?}}checked{{/payment_paypal?}} disabled data-method-type="paypal">
+				<strong>Paypal</strong>
+				<span class="paypal directions">If you do not receive a pop up to enter your paypal payment, please check your pop up blocker.</span>
+				<input type="hidden" name="paypal-nonce" class="payment-method-extra paypal" value="{{paypal_nonce}}">
+				<div class="paypal-err"></div>
+			</div>
+
+			{{#terms}}
+			<div class="payment-type terms {{#payment_terms?}}selected{{/payment_terms?}} {{#net_po_number}}complete{{/net_po_number}}">
+				<input type="radio" class="payment-method terms" name="payment_method" value="terms" required {{#payment_terms?}}checked{{/payment_terms?}} data-method-type="terms">
+				<strong>{{label}}</strong>
+				<span class="net-po">Purchase Order Number: <input type="text" name="net_po_number" class="payment-method-extra terms" value="{{net_po_number}}">  <span class="req terms">* Required</span></span>
+				{{#cannot_place_any_order}}
+				<div class="net-terms-warning">
+					YOUR CREDIT TERMS HAVE BEEN SUSPENDED. ALL ORDERS WILL BE HELD UNTIL FURTHER NOTICE. PLEASE CONTACT OUR <a href="mailto:accounting@cablesandkits.com">ACCOUNTING DEPARTMENT</a> TO RESOLVE.
+				</div>
+				{{/cannot_place_any_order}}
+				{{#prepaid_only}}
+				<div class="net-terms-warning">
+					Your credit terms have been TEMPORARILY SUSPENDED. You must prepay via credit card or paypal to release this order immediately. Please contact our <a href="mailto:accounting@cablesandkits.com">accounting department</a> to resolve any pending issues and have your terms reinstated.
+				</div>
+				{{/prepaid_only}}
+				{{#over_limit}}
+				<div class="net-terms-warning">
+					This order will place you over your credit limit.  You have {{remaining_credit}} available credit.  This order will be held until your previous invoices have been paid. You still have the option to place your order via Credit Card or Paypal.
+				</div>
+				{{/over_limit}}
+			</div>
+			{{/terms}}
+
+			{{^terms}}
+			<div class="payment-type checkmo {{#payment_checkmo?}}selected{{/payment_checkmo?}}">
+				<input type="radio" class="payment-method checkmo" name="payment_method" value="checkmo" required {{#payment_checkmo?}}checked{{/payment_checkmo?}} data-method-type="checkmo">
+				<strong>Check or Money Order</strong>
+			</div>
+			{{/terms}}
+
+			{{#admin?}}
+			<div class="payment-type account-credit {{#payment_account_credit?}}selected{{/payment_account_credit?}}">
+				<input type="radio" class="payment-method account-credit" name="payment_method" value="account-credit" required {{#payment_account_credit?}}checked{{/payment_account_credit?}} data-method-type="account-credit">
+				<strong>Account Credit</strong>
+			</div>
+
+			<!--div class="payment-type expected-cc {{#payment_expected_cc?}}selected{{/payment_expected_cc?}}">
+				<input type="radio" class="payment-method expected-cc" name="payment_method" value="expected-cc" required {{#payment_expected_cc?}}checked{{/payment_expected_cc?}} data-method-type="expected-cc">
+				<strong>CK Admin Expected CC</strong>
+			</div-->
+			{{/admin?}}
+
+			<div class="payment-type coupon-code">
+				If you have a coupon code, enter it here: <input type="text" name="coupon_code" value="{{coupon_code}}" placeholder="Enter Coupon Code">
+			</div>
+		</div>
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Order Comments/Instructions:</h2>
+			<p>If you have comments or instructions about your order please enter them here. We do not include any information you enter here in your order, it is only a method for you to communicate with us concerning this order.</p>
+			<textarea class="order-comments" name="comments" wrap="soft" cols="60" rows="5">{{comments}}</textarea>
+			{{#admin?}}
+			<div class="admin-block">
+				<p>Please add any admin notes for this order here.</p>
+				<textarea class="order-comments" name="admin_comments" wrap="soft" cols="60" rows="5">{{admin_comments}}</textarea>
+			</div>
+			{{/admin?}}
+			<div class="checkout-submit">
+				<input class="submit-continue" type="image" src="{{static_files}}/img/continue-button.png" alt="Continue" title=" Continue " name="form-submit" value="continue">
+			</div>
+		</div>
+	</form>
+
+	<ul class="checkout-progress payment">
+		<li class="bar"><hr><img class="bullet" src="//media.cablesandkits.com/checkout_bullet.gif"></li>
+		<li class="shipping">Delivery Information</li>
+		<li class="payment">Payment Information</li>
+		<li class="confirmation">Confirmation</li>
+		<li class="success">Finished!</li>
+	</ul>
+</div>
+
+<script src="https://js.braintreegateway.com/web/3.31.0/js/client.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.31.0/js/hosted-fields.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.31.0/js/paypal.min.js"></script>
+
+<script src="includes/javascript/jquery-ui-1.8.custom.min.js"></script>
+<script src="includes/javascript/jquery.simplemodal.1.4.3.min.js"></script>
+
+<!-- CK Page Control -->
+<script>
+
+	if (jQuery('.other-addresses > .address').length > 0) jQuery('.choose-other-address').show();
+
+	jQuery('#new-address-country').change(reload_zones);
+
+	function reload_zones(zone) {
+		jQuery.ajax({
+			url: '/checkout_payment.php',
+			type: 'get',
+			dataType: 'json',
+			data: { action: 'reload-zones', ajax: 1, countries_id: jQuery('#new-address-country').val() },
+			timeout: 8000,
+			success: function(data) {
+				if (data.states.length > 0) {
+					let $select = jQuery('<select id="new-address-state" name="address-state"><option value="">Choose</option></select>');
+
+					for (var i=0; i<data.states.length; i++) {
+						$select.append('<option value="'+data.states[i].zone_code+'" '+(data.states[i].zone_code==zone?'selected':'')+'>'+data.states[i].zone_name+'</option>');
+					}
+
+					jQuery('.new-address-state-block').html($select);
+				}
+				else {
+					jQuery('.new-address-state-block').html('<input id="new-address-state" type="text" name="address-state">');
+				}
+			}
+		});
+	}
+
+	jQuery('.enter-new-address').click(function(e) {
+		e.preventDefault();
+
+		jQuery('.add-new-address h3').html('Add New Billing Address');
+		jQuery('.add-new-address #add-address-submit').html('Add Address');
+
+		jQuery('#edit-address-id').val('');
+		jQuery('#new-address-firstname').val('');
+		jQuery('#new-address-lastname').val('');
+		jQuery('#new-address-company').val('');
+		jQuery('#new-address-street1').val('');
+		jQuery('#new-address-street2').val('');
+		jQuery('#new-address-city').val('');
+		jQuery('#new-address-state').val('');
+		jQuery('#new-address-postcode').val('');
+		jQuery('#new-address-country').val({{default_country}});
+		jQuery('#new-address-phone').val('');
+
+		jQuery('#address-err').html('').hide();
+
+		jQuery('.add-new-address').toggle();
+		jQuery('#new-address-use').attr('checked', jQuery('.add-new-address').is(':visible'));
+	});
+
+	jQuery('#add-address-submit').click(function(e) {
+		jQuery('#address-err').html('').hide();
+
+		let fields = { action: 'save-address', ajax: 1, edit_address_id: jQuery('#edit-address-id').val() };
+
+		fields.first_name = jQuery('#new-address-firstname').val();
+		fields.last_name = jQuery('#new-address-lastname').val();
+		fields.company = jQuery('#new-address-company').val();
+		fields.address1 = jQuery('#new-address-street1').val();
+		fields.address2 = jQuery('#new-address-street2').val();
+		fields.city = jQuery('#new-address-city').val();
+		fields.state = jQuery('#new-address-state').val();
+		fields.postcode = jQuery('#new-address-postcode').val();
+		fields.country_id = jQuery('#new-address-country').val();
+		fields.phone = jQuery('#new-address-phone').val();
+
+		if (!fields.first_name) {
+			jQuery('#address-err').html('Please enter first name.').show();
+			return;
+		}
+		if (!fields.last_name) {
+			jQuery('#address-err').html('Please enter last name.').show();
+			return;
+		}
+		if (!fields.address1) {
+			jQuery('#address-err').html('Please enter address.').show();
+			return;
+		}
+		if (!fields.city) {
+			jQuery('#address-err').html('Please enter city.').show();
+			return;
+		}
+		if (!fields.state) {
+			jQuery('#address-err').html('Please enter state.').show();
+			return;
+		}
+		if (!fields.postcode) {
+			jQuery('#address-err').html('Please enter zip code.').show();
+			return;
+		}
+		if (!fields.country_id) {
+			jQuery('#address-err').html('Please enter country.').show();
+			return;
+		}
+		if (!fields.phone) {
+			jQuery('#address-err').html('Please enter phone.').show();
+			return;
+		}
+
+		jQuery.ajax({
+			url: '/checkout_payment.php',
+			type: 'post',
+			dataType: 'json',
+			data: fields,
+			//timeout: 8000,
+			success: function(data) {
+				if (data.error) {
+					jQuery('#address-err').html(data.error).show();
+					return;
+				}
+
+				let $address = jQuery('<div class="address addr-'+data.address_id+'" data-address-id="'+data.address_id+'"><input type="radio" class="billing-address-id addr-'+data.address_id+'" name="billing_address_id" value="'+data.address_id+'" required data-address-id="'+data.address_id+'" data-is-default="" data-is-international="'+data.is_international+'"> <span class="addr">'+data.address+'</span><a href="#" class="edit-address" data-address-id="'+data.address_id+'">Edit</a></div>');
+				if (data.edit) jQuery('.addr-'+data.address_id).replaceWith($address);
+				else jQuery('.other-addresses').prepend($address).show();
+
+				if (jQuery('#new-address-use').is(':checked')) select_address.call($address);
+
+				bt_addresses[data.address_id] = {
+					postalCode: fields.postcode,
+					company: fields.company,
+					streetAddress: fields.address1,
+					extendedAddress: fields.address2,
+					locality: fields.city,
+					region: fields.state,
+					countryCodeAlpha2: data.country_code,
+				};
+
+				jQuery('.add-new-address').hide();
+				jQuery('#edit-address-id').val('');
+				jQuery('#new-address-firstname').val('');
+				jQuery('#new-address-lastname').val('');
+				jQuery('#new-address-company').val('');
+				jQuery('#new-address-street1').val('');
+				jQuery('#new-address-street2').val('');
+				jQuery('#new-address-city').val('');
+				jQuery('#new-address-state').val('');
+				jQuery('#new-address-postcode').val('');
+				jQuery('#new-address-country').val({{default_country}});
+				jQuery('#new-address-phone').val('');
+
+				jQuery('#new-address-use').attr('checked', false);
+
+				jQuery('#address-err').hide();
+				jQuery('.choose-other-address').show();
+			},
+			error: function() {
+				alert('There was a problem recording this address to your account; please contact your sales team.');
+			}
+		});
+	});
+
+	jQuery('.payment-type').on('click', '.payment-method', function() {
+		let method_type = jQuery(this).attr('data-method-type');
+
+		jQuery('.payment-type').removeClass('selected');
+		jQuery('.payment-type.cc tr.selected').removeClass('selected');
+
+		if (method_type != 'cc') jQuery('.payment-type.'+method_type).addClass('selected');
+		if (method_type != 'paypal') jQuery('.payment-method-extra.paypal').attr('required', false);
+		if (method_type != 'terms') {
+			jQuery('.payment-method-extra.terms').attr('required', false);
+			jQuery('.req.terms').hide();
+		}
+		if (method_type != 'checkmo') {
+		}
+		if (method_type != 'account-credit') {
+		}
+		/*if (method_type != 'expected-cc') {
+		}*/
+
+		if (method_type == 'cc') jQuery('.'+jQuery(this).val()).addClass('selected');
+		else if (method_type == 'paypal') jQuery('.payment-method-extra.paypal').attr('required', true);
+		else if (method_type == 'terms') {
+			jQuery('.payment-method-extra.terms').attr('required', true);
+			jQuery('.req.terms').show();
+		}
+		else if (method_type == 'checkmo') {
+			if (!confirm('You selected "Check or Money Order" as your payment Method. We will hold your order until we receive payment.  Are you sure you wish to pay using this method?')) {
+				jQuery(this).prop('checked', false);
+				jQuery('.payment-type.checkmo').removeClass('selected');
+			}
+		}
+		else if (method_type == 'account-credit') {
+		}
+		/*else if (method_type == 'expected-cc') {
+		}*/
+	});
+
+	jQuery('.payment-method-extra.terms').on('keyup', function() {
+		if (jQuery(this).val().length > 0) jQuery('.payment-type.terms').addClass('complete');
+		else jQuery('.payment-type.terms').removeClass('complete');
+	});
+
+	jQuery('.addresses').on('click', '.address', select_address);
+	jQuery('.addresses').on('click', '.edit-address', function(e) {
+		e.preventDefault();
+
+		jQuery.ajax({
+			url: '/checkout_payment.php',
+			type: 'get',
+			dataType: 'json',
+			data: {
+				action: 'get-address-data',
+				ajax: 1,
+				address_id: jQuery(this).attr('data-address-id')
+			},
+			timeout: 8000,
+			success: function(data) {
+				jQuery('.add-new-address h3').html('Edit Billing Address');
+				jQuery('.add-new-address #add-address-submit').html('Edit Address');
+				jQuery('.add-new-address').show();
+				jQuery('#edit-address-id').val(data.address_id);
+				jQuery('#new-address-firstname').val(data.address.first_name);
+				jQuery('#new-address-lastname').val(data.address.last_name);
+				jQuery('#new-address-company').val(data.address.company_name);
+				jQuery('#new-address-street1').val(data.address.address1);
+				jQuery('#new-address-street2').val(data.address.address2);
+				jQuery('#new-address-city').val(data.address.city);
+				jQuery('#new-address-postcode').val(data.address.postcode);
+				jQuery('#new-address-country').val(data.address.countries_id);
+				jQuery('#new-address-phone').val(data.address.telephone);
+
+				jQuery('#new-address-use').attr('checked', true);
+
+				reload_zones(data.address.state_region_code);
+			}
+		});
+	});
+
+	{{#new_address}}
+	{
+		jQuery('.add-new-address h3').html('Add New Billing Address');
+		jQuery('.add-new-address #add-address-submit').html('Add Address');
+
+		jQuery('#edit-address-id').val('{{new_address.edit-address-id}}');
+		jQuery('#new-address-firstname').val('{{new_address.address-firstname}}');
+		jQuery('#new-address-lastname').val('{{new_address.address-lastname}}');
+		jQuery('#new-address-company').val('{{new_address.address-company}}');
+		jQuery('#new-address-street1').val('{{new_address.address-street1}}');
+		jQuery('#new-address-street2').val('{{new_address.address-street2}}');
+		jQuery('#new-address-city').val('{{new_address.address-city}}');
+		jQuery('#new-address-postcode').val('{{new_address.address-postcode}}');
+		jQuery('#new-address-country').val('{{new_address.address-country}}');
+		jQuery('#new-address-phone').val('{{new_address.address-phone}}');
+
+		reload_zones('{{new_address.address-state}}');
+
+		jQuery('#address-err').html('').hide();
+
+		jQuery('.add-new-address').show();
+		jQuery('#new-address-use').attr('checked', true);
+	};
+	{{/new_address}}
+
+	function select_address() {
+		let address_id = jQuery(this).attr('data-address-id');
+
+		$inp = jQuery('input.addr-'+address_id+'');
+
+		$inp.attr('checked', true);
+		jQuery('.address').removeClass('selected');
+
+		$addr = jQuery('.address.addr-'+address_id);
+		$addr.addClass('selected');
+
+		if ($inp.attr('data-is-default') == 1) {
+			jQuery('input.blind').attr('disabled', true).attr('checked', false);
+			jQuery('span.blind').addClass('disabled-option');
+		}
+		else {
+			jQuery('input.blind').attr('disabled', false);
+			jQuery('span.blind').removeClass('disabled-option');
+		}
+
+		if ($inp.attr('data-is-international') == 1) {
+			jQuery('.international-warning').addClass('is-international');
+		}
+		else {
+			jQuery('.international-warning').removeClass('is-international');
+		}
+	}
+
+	jQuery('.billing-same').click(function() {
+		if (jQuery(this).is(':checked')) {
+			jQuery('.addresses').addClass('same');
+			jQuery('.billing-address-id').attr('required', false);
+		}
+		else {
+			jQuery('.addresses').removeClass('same');
+			jQuery('.billing-address-id').attr('required', true);
+		}
+	});
+
+	jQuery('.choose-other-address').click(function(e) {
+		e.preventDefault();
+		if (jQuery('.other-addresses .address.selected').length > 0) return;
+		jQuery('.other-addresses').toggle();
+	});
+
+	jQuery('.ci-modal').click(function(e) {
+		e.preventDefault();
+
+		let $self = jQuery(this);
+
+		jQuery('#'+$self.attr('data-modal-id')).modal({
+			containerCss:{
+				backgroundColor: '#ffffff',
+				color: '#000000',
+				width: 550,
+				height: $self.attr('data-modal-height')
+			},
+			overlayClose:true,
+			onClose: function(dialog) {
+				jQuery('#nav').css('z-index', '30000');
+				jQuery.modal.close();
+			}
+		});
+		jQuery('#wrap').css('z-index', '0');
+		jQuery('#nav').css('z-index', '0');
+	});
+</script>
+
+<!-- Braintree Control -->
+<script>
+	var bt_addresses = {
+		{{#default_address}}
+		{{address_id}}: {
+			postalCode: '{{{default_address.safe_header.postcode}}}}',
+			/*firstName: '{{{default_address.safe_header.first_name}}}',
+			lastName: '{{{default_address.safe_header.last_name}}}',*/
+			company: '{{{default_address.safe_header.company_name}}}',
+			streetAddress: '{{{default_address.safe_header.address1}}}',
+			extendedAddress: '{{{default_address.safe_header.address2}}}',
+			locality: '{{{default_address.safe_header.city}}}',
+			region: '{{{default_address.safe_header.state}}}',
+			countryCodeAlpha2: '{{{default_address.safe_header.countries_iso_code_2}}}',
+		},
+		{{/default_address}}
+		{{#addresses}}
+		{{address_id}}: {
+			postalCode: '{{{safe_header.postcode}}}',
+			/*firstName: '{{{safe_header.first_name}}}',
+			lastName: '{{{safe_header.last_name}}}',*/
+			company: '{{{safe_header.company_name}}}',
+			streetAddress: '{{{safe_header.address1}}}',
+			extendedAddress: '{{{safe_header.address2}}}',
+			locality: '{{{safe_header.city}}}',
+			region: '{{{safe_header.state}}}',
+			countryCodeAlpha2: '{{{safe_header.countries_iso_code_2}}}',
+		},
+		{{/addresses}}
+	};
+
+	jQuery('body').on('bt:load', function() {
+		jQuery('.payment-type.paypal').removeClass('disabled');
+		jQuery('.payment-method.paypal').attr('disabled', false);
+		jQuery('.add-new-cc.has-billing-address').attr('disabled', false);
+	});
+
+	braintree.client.create({ authorization: '{{braintree_client_token}}' }, function(err, clientInstance) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+
+		jQuery('body').trigger('bt:load');
+
+		braintree.hostedFields.create({
+			client: clientInstance,
+			fields: {
+				number: {
+					selector: '#bt-card-number'
+				},
+				cvv: {
+					selector: '#bt-cvv',
+					type: 'password'
+				},
+				expirationDate: {
+					selector: '#bt-expiration-date',
+					placeholder: 'MM/YY'
+				}
+			}
+		},
+		function(err, hostedFieldsInstance) {
+			if (err) {
+				jQuery('#cc-err').html('Error: '+err).show();
+				return;
+			}
+
+			jQuery('.add-new-cc').click(function() {
+				jQuery('.add-new-cc-form').toggle();
+			});
+
+			jQuery('#add-card-submit').click(function(e) {
+				jQuery('#cc-err').hide();
+
+				if (jQuery('#new-card-firstname').val() == '' || jQuery('#new-card-lastname').val() == '') {
+					jQuery('#cc-err').html('Please enter the name on the card.').show();
+					return;
+				}
+
+				let billing_address_id = jQuery('.billing-address-id:checked').val();
+				if (jQuery('.billing-same').is(':checked')) billing_address_id = jQuery('.shipping_address_id').val();
+
+				jQuery('#add-card-submit').attr('disabled', true);
+				e.preventDefault();
+				hostedFieldsInstance.tokenize(
+					{
+						cardholderName: jQuery('#new-card-firstname').val()+' '+jQuery('#new-card-lastname').val(),
+						billingAddress: bt_addresses[billing_address_id]
+					},
+					function(err, payload) {
+						jQuery('#add-card-submit').attr('disabled', false);
+
+						if (err) {
+							switch (err.code) {
+								case 'HOSTED_FIELDS_FIELDS_EMPTY':
+									jQuery('#cc-err').html('All fields are empty! Please fill out the form.').show();
+									break;
+								case 'HOSTED_FIELDS_FIELDS_INVALID':
+									jQuery('#cc-err').html('Some fields are invalid: '+err.details.invalidFieldKeys).show();
+									break;
+								case 'HOSTED_FIELDS_FAILED_TOKENIZATION':
+									jQuery('#cc-err').html('Card failed. Is the card valid? Are all fields filled out correctly?').show();
+									break;
+								case 'HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR':
+									jQuery('#cc-err').html('Network error occurred when tokenizing.').show();
+									break;
+								default:
+									jQuery('#cc-err').html('Something bad happened! '+err).show();
+							}
+							return;
+						}
+
+						let fields = {
+							ajax: 1,
+							action: 'record-credit-card',
+							card_nonce: payload.nonce,
+							first_name: jQuery('#new-card-firstname').val(),
+							last_name: jQuery('#new-card-lastname').val(),
+							email: jQuery('#new-card-email').val(),
+							private_card: jQuery('#new-card-is-private').is(':checked')?1:0,
+							billing_address_id: billing_address_id
+						};
+
+						jQuery.ajax({
+							url: '/checkout_payment.php',
+							type: 'post',
+							dataType: 'json',
+							data: fields,
+							timeout: 8000,
+							success: function(data) {
+								if (data.error) {
+									jQuery('#cc-err').html(data.error).show();
+									return;
+								}
+
+								jQuery('.no-cards').remove();
+
+								let $ccin = jQuery('<input type="radio" class="payment-method cc" name="payment_method" value="cc-'+data.card_id+'" required data-method-type="cc">');
+								let $incell = jQuery('<td></td>').append($ccin);
+								let $imgcell = jQuery('<td><img class="card-type" src="'+data.card_img+'" alt="'+data.card_type+'" title="'+data.card_type+'"></td>');
+								let $endcell = jQuery('<td>****'+data.ending_in+'</td>');
+								let $namecell = jQuery('<td>'+data.name_on_card+'</td>');
+								let $expcell = jQuery('<td>'+data.expiration+'</td>');
+								jQuery('<tr class="cc-'+data.card_id+'"></tr>').append($incell).append($imgcell).append($endcell).append($namecell).append($expcell).appendTo('.cc-list');
+
+								$ccin.attr('checked', true).trigger('click');
+
+								jQuery('.add-new-cc-form').hide();
+								jQuery('#new-card-firstname').val('');
+								jQuery('#new-card-lastname').val('');
+								jQuery('#new-card-is-private').attr('checked', false);
+
+								hostedFieldsInstance.clear('number');
+								hostedFieldsInstance.clear('cvv');
+								hostedFieldsInstance.clear('expirationDate');
+
+								jQuery('#cc-err').hide();
+							},
+							error: function() {
+								alert('There was a problem recording this card to your account; please contact your sales team.');
+							}
+						});
+					}
+				);
+			});
+		});
+
+		braintree.paypal.create({
+		  client: clientInstance
+		},
+		function (err, paypalInstance) {
+			if (err) {
+				if (err.code === 'PAYPAL_BROWSER_NOT_SUPPORTED') jQuery('.paypal-err').html('This browser is not supported.').show();
+				else jQuery('.paypal-err').html('Error: '+err).show();
+				return;
+			}
+
+			let paypal_continue = false;
+
+			jQuery('.submit-continue').click(function(e) {
+				paypal_continue = false;
+
+				if (!jQuery('.payment-method.paypal').is(':checked')) return;
+
+				if (jQuery('.payment-method-extra.paypal').val() == '' || jQuery('.payment-method-extra.paypal').val().length <= 0) {
+					e.preventDefault();
+
+					paypal_continue = true;
+
+					jQuery('.payment-method.paypal').trigger('click');
+
+					return false;
+				}
+			});
+
+			jQuery('.payment-method.paypal').click(function(e) {
+				jQuery('.paypal-err').hide();
+
+				if (jQuery('.payment-method-extra.paypal').val() != '' && jQuery('.payment-method-extra.paypal').val().length > 0) {
+					jQuery('.payment-type.paypal').addClass('complete');
+					if (paypal_continue) jQuery('.payment-form').submit();
+					return;
+				}
+
+				jQuery('.payment-type.paypal').removeClass('complete');
+
+				paypalInstance.tokenize({
+					flow: 'checkout',
+					amount: '{{order_total}}',
+					currency: 'USD',
+					displayName: 'CablesAndKits.com',
+					locale: 'en_US',
+					enableShippingAddress: false,
+				},
+				function(err, payload) {
+					if (err) {
+						// Handle tokenization errors or premature flow closure
+						switch (err.code) {
+							case 'PAYPAL_POPUP_CLOSED':
+								jQuery('.paypal-err').text('Customer closed PayPal popup.').show();
+								break;
+							case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
+								jQuery('.paypal-err').text('PayPal tokenization failed. See details: '+err.details).show();
+								break;
+							case 'PAYPAL_FLOW_FAILED':
+								jQuery('.paypal-err').text('Unable to initialize PayPal flow. Are your options correct? '+err.details).show();
+								break;
+							default:
+								jQuery('.paypal-err').text('Error: '+err).show();
+								break;
+						}
+						return;
+					}
+
+					if (payload.nonce.length > 0) {
+						jQuery('.payment-method-extra.paypal').val(payload.nonce);
+						jQuery('.payment-type.paypal').addClass('complete');
+						if (paypal_continue) jQuery('.payment-form').submit();
+						else {
+							// we only need to record the nonce out of band if we're not immediately submitting the form
+							jQuery.ajax({
+								url: '/checkout_payment.php',
+								type: 'post',
+								dataType: 'json',
+								data: { ajax: 1, action: 'record-paypal-nonce', paypal_nonce: payload.nonce },
+								timeout: 8000,
+								success: function(data) {
+									// do nothing
+								},
+								error: function() {
+									alert('There was a problem recording this paypal transaction on our end; please contact your sales team.');
+								}
+							});
+						}
+					}
+				});
+			});
+		});
+	});
+</script>
+
+<!-- Google Remarketing -->
+<script>
+	var google_conversion_id = 1070544332;
+	var google_conversion_language = "en";
+	var google_conversion_format = "3";
+	var google_conversion_color = "666666";
+	var google_conversion_label = "9cruCOj39wEQzOu8_gM"; // checkout-payment
+	var google_conversion_value = 0;
+</script>
+<script src="https://www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+	<div style="display:inline;">
+		<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/1070544332/?label=9cruCOj39wEQzOu8_gM&amp;guid=ON&amp;script=0">
+	</div>
+</noscript>

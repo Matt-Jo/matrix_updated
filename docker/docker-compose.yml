@@ -1,0 +1,136 @@
+version: '3'
+services:
+  apache_img:
+    container_name: ${COMPOSE_PROJECT_NAME}-apache
+    build:
+      context: ./apache
+      args:
+        - WEB_USER=${WEB_USER}
+        - WEB_GROUP=${WEB_GROUP}
+        - APACHE_ROOT_DIR=${APACHE_ROOT_DIR}
+        - PHP_IP=${PHP_IP}
+        - APACHE_EXPOSED_PORT=${APACHE_EXPOSED_PORT}
+        - APACHE_SSL_EXPOSED_PORT=${APACHE_SSL_EXPOSED_PORT}
+    volumes:
+      - ./apache/config/httpd.conf:${APACHE_ROOT_DIR}/conf/httpd.conf:cached
+      - ./apache/config/extra/httpd-vhosts.conf:${APACHE_ROOT_DIR}/conf/extra/httpd-vhosts.conf:cached
+      - ./logs/apache:${APACHE_LOG_DIR}
+      - ..:${PHP_APP_DIR}
+    networks:
+      public_net:
+        ipv4_address: ${APACHE_IP}
+    ports:
+      - ${APACHE_EXPOSED_PORT}:${APACHE_EXPOSED_PORT}
+      - ${APACHE_SSL_EXPOSED_PORT}:${APACHE_SSL_EXPOSED_PORT}
+    env_file:
+      - ./.env
+      - ./.myenv
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; apachectl reload; done & /usr/local/bin/httpd-foreground \"daemon off;\"'"
+
+
+  php_img:
+    container_name: ${COMPOSE_PROJECT_NAME}-php
+    build:
+      context: ./php
+      args:
+        - PHP_WITH_XDEBUG=${PHP_WITH_XDEBUG}
+        - WEB_USER=${WEB_USER}
+        - WEB_GROUP=${WEB_GROUP}
+        - PHP_ROOT_DIR=${PHP_ROOT_DIR}
+        - PHP_APP_DIR=${PHP_APP_DIR}
+    working_dir: ${PHP_APP_DIR}
+    volumes: 
+      - ./php/config/webapp/includes/configure.php:${PHP_APP_DIR}/includes/configure.php:cached
+      - ./php/config/webapp/config:${PHP_APP_DIR}/config:cached
+      - ./php/config/webapp/admin/includes/configure.php:${PHP_APP_DIR}/admin/includes/configure.php:cached
+      - ..:${PHP_APP_DIR}
+      - ./logs/php:${PHP_LOG_DIR}
+    networks:
+      public_net:
+        ipv4_address: ${PHP_IP}
+    env_file:
+      - ./.env
+      - ./.myenv
+
+  composer_img:
+    container_name: ${COMPOSE_PROJECT_NAME}-composer
+    restart: 'no'
+    image: composer:1.8
+    working_dir: ${PHP_APP_DIR}/includes/engine
+    command: install --optimize-autoloader --ignore-platform-reqs --no-dev --classmap-authoritative
+    env_file:
+      - ./.env
+      - ./.myenv
+    volumes:
+      - ../includes/engine/composer.json:${PHP_APP_DIR}/includes/engine/composer.json
+      - ../includes/engine/composer.lock:${PHP_APP_DIR}/includes/engine/composer.lock
+      - ../includes/engine/vendor:${PHP_APP_DIR}/includes/engine/vendor:delegated
+    networks:
+      public_net:
+        ipv4_address: ${COMPOSER_IP}
+
+
+  memcached_img:
+    container_name: ${COMPOSE_PROJECT_NAME}-memcached
+    image: memcached:1.5
+    networks:
+      public_net:
+        ipv4_address: ${MEMCACHED_HOST}
+    env_file:
+      - ./.env
+      - ./.myenv
+
+
+  utils_img:
+    container_name: ${COMPOSE_PROJECT_NAME}-utils
+    build:
+      context: ./utils
+    working_dir: ${PHP_APP_DIR}
+    volumes:
+      - ./apache:/apache
+      - ./php:/php
+      - ./data:/cak-data
+      - ./logs:/cak-logs
+      - ../includes/templates:/cak-templates
+      - ..:/source
+      - .:/docker 
+      - ./data/database:/cak-database
+      - ../includes/engine/vendor:/cak-vendor
+    networks:
+      public_net:
+        ipv4_address: ${UTILS_IP}
+    env_file:
+      - ./.env
+      - ./.myenv
+
+
+  mysql_img:
+    container_name: ${COMPOSE_PROJECT_NAME}-mysql
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_CONTAINER_USER=${MYSQL_CONTAINER_USER}
+        - MYSQL_CONTAINER_GROUP=${MYSQL_CONTAINER_GROUP}
+    volumes:
+      - ./logs/mysql:${MYSQL_LOG_DIR}:delegated
+      - ./mysql/config:/etc/mysql/conf.d:cached
+      - ./data/database:${MYSQL_DATA_DIR}
+      - ./mysql/db:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      public_net:
+        ipv4_address: ${MYSQL_IP}
+    ports:
+      - 3306:3306
+    env_file:
+      - ./.env
+      - ./.myenv
+
+
+networks:
+  public_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${NETWORK_SUBNET}

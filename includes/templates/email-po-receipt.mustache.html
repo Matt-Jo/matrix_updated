@@ -1,0 +1,41 @@
+The following receiving session was just created for PO #<a href="https://{{fqdn}}/admin/po_list.php?po_search={{po_id}}">{{po_number}}</a><br><br>
+
+The receiving session ID is {{receiving_session_id}}<br><br>
+
+PO Administrator: {{administrator}}<br>
+PO Owner: {{Owner}}<br>
+Vendor: {{vendor}}<br>
+PO Status: {{po_status}}<br>
+
+{{#received_products.0}}
+<br><b><u>Items Received to Inventory:</u></b><br>
+	{{#received_products}}
+{{qty}} x {{ipn}}<br>
+	{{/received_products}}
+{{/received_products.0}}
+
+{{#held_products.0}}
+<br><b><u>Items Received and Placed On Hold:</u></b><br>
+	{{#held_products}}
+{{qty}} x {{ipn}} {{serials}}<br>
+	{{/held_products}}
+{{/held_products.0}}
+
+{{#review_products.0}}
+<br>
+<div style="background-color:yellow">
+	<b><u>Items To Review:</u></b><br>
+	{{#review_products}}
+	{{qty}} x {{ipn}}<br>
+	{{/review_products}}
+</div>
+{{/review_products.0}}
+
+{{#notes.0}}
+<br><b><u>Purchase Order Notes:</u></b><br><br>
+	{{#notes}}
+--------------------------------------------------<br>
+{{created_date}} - {{firstname}} {{lastname}}<br><br>
+{{{note}}}<br>
+	{{/notes}}
+{{/notes.0}}

@@ -1,0 +1,1 @@
+MMD - this is a dummy URL for the PP IPN to send notifications to rather than the AuctionBlox URL that starting giving a 503 error on 2/26/2015.

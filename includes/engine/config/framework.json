@@ -1,0 +1,25 @@
+{
+	"tables": {
+		"ck_framework_registry": {
+			"fields": {
+				"framework_registry_id": { "type": "INT", "required": "NOT NULL", "default": "AUTO_INCREMENT" },
+				"entity_identifier": { "type": "VARCHAR(255)", "required": "NOT NULL", "default": null },
+				"description": { "type": "TEXT", "required": "NULL", "default": null },
+				"installed": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 0" },
+				"active": { "type": "TINYINT", "required": "NOT NULL", "default": "DEFAULT 1" },
+				"entered": { "type": "TIMESTAMP", "required": "NOT NULL", "default": "DEFAULT CURRENT_TIMESTAMP" }
+			},
+			"indexes": [
+				{
+					"index_type": "PRIMARY KEY",
+					"fields": ["framework_registry_id"]
+				},
+				{
+					"index_type": "UNIQUE INDEX",
+					"fields": ["entity_identifier"]
+				}
+			],
+			"options": { "engine": "ENGINE=INNODB", "charset": "CHARACTER SET utf8", "collation": "COLLATE utf8_bin" }
+		}
+	}
+}

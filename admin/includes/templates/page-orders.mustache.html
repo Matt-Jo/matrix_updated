@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-xVVam1KS4+Qt2OrFa+VdRUoXygyKIuNWUUUBZYv+n27STsJ7oDOHJgfF0bNKLMJF" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+	#page-body { width:100%; font-size:.75rem; }
+	.nav-pills a { font-size:.75rem; }
+	.table > thead > tr > th { font-size:.5rem; }
+	#print-all, label[for=print-all] { cursor:pointer; }
+</style>
+<td id="page-body">
+	<div class="container-fluid">
+		<nav id="orders-nav" class="nav nav-pills flex-column flex-sm-row">
+			<a class="flex-sm-fill text-sm-center nav-link {{#rtp}}active{{/rtp}}" href="/admin/orders?tab=ready-to-pick">READY TO PICK</a>
+			<a class="flex-sm-fill text-sm-center nav-link {{#shipping}}active{{/shipping}}" href="/admin/orders?tab=shipping">SHIPPING</a>
+			<a class="flex-sm-fill text-sm-center nav-link {{#warehouse}}active{{/warehouse}}" href="/admin/orders?tab=warehouse">WAREHOUSE</a>
+			<a class="flex-sm-fill text-sm-center nav-link {{#shipped}}active{{/shipped}}" href="/admin/orders?tab=shipped">SHIPPED</a>
+		</nav>
+	</div>
+	<form action="/admin/pack_and_pick_list.php" id="print-bulk-pick-pack" data-status="2" method="get">
+		<table class="table table-hover table-striped mt-4">
+			<thead>
+				<tr>
+					<th style="max-width:75px;">
+						{{#rtp}}
+							<div class="d-flex justify-content-start align-items-center">
+								<div class="form-check form-check-inline mr-3" style="font-size:1.75rem;">
+									<input type="checkbox" class="form-check-input" id="print-all">
+								</div>
+								<button id="print-selected-button" type="submit" class="btn btn-sm btn-light">
+									Print {{#total_orders}} [{{.}}] {{/total_orders}}
+								</button>
+							</div>
+						{{/rtp}}
+					</th>
+					<th>ORDER #</th>
+					<th>CUSTOMER</th>
+					<th>COMPANY</th>
+					<th>PO #</th>
+					<th>ORDERS</th>
+					<th>SHIP METHOD</th>
+					<th>WEIGHT</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#order_group}}
+					<thead>
+						<tr><th colspan="8" class="text-center" style="font-size:1rem;">{{title}}</th></tr>
+					</thead>
+					<tbody>
+					{{#orders}}
+					<tr>
+						<td>
+							<div class="d-flex justify-content-between align-item-center">
+								{{#rtp}}
+								<div class="form-check form-check-inline mr-3" style="font-size:1.75rem">
+									<input type="checkbox" class="form-check-input print-control" name="orders_ids[]" value="{{order_id}}" data-special-handling="{{special_handling}}" {{#special_handling}}disabled{{/special_handling}}>
+								</div>
+								{{/rtp}}
+
+								<a href="/admin/orders_new.php?oID={{order_id}}&action=edit" target="_blank">
+									<i class="fas fa-external-link-alt fa-lg"></i>
+								</a>
+							</div>
+						</td>
+						<td>{{order_id}}</td>
+						<td>{{customer_name}}</td>
+						<td>{{customer_company}}</td>
+						<td>{{po_number}}</td>
+						<td>{{orders}}</td>
+						<td>{{ship_method}}</td>
+						<td>{{weight}}</td>
+					</tr>
+					{{/orders}}
+					</tbody>
+				{{/order_group}}
+			</tbody>
+		</table>
+	</form>
+</td>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+	let print_reload_timer;
+
+	jQuery('#print-all').click(function(e) {
+		let checked = jQuery(this).is(':checked');
+		jQuery('.print-control').each(function () {
+			if (jQuery(this).attr('data-special-handling') == 0) {
+				jQuery(this).attr('checked', checked);
+			}
+		});
+		clearTimeout(print_reload_timer);
+	});
+</script>

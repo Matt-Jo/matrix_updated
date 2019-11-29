@@ -1,0 +1,21 @@
+#catalog-main { position:relative; top:-40px; margin-bottom:-60px; }
+#catalog-header { display:inline; font-size:inherit; font-weight:inherit; -webkit-margin-before:0px; -webkit-margin-after:0px; }
+.category_desc { text-align:left; vertical-align:top; width:75%; }
+#category_img { text-align:right; width:25%; }
+#social { text-align:left; vertical-align:bottom; width:400px; padding-top:17px; }
+
+.category-promo { display:block; margin-bottom:5px; margin-right:5px; }
+.category-promo img {max-width: 100%; height: auto;}
+
+.product-info-link-title { text-decoration:underline; font-weight:bold; font-size: 14px; /*white-space:nowrap;*/ display:block; margin-bottom:10px; }
+.show-details { font-weight:normal; color:#0000ff; text-decoration:underline; font-size:9px; margin-right:5px; }
+.avail-details { display:none; padding-left:5px; padding-top:11px; }
+
+.prod-short-desc { margin-top:10px; }
+
+.listing-price { font-weight:bold; text-align:center; font-size:14px; color:#333; margin-bottom:18px; }
+.listing-price .original { text-decoration:line-through; }
+
+.buy-now { text-align:center; }
+
+.mainProductInfo .listing-price {margin-top: 10px;font-size: 20px;text-align: left;}

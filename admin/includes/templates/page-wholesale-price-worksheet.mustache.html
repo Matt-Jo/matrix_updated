@@ -1,0 +1,353 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-6jHF7Z3XI3fF4XZixAuSu0gGKrXwoX/w3uFPxC56OtjChio7wtTGJWRW53Nhx6Ev" crossorigin="anonymous">
+<style>
+	#page-loader { display:none; width:100%; height:100%; overflow:hidden; }
+	#page-body { min-width:100%; padding:5px; }
+	#change-log { width:100%; overflow-y:auto; }
+	#change-log-button { display:none; }
+	#change-log-table { display:none; margin:10px 0; }
+	#copy-to-clipboard { margin:5px; cursor:pointer; font-size:18px; color:darkslategrey; }
+	#table-container { width:100%; overflow-x:auto; margin-top:5px; }
+	#wholesale-price-table { width:100%; }
+	#report-actions { margin:5px; }
+	.quick-action-button { font-size:12px; }
+</style>
+<td id="page-body">
+	<h3>Wholesale Price Worksheet</h3>
+	<div id="change-log">
+		<div id="change-log-button">
+			<button id="expand-change-log" class="ui small button">Change Log <i class="fal fa-arrow-down" data-content="Expanded!"></i></button>
+		</div>
+		<div id="change-log-table">
+			<table class="ui basic table">
+				<thead>
+					<tr>
+						<th><i id="copy-to-clipboard" class="fal fa-clipboard" data-content="Copied!"></i> IPN</th>
+						<th>Field</th>
+						<th>Old Value</th>
+						<th>New Value</th>
+					</tr>
+				</thead>
+				<tbody id="changes"></tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="report-actions">
+		<div id="page-loader" class="ui segmenet">
+			<p></p>
+			<div id="page-dimmer" class="ui active dimmer">
+				<div class="ui text loader">Loading</div>
+			</div>
+		</div>
+		<div class="ui form">
+			<div class="four fields">
+				<div class="field">
+					<label>Ipn Search..</label>
+					<input id="report-search" placeholder="Search for IPN..">
+				</div>
+				<div class="field">
+					<label>Verticals</label>
+					<select id="vertical-selection" class="ui selection dropdown">
+						{{#verticals}}
+						<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+						{{/verticals}}
+					</select>
+				</div>
+				<div class="field">
+					<label>Range</label>
+					<select id="range-selection" class="ui selection dropdown">
+						{{#ranges}}
+						<option value="{{value}}"{{#selected}}selected{{/selected}}>{{name}}</option>
+						{{/ranges}}
+					</select>
+				</div>
+				<div class="field">
+					<label>Results: <span id="displayed-results">{{displayed_results}}</span> out of <span id="total-results">{{total_results}}</span></label>
+					<select id="result-selection" class="ui selection dropdown">
+						{{#results}}
+						<option value="{{value}}"{{#selected}}selected{{/selected}}>{{name}}</option>
+						{{/results}}
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="form-quick-actions" class="left floated column">
+		<button class="ui mini button quick-action-button" data-action="update">Update Selection</button>
+		<button class="ui mini button quick-action-button" data-action="update">Refresh Results</button>
+	</div>
+	<div id="table-container" class="ui container">
+		<table id="wholesale-price-table" class="ui small sortable unstackable celled striped table">
+			<thead>
+				<tr>
+					<th>IPN</th>
+					<th>Category</th>
+					<th>Vertical</th>
+					<th>On Hand</th>
+					<th>Available</th>
+					<th>Discontinued?</th>
+					<th>Last High Confirmation</th>
+					<th>Last Low Confirmation</th>
+					<th>High Price</th>
+					<th>Low Price</th>
+					<th>Sold</th>
+					<th>Sold Avg</th>
+					<th>Purchased</th>
+					<th>Purchased Avg</th>
+					<th>RFQs</th>
+					<th>RFQ Avg</th>
+				</tr>
+			</thead>
+			<tbody>
+			{{#wholesale_ipns}}
+			<tr data-stock-id="{{stock_id}}" data-vertical-id="{{vertical}}">
+				<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank" tabindex="-1">{{ipn}}</a></td>
+				<td>{{category}}</td>
+				<td>{{vertical}}</td>
+				<td>{{on_hand}}</td>
+				<td>{{available}}</td>
+				<td>{{discontinued}}</td>
+				<td>{{last_wholesale_high_price_confirmation}}</td>
+				<td>{{last_wholesale_low_price_confirmation}}</td>
+				<td>
+					<div class="ui form">
+						<input id="wholesale-high-input-{{stock_id}}" class="wholesale-price-input" value="{{wholesale_high_price}}" data-ipn="{{ipn}}" data-stock-id="{{stock_id}}" data-price="{{wholesale_high_price}}" data-field-type="high" name="wholesale_high_price_input">
+					</div>
+				</td>
+				<td>
+					<div class="ui form">
+						<input id="wholesale-low-input-{{stock_id}}" class="wholesale-price-input" value="{{wholesale_low_price}}" data-ipn="{{ipn}}" data-stock-id="{{stock_id}}" data-price="{{wholesale_low_price}}" data-field-type="low" name="wholesale_low_price_input">
+					</div>
+				</td>
+				<td>{{sold}}</td>
+				<td>{{sold_average}}</td>
+				<td>{{purchased}}</td>
+				<td>{{purchased_average}}</td>
+				<td>{{quoted}}</td>
+				<td>{{quoted_average}}</td>
+			</tr>
+			{{/wholesale_ipns}}
+		</tbody>
+		</table>
+	</div>
+</td>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script>
+	let ajax_request;
+
+	function initiate_whole_sale_inputs() {
+		jQuery('.wholesale-price-input').on('focus', function () {
+			jQuery(this).css({ 'background-color': '#fff' });
+		});
+		jQuery('.wholesale-price-input').on('change', function () {
+			let user_input = jQuery(this).val();
+			if (isNaN(user_input)) return false;
+
+			user_input = parseFloat(user_input).toFixed(2);
+			if (user_input == jQuery(this).data('price')) return false;
+
+			const ipn = jQuery(this).data('ipn');
+			const field_type = jQuery(this).data('field-type');
+			const stock_id = jQuery(this).data('stock-id');
+
+			let action = 'set-low-price';
+			if (field_type == 'high') action = 'set-high-price';
+
+			let wholesale_low_price, wholesale_high_price;
+
+			let current_price = jQuery(this).data('price');
+
+			if (action == 'set-high-price') wholesale_high_price = user_input;
+			else if (action == 'set-low-price') wholesale_low_price = user_input;
+
+			jQuery.ajax({
+				url:'/admin/wholesale-price-worksheet',
+				method:'POST',
+				dataType:'json',
+				data: {
+					ajax:1,
+					action:action,
+					wholesale_low_price:wholesale_low_price,
+					wholesale_high_price:wholesale_high_price,
+					stock_id:stock_id
+				},
+				success: function (data) {
+					if (!data.success) alert('There was an issue saving your input, please submit a bug');
+					if (!current_price) current_price = '<i>Empty</i>';
+					else current_price = '$' + current_price;
+
+					jQuery('#changes').append('<tr><td>'+ipn+'</td><td>'+field_type+'</td><td>'+current_price+'</td><td>'+'$'+user_input+'</td></tr>');
+
+					jQuery('#change-log-button').show();
+
+					jQuery('#wholesale-'+field_type+'-input-'+stock_id).attr('value', user_input);
+					jQuery('#wholesale-'+field_type+'-input-'+stock_id).attr('data-price', user_input);
+					jQuery('#wholesale-'+field_type+'-input-'+stock_id).css({'background-color': '#99f996'});
+				},
+				error: function() {
+					jQuery('#wholesale-'+field_type+'-input-'+stock_id).css({'background-color': '#ec452Bb'});
+				}
+			});
+		});
+	}
+
+	function reset_loader() {
+		// disable the loader
+		jQuery('#page-loader').hide();
+		jQuery('body').css('overflow', 'auto');
+		jQuery('#report-search').val('');
+	}
+
+	jQuery('.quick-action-button').on('click', function () {
+		jQuery('#report-search').val('^'+jQuery(this).data('action'));
+		let event = jQuery.Event('keyup');
+		event.keyCode = event.which = 13;
+		jQuery('#report-search').trigger(event);
+	});
+
+	jQuery('#report-search').on('keyup', function (e) {
+		if (ajax_request) ajax_request.abort();
+
+		let key = jQuery(this).val();
+		const last_id = jQuery(this).data('stock-id');
+		const vertical_id = jQuery('#vertical-selection').find(':selected').val();
+		const range = jQuery('#range-selection').find(':selected').val();
+		const results_per_page = jQuery('#result-selection').find(':selected').val();
+
+		// this will be a niffty little trick to reload the page
+		if (key[0] === '^' && key !== '^update' && key !== '^refresh') return;
+		else if (key.trim() === '^refresh' && e.which == 13) window.location = '/admin/wholesale-price-worksheet';
+		else if (key.length > 3) {
+			// activate the loader
+			jQuery('#page-loader').show();
+			jQuery('body').css('overflow', 'hidden');
+
+			ajax_request = jQuery.ajax({
+				action: '/admin/wholesale-price-worksheet',
+				method: 'POST',
+				dataType: 'json',
+				data: { action:'search', ajax:1, last_id:last_id, key:key, vertical_id:vertical_id, range:range, results_per_page:results_per_page },
+				success: function (data) {
+					let table_results;
+
+					jQuery('#wholesale-price-table tbody tr').remove();
+
+					if (data.results) {
+						data.results.forEach(function (data) {
+							let wholesale_low_price = data.wholesale_low_price;
+							if (!wholesale_low_price) wholesale_low_price = '';
+
+							let wholesale_high_price = data.wholesale_high_price;
+							if (!wholesale_high_price) wholesale_high_price = '';
+
+							let last_wholesale_high_price_confirmation = data.last_wholesale_high_price_confirmation;
+							if (!last_wholesale_high_price_confirmation) last_wholesale_high_price_confirmation = '';
+
+							let last_wholesale_low_price_confirmation = data.last_wholesale_low_price_confirmation;
+							if (!last_wholesale_low_price_confirmation) last_wholesale_low_price_confirmation = '';
+
+							table_results +=
+							`<tr data-stock-id="${data.stock_id}" data-vertical-id="${data.vertical}">
+								<td>
+									<a href="/admin/ipn_editor.php?ipnId=${data.ipn}" target="_blank" tabindex="-1">
+										${data.ipn}
+									</a>
+								</td>
+								<td>${data.category}</td>
+								<td>${data.vertical}</td>
+								<td>${data.on_hand}</td>
+								<td>${data.available}</td>
+								<td>${data.discontinued}</td>
+								<td>${last_wholesale_high_price_confirmation}</td>
+								<td>${last_wholesale_low_price_confirmation}</td>
+								<td>
+									<div class="ui form">
+										<input id="wholesale-high-input-${data.stock_id}" class="wholesale-price-input" value="${wholesale_high_price}" data-ipn="${data.ipn}" data-stock-id="${data.stock_id}" data-price="${wholesale_high_price}" data-field-type="high" name="wholesale_high_price_input">
+									</div>
+								</td>
+								<td>
+									<div class="ui form">
+										<input id="wholesale-low-input-${data.stock_id}" class="wholesale-price-input" value="${wholesale_low_price}" data-ipn="${data.ipn}" data-stock-id="${data.stock_id}" data-price="${wholesale_low_price}" data-field-type="low" name="wholesale_low_price_input">
+									</div>
+								</td>
+								<td>${data.sold}</td>
+								<td>${data.sold_average}</td>
+								<td>${data.purchased}</td>
+								<td>${data.purchased_average}</td>
+								<td>${data.rfqs}</td>
+								<td>${data.rfq_average}</td>
+							</tr>`;
+						});
+						jQuery('#wholesale-price-table tbody').append(table_results);
+					}
+
+					jQuery('#displayed-results').html(data.displayed_results);
+					jQuery('#total-results').html(data.total_results);
+
+					reset_loader();
+
+					initiate_whole_sale_inputs();
+				},
+				error: function () {
+					reset_loader();
+					alert('Problem loading data. Try a different selection');
+					return false;
+				}
+			});
+		}
+	});
+
+	jQuery('#copy-to-clipboard').popup({ on:'click' }).popup('toggle');
+
+	jQuery('#copy-to-clipboard').on('click', function () {
+		let new_text_area = document.createElement('textarea');
+		new_text_area.value = document.getElementById('changes').innerText;
+		document.body.appendChild(new_text_area);
+		new_text_area.select();
+		document.execCommand('copy');
+		document.body.removeChild(new_text_area);
+	});
+
+	initiate_whole_sale_inputs();
+
+	jQuery('#wholesale-price-table th').on('click', function () {
+		let ascending = false;
+		if (jQuery(this).hasClass('ascending')) ascending = true;
+		jQuery('#wholesale-price-table th').each(function () {
+			jQuery(this).removeClass('sorted');
+			jQuery(this).removeClass('ascending');
+			jQuery(this).removeClass('descending');
+		});
+		if (ascending) jQuery(this).addClass('sorted descending');
+		else jQuery(this).addClass('sorted ascending');
+	});
+
+	jQuery.tablesorter.addParser({
+		id:'input',
+		is: function (element) { return false; },
+		format: function(element) { return jQuery(element).find('input').val() },
+		type:'digit'
+	});
+
+	jQuery('#wholesale-price-table').tablesorter({
+		headers:{
+			3:{sorter:'digit'},
+			4:{sorter:'digit'},
+			8:{sorter:'input'},
+			9:{sorter:'input'},
+			10:{sorter:'currency'},
+			11:{sorter:'digit'},
+			12:{sorter:'currency'},
+			13:{sorter:'digit'},
+			14:{sorter:'currency'}
+		},
+		sortList: [[5, 6]]
+	});
+
+	jQuery('#expand-change-log').on('click', function () {
+		jQuery('#change-log-table').slideToggle('slow');
+		jQuery(this).find('i').toggleClass('fa-arrow-down');
+		jQuery(this).find('i').toggleClass('fa-arrow-up');
+	});
+</script>

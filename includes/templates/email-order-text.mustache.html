@@ -1,0 +1,32 @@
+CablesAndKits.com
+------------------------------------------------------
+Order number: {{order_number}}
+Detailed Invoice: {{fqdn}}/account_history_info.php?order_id={{order_number}}
+Date Ordered: {{date_purchased_long}}
+
+{{#order_comments}}{{.}}{{/order_comments}}
+
+{{#update_status?}}
+Your order has been updated to the following status.
+
+New status: {{.}}
+
+Please reply to this email if you have any questions.
+{{/update_status?}}
+
+------------------------------------------------------
+{{#totals}}
+{{description}} {{value}}
+{{/totals}}
+
+Delivery Address
+------------------------------------------------------
+{{#delivery}}
+	{{> partial-enhanced-address-format.mustache.html}}
+{{/delivery}}
+
+Billing Address
+------------------------------------------------------
+{{#billing}}
+	{{> partial-enhanced-address-format.mustache.html}}
+{{/billing}}

@@ -1,0 +1,444 @@
+<style>
+	.lt-ie9 section.dow-header { width:100%; }
+	#ck-body div.section-content { overflow:visible; }
+	.dow-header { height: 210px; }
+	.dow-countdown { position:absolute; background-image:url({{static_files}}/img/dow-countdown-badge.png); height:202px; width:384px; margin-left:60px; color:#fff; text-align:center; padding-top:15px; margin-top:-10px; }
+	#deal-count-text { font-size:16px; }
+	#deal-count-title { font-size:40px; font-weight:bold; }
+	#deal-counter { font-size:36px; font-weight:bold; position:relative; bottom:4px; }
+	.dow-social { background-color:#d22842; height:50px; text-align:right; padding:10px 35px 0px 0px; }
+	.dow-social a { margin-left:14px; }
+	.dow-ribbon { float:right; margin-top:38px; position:relative; left:20px; }
+	.ie .dow-ribbon { left:19px; }
+
+	#product_image_div {position:relative; }
+	#deal-sticker { position:absolute; top:10px; left:40px; text-align:center; background-image:url({{static_files}}/img/dow-discount-sticker.png); background-repeat:no-repeat; width:120px; height:120px; /*background-size:120px 120px;*/ font-size:40px; font-weight:bold; color:#fff; padding-top:15px; line-height:40px; }
+	#deal-outofstock-sticker { position:absolute; top:0px; left:0px; background-image:url({{static_files}}/img/DOW_CheckBack.png); background-repeat:no-repeat; width:505px; height:239px; /*background-size:120px 120px;*/ }
+
+	#product_information { text-align:right; }
+	.model-box { font-size:18px; font-weight:bold; }
+	.model { font-size:22px; color:#d22842; margin-left:10px; }
+	.itemDescription { font-size:28px; font-weight:bold; color:#325b6f; padding-left:40px; line-height:32px; }
+	.prices { font-weight:bold; margin:8px 0px 0px 0px; }
+	#originalPrice { font-size:18px; }
+	.orig-price { font-size:22px; color:#325b6f; }
+	#productPrice { font-size:72px; font-weight:bold; color:#d22842; line-height:72px; }
+	#stock_level { font-size:18px; color:#d22842; }
+	#configButton { margin-top:25px; border:0px; }
+
+	#product-options { }
+	#options_dropdown {border:1px solid #cecece; background-color:white; padding:8px; text-align:left; }
+	#included_box { color:#777; font-style:italic; }
+	#included_options { display:inline; padding:0px; margin:0px; }
+	#included_options li { display:inline; list-style-type:none; margin-right:3px; }
+	#included_options li a { color:#777; text-decoration:underline; }
+	#extra_options { margin-top:10px; width:100%; }
+	#extra_options td { padding:7px 10px; text-align:center; vertical-align:top; }
+	.extopt_recommended { font-size:12px; color:green; font-weight:bold; }
+	.extopt_description { font-size:12px; color:#777777; font-style:italic; }
+	.extopt_price { text-align:right; color:#d22842; font-weight:bold; font-size:18px; }
+	#opts_subtotal { margin-top:10px; text-align:right; font-weight:bold; }
+	#subtotal { color:#d22842; font-size:24px; font-weight:bold; }
+
+	.ghostfix { position:relative; float:left; clear:both; width:100%; }
+
+	#cart-control { float:left; margin:25px 24px 0px 20px;; font-weight:bold; text-align:center; }
+	#productQuantity { font-size:16px; font-weight:bold; height:40px; width:40px; border-radius:4px; border:1px solid #797979; padding-left:10px; }
+	#add-to-cart { margin:35px 5px 0px 0px; max-width: 100%; }
+
+	#link-to-prod { font-size:16px; font-weight:bold; text-decoration:underline; }
+	#legalese { float:right; font-size:12px; color:#777; margin-top:10px; width:100%; }
+
+	#recommends-box { width:100%; }
+	.recommends-ribbon { float:left; margin-top:20px; position:relative; right:18px; }
+	#recommendations { margin:0px 20px; }
+	#recommendations .boxborder { height:140px; margin-top:0px; }
+	.rec-product { height:160px; margin:0px 18px; }
+
+	#dow-admin { clear:both; float:right; margin:40px 20px -40px 0px; text-align:right; }
+
+	#dow-footer { clear:both; float:left; margin-top:50px; }
+
+	.dow-edit-field { display:none; }
+	.dow-edit-field textarea { width:auto; }
+	.dow-edit { font-size:12px; }
+
+	#edit_product_desc { float:left; padding-left:20px; }
+	#edit_recommendations { float:left; clear:both; margin:0px 0px 0px 90px; }
+
+	.change-recommends { float:left; width:234px; margin:0px 18px; text-align:center; }
+</style>
+{{#product}}
+	{{> partial-product-schema.mustache.html }}
+<div class="grid grid-pad dow-holding-container">
+	<div class="col-1-1">
+		<table cellspacing="0" cellpadding="0" border="0" class="centertable" style="margin-bottom:15px;width:100%;">
+			<tr>
+				<td style="border-style:solid; border-color:#cecece; border-width:0px 1px 2px 1px; background-color:#fff;vertical-align:top;">
+					<section class="dow-header">
+						<div class="dow-countdown">
+							<span id="deal-count-text">Deal ends <span id="deal-ends"></span></span><br>
+							<span id="deal-count-title">Time till deal ends</span><br>
+							<span id="deal-counter"></span>
+						</div>
+						<script src="{{static_files}}/js/vendor/moment.min.js"></script>
+						<!-- script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script -->
+						<script>
+							var exp = moment('{{end_date}}', 'YYYY-MM-DD HH:mm:ss');
+							jQuery('#deal-ends').text(exp.format('MM-DD-YYYY, hh:mma'));
+							var dowtimer = setInterval(function() {
+								var count = exp.diff(moment());
+								if (count <= 0) {
+									clearInterval(dowtimer);
+									{{^edit_dow_id}}
+									window.location.reload(true);
+									{{/edit_dow_id}}
+								}
+								else {
+									var disp = moment.duration(count);
+									jQuery('#deal-counter').text(disp.days()+'d - '+(disp.hours()<10?'0'+disp.hours():disp.hours())+'h - '+(disp.minutes()<10?'0'+disp.minutes():disp.minutes())+'m - '+(disp.seconds()<10?'0'+disp.seconds():disp.seconds())+'s');
+								}
+							}, 1000); // every second
+						</script>
+
+						<div class="dow-social">
+							<a href="http://www.linkedin.com/company/cablesandkits.com" title="LinkedIn"><img src="{{static_files}}/img/dow-LinkedIn.png" alt="LinkedIn"></a>
+							<a href="http://community.spiceworks.com/pages/cablesandkits" title="Spiceworks"><img src="{{static_files}}/img/dow-Spiceworks.png" alt="Spiceworks"></a>
+							<a href="http://www.facebook.com/cablesandkits" title="Facebook"><img src="{{static_files}}/img/dow-Facebook.png" alt="Facebook"></a>
+						</div>
+
+						<div class="dow-ribbon responsiveImgHolder">
+							{{#sched_weekdays?}}
+							<img src="{{static_files}}/img/DOW_SIS.png" alt="Spring into Savings">
+							<!--img src="{{static_files}}/img/dow-dodribbon.png" alt="Deal of the Day"-->
+							{{/sched_weekdays?}}
+							{{#sched_weekly?}}
+							<img src="{{static_files}}/img/dow-ribbon.png" alt="Deal of the Week">
+							{{/sched_weekly?}}
+						</div>
+					</section>
+
+					<section>
+						<div class="grid grid-pad" style="padding-left: 10px;">
+							<div class="col-1-1 show-on-mobile alignCenter">
+								<div class="model-box">Model #: <span class="model">{{model_num}}</span></div>
+								<div class="itemDescription">{{name}}</div>
+							</div>
+							<div class="col-6-12">
+								<div id="product_image_div" class="alignCenter">
+									<!--a href="{{cdn}}/{{img}}"--><img src="{{cdn}}/{{img}}" style="width:500px;" title="{{name_attr}}" alt="{{name_attr}}"><!--/a-->
+									{{#sched_weekdays?}}
+										{{^available?}}
+									<div id="deal-outofstock-sticker"></div>
+										{{/available?}}
+										{{#available?}}
+									<div id="deal-sticker">{{pct_off}}%<br>OFF</div>
+										{{/available?}}
+									{{/sched_weekdays?}}
+									{{#sched_weekly?}}
+									<div id="deal-sticker">{{pct_off}}%<br>OFF</div>
+									{{/sched_weekly?}}
+								</div>
+
+								<div class="product_desc">
+									<div class="product_desc_body hide-on-mobile">
+										{{{description}}}
+									</div>
+									{{#edit_dow_id}}
+									<br><a href="#" class="dow-edit" data-field="product_desc">[EDIT]</a>
+									{{/edit_dow_id}}
+								</div>
+							</div>
+
+							<div id="product_information" class="col-6-12">
+								<div class="hide-on-mobile">
+									<div class="model-box">Model #: <span class="model">{{model_num}}</span></div>
+									<div class="itemDescription">{{name}}</div>
+								</div>
+
+								<div class="prices">
+									<span id="originalPrice">was <span class="orig-price">{{reg_price}}</span></span><br>
+									<span id="productPrice" price="{{price_num}}">{{price}}</span><br>
+									<span id="stock_level">{{display_available}}</span>
+								</div>
+
+								<form action="/cart-flyout" method="post" class="add-to-cart-form">
+									<input type="hidden" name="products_id" value="{{id}}">
+									<input type="hidden" name="action" value="add-product">
+									<input type="hidden" name="products_id" value="{{product.id}}">
+
+									{{#options?}}
+									<div id="product-options">
+										<a href="#" class="main-view-options alignLeft" id="configButton">Included/Additional options for this product</a>
+										<div id="options_dropdown">
+										{{#included_options}}
+											<div id="included_box">
+												Included with this product:
+												<ul id="included_options">
+												{{#options}}
+													<li><a href="product_info.php?products_id={{products_id}}">{{name}}</a>{{#desc}} ({{.}}){{/desc}}{{^last}},{{/last}}</li>
+												{{/options}}
+												<ul>
+											</div>
+										{{/included_options}}
+
+										{{#extra_options}}
+											<table id="extra_options" border="0" cellspacing="0" cellpadding="0">
+												<thead>
+													<tr>
+														<th style="display:none;">QTY</th>
+														<th>ADD</th>
+														<th></th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													{{#options}}
+													<tr>
+														<td style="display:none;"><input class="addonQuantity" type="text" size="1" maxlength="2" id="addon_{{products_id}}_quantity" name="addon_quantity[{{products_id}}]" {{#recommended?}}value="1"{{/recommended?}}{{^recommended?}}disabled{{/recommended?}}></td>
+														<td><input class="addonSelection" type="checkbox" id="addon_{{products_id}}" data-aid="{{products_id}}" name="addon_select[{{products_id}}]" {{#recommended?}}checked{{/recommended?}}></td>
+														<td style="text-align:left;">
+															<a href="/product_info.php?products_id={{products_id}}"><strong>{{name}}</strong></a> {{#recommended?}}<span class="extopt_recommended">[recommended]</span>{{/recommended?}}<br>
+															<span class="extopt_description">{{desc}}</span>
+															{{#qty?}} - <strong>{{.}}</strong> in stock{{/qty?}}
+															{{^qty?}} - <strong style="color:#d22842;">out of stock</strong>{{/qty?}}
+														</td>
+														<td class="extopt_price" id="addon_{{products_id}}_price" price="{{price}}">{{display_price}}</td>
+													</tr>
+													{{/options}}
+												</tbody>
+											</table>
+										{{/extra_options}}
+											<div id="opts_subtotal">
+												Subtotal: <span id="subtotal"></span>
+											</div>
+										</div>
+									</div>
+									{{/options?}}
+
+									<div class="ghostfix">
+										<div class="ghost">
+											{{#sched_weekdays?}}
+												{{^available?}}
+											<img src="{{static_files}}/img/DOW_CheckBack.png" style="width:375px;height:177px;">
+												{{/available?}}
+												{{#available?}}
+											<div id="cart-control">
+												Qty:<br>
+												<input type="text" maxlength="4" name="quantity" value="1" id="productQuantity">
+											</div>
+											<input type="image" src="{{static_files}}/img/dow-add-to-cart.png" alt="Add To Cart" id="add-to-cart">
+												{{/available?}}
+											{{/sched_weekdays?}}
+											{{#sched_weekly?}}
+											<div id="cart-control">
+												Qty:<br>
+												<input type="text" maxlength="4" name="quantity" value="1" id="productQuantity">
+											</div>
+											<input type="image" src="{{static_files}}/img/dow-add-to-cart.png" alt="Add To Cart" id="add-to-cart">
+											{{/sched_weekly?}}
+
+											<div id="product-link"><a href="/product_info.php?products_id={{id}}" id="link-to-prod">click for More Product Info</a></div>
+
+											<div id="legalese">
+												<div id="legalese_body">
+													{{#legalese}}
+														{{{.}}}
+													{{/legalese}}
+													{{^legalese}}
+														no substitutions<br>
+														***Limited Quantity Available<br>
+														no more than 25 per customer
+													{{/legalese}}
+												</div>
+												{{#edit_dow_id}}
+												<br><a href="#" class="dow-edit" data-field="legalese">[EDIT]</a>
+												{{/edit_dow_id}}
+											</div>
+											{{#edit_dow_id}}
+											<div id="edit_legalese" class="dow-edit-field">
+												<input type="hidden" name="edit-dow-id" value="{{.}}">
+												<input type="hidden" name="dow_action" value="edit">
+												<textarea name="edit_legalese" id="legalese_field" rows="5" cols="20">{{#legalese}}{{{.}}}{{/legalese}}{{^legalese}}no substitutions<br>
+			***Limited Quantity Available<br>
+			no more than 25 per customer{{/legalese}}</textarea>
+												<br><a href="#" class="edit-submit" data-field="legalese">[SUBMIT]</a> <a href="#" class="edit-preview" data-field="legalese">[PREVIEW]</a>
+											</div>
+											{{/edit_dow_id}}
+										</div>
+									</div>
+								</form>
+								<script>
+									jQuery('.main-view-options').click(function(e) {
+										e.preventDefault();
+										jQuery('#options_dropdown').toggle();
+										return false;
+									});
+									jQuery('#productQuantity, .addonQuantity').change(updateSubtotal);
+									jQuery('.addonSelection').click(function() {
+										if (jQuery(this).is(':checked')) {
+											jQuery('#'+jQuery(this).attr('id')+'_quantity').prop('disabled', false);
+											updateQty(jQuery(this).attr('data-aid'));
+										}
+										else {
+											jQuery('#'+jQuery(this).attr('id')+'_quantity').prop('disabled', true).val('');
+										}
+										updateSubtotal();
+									});
+
+									var doNotSubmit = false;
+									function updateSubtotal() {
+										updateAllSelectedQtys();
+
+										var subtotal = parseInt(jQuery('#productQuantity').val()) * parseFloat(jQuery('#productPrice').attr('price'));
+
+										jQuery('.addonSelection:checked').each(function() {
+											subtotal += parseInt(jQuery('#'+jQuery(this).attr('id')+'_quantity').val()) * parseFloat(jQuery('#'+jQuery(this).attr('id')+'_price').attr('price'));
+										});
+
+										if (isNaN(subtotal)) subtotal = 0;
+
+										jQuery('#subtotal').text('$'+subtotal.toFixed(2));
+									}
+
+									function updateQty(products_id) {
+										jQuery('#addon_'+products_id+'_quantity').val(jQuery('#productQuantity').val());
+									}
+
+									function updateAllSelectedQtys(){
+										var atLeastOneOptionSelected = false;
+										var quantity = jQuery('#productQuantity').val();
+
+										jQuery('.addonSelection:checked').each(function() {
+											jQuery('#'+jQuery(this).attr('id')+'_quantity').val(quantity);
+										});
+									}
+									//initialize subtotal
+									jQuery( document ).ready(function() {
+										updateSubtotal();
+									});
+								</script>
+							</div>
+
+							<div class="clearfix"></div>
+
+							<div class="product_desc">
+								<div class="product_desc_body show-on-mobile">
+									{{{description}}}
+								</div>
+								<div class="show-on-mobile">
+									{{#edit_dow_id}}
+									<br><a href="#" class="dow-edit" data-field="product_desc">[EDIT]</a>
+									{{/edit_dow_id}}
+								</div>
+							</div>
+							{{#edit_dow_id}}
+							<div id="edit_product_desc" class="dow-edit-field">
+								<input type="hidden" name="edit-dow-id" value="{{.}}">
+								<input type="hidden" name="dow_action" value="edit">
+								<textarea name="edit_product_desc" id="product_desc_field" rows="12" cols="69">{{{description}}}</textarea>
+								<br><a href="#" class="edit-submit" data-field="product_desc">[SUBMIT]</a> <a href="#" class="edit-preview" data-field="product_desc">[PREVIEW]</a>
+							</div>
+							{{/edit_dow_id}}
+						</div>
+					</section>
+
+					<div class="clearfix"></div>
+
+					<section id="recommends-box">
+						<div class="recommends-ribbon">
+							<img src="{{static_files}}/img/dow-ck-recommends.png" alt="CK Recommends">
+						</div>
+
+						{{#recommendations}}
+						<div id="recommendations">
+							<div class="grid">
+							{{#products}}
+								<div class="col-3-12 text-center">
+									<a class="rec-product" href="/product_info.php?products_id={{id}}">
+										<img src="{{cdn}}/{{img}}" class="rec-img" alt="{{name}}"><br>
+										<strong>{{name}}</strong>
+									</a>
+								</div>
+							{{/products}}
+							</div>
+						</div>
+						{{/recommendations}}
+						{{#edit_dow_id}}
+						<div id="edit_recommendations">
+							<input type="hidden" name="edit-dow-id" value="{{.}}">
+							<input type="hidden" name="dow_action" value="edit">
+							<input type="hidden" name="base_products_id" value="{{id}}">
+							{{#recommendations}}
+								{{#products}}
+							<div class="change-recommends">
+								<input type="text" name="edit_product_recommends[{{idx}}][recommend_products_id]" value="{{id}}" placeholder="product ID">
+							</div>
+								{{/products}}
+							{{/recommendations}}
+							{{^recommendations}}
+							<div class="change-recommends">
+								<input type="text" name="edit_product_recommends[0][recommend_products_id]" value="" placeholder="product ID">
+							</div>
+							<div class="change-recommends">
+								<input type="text" name="edit_product_recommends[1][recommend_products_id]" value="" placeholder="product ID">
+							</div>
+							<div class="change-recommends">
+								<input type="text" name="edit_product_recommends[2][recommend_products_id]" value="" placeholder="product ID">
+							</div>
+							{{/recommendations}}
+							<br><a href="#" class="edit-submit" data-field="recommendations">[SUBMIT]</a>
+						</div>
+						{{/edit_dow_id}}
+					</section>
+
+					<section id="dow-footer">
+						<a href="/whyck"><img src="{{static_files}}/img/dow-why-ck.jpg" alt="Why CablesAndKits?"></a>
+					</section>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<script>
+	jQuery('.dow-edit').click(function(e) {
+		e.preventDefault();
+
+		var field = jQuery(this).attr('data-field');
+
+		jQuery('#'+field).hide();
+		jQuery('#edit_'+field).show();
+		jQuery('#'+field+'_field').focus();
+	});
+
+	jQuery('.edit-preview').click(function(e) {
+		e.preventDefault();
+
+		var field = jQuery(this).attr('data-field');
+
+		jQuery('#'+field+'_body').html(jQuery('#'+field+'_field').val());
+		jQuery('#'+field).show();
+		jQuery('#edit_'+field).hide();
+	});
+
+	jQuery('.edit-submit').click(function(e) {
+		e.preventDefault();
+
+		var field = jQuery(this).attr('data-field');
+
+		var ajax_call = jQuery.ajax({
+			url: '/dow',
+			type: 'post',
+			data: jQuery('#edit_'+field+' :input').serialize(),
+			success: function(data, textStatus, jqXHR) {
+				jQuery('#'+field+'_body').html(jQuery('#'+field+'_field').val());
+				jQuery('#'+field).show();
+				jQuery('#edit_'+field).hide();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert('there was an error!');
+			}
+		});
+	});
+</script>
+{{/product}}

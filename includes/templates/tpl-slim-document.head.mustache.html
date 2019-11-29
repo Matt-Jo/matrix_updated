@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>{{head.title}}</title>
+		<meta name="description" content="{{head.meta.description}}">
+		<meta name="viewport" content="width=device-width">
+		<meta name="robots" content="noindex, nofollow">
+	</head>
+	<body class="{{body.class}}">
+		{{!
+			all we want is the opening of the page structure here.  anything that requires actual processing will be completed and pushed to the page as it's ready.
+			a side effect of this strategy, meant to maximize perceived page-load speed, is that we must remember to close the tags with a finishing template
+		}}

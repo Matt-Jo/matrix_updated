@@ -1,0 +1,477 @@
+<style>
+	button[disabled] { color:#aaa; }
+
+	.main-body-container { margin-bottom:15px; width:auto; }
+	.main-body-inner-container { margin:0px 0px 20px 0px; padding:20px; font-size:13px; line-height:1.5em; }
+
+	.main-body-header { display:inline-block; }
+
+	.sub-header { color:#777; font-size:18px; border-bottom:1px solid #ccc; margin:0px 0px 15px 0px; padding-bottom:7px; }
+	.sub-header.middle { margin-top:15px; }
+
+	/*.main-body-inner-container a { font-weight:bold; color:#3f6b94; }*/
+
+	.template-basic .main-body-inner-container.error-stack { background-color:#fee; border-color:#c00; }
+
+	.edit-order { font-size:12px; font-weight:bold; color:#60c240; text-decoration:underline; }
+
+	.complete-order { margin:0px auto; border:1px solid black; border-radius:5px; background-color:#f1f1f1; width:70%; padding:10px; font-size:16px; font-weight:bold; text-align:center; line-height:20px; }
+	.bottom .complete-order { margin-top:20px; }
+
+	.net-terms-warning { text-align:center; color:#f00; font-weight:bold; margin-top:15px; }
+
+	.checkout-note { text-align:center; margin-top:15px; }
+
+	.cart-display { border-collapse:collapse; font-size:12px; margin:auto; width:calc(100% - 60px); }
+	.cart-display th, .cart-display td { padding:2px 7px; text-align:left; }
+	.cart-display thead th { border-width:2px 0px 1px 0px; border-style:solid; border-color:#000; background-color:#f1f1f1; }
+	.cart-display tbody tr:not(.has-addons) td { border-width:0px 0px 1px 0px; border-style:solid; border-color:#ccc; }
+	.cart-display tbody tr:last-child td { border-bottom-width:1px; border-style:solid; border-color:#000; }
+
+	.cart-display th:first-child { border-left-style:solid; border-left-width:2px; border-left-color:#000; }
+	.cart-display th:last-child { border-right-style:solid; border-right-width:2px; border-right-color:#000; }
+
+	.cart-display tfoot th:last-child, .cart-display tfoot td:first-child { /*border-bottom:2px solid #000;*/ border-width:0px; }
+
+	.cart-display .qty { width:26px; text-align:right; }
+	.cart-display .product-name {}
+	.cart-display .included .product-name, .cart-display .optional .product-name { padding-left:30px; }
+	.cart-display .model {}
+	.cart-display .price { width:70px; text-align:right; }
+	.cart-display tbody tr.included td { color:#999; font-style:italic; border-bottom-width:0px; }
+	.cart-display tbody tr.optional td { border-bottom-width:0px; }
+	.cart-display tbody tr.included.last td, .cart-display tbody tr.optional.last td { border-bottom-width:1px; }
+
+	.order-total { text-align:right; margin:3px 30px 0px 0px; padding-right:7px; }
+	.order-total strong.subtitle { display:inline; width:auto; margin-right:0px; }
+	.order-total strong { display:inline-block; width:130px; }
+	.order-total .shipping-method { display:inline-block; max-width:550px; vertical-align:middle; margin-right:2px; }
+
+	.overall-total { font-size:18px; }
+
+	.shipping-details { overflow:auto; }
+	.shipping-details .shipping-address { float:left; padding-right:30px; border-right:1px solid #999; min-width:175px; }
+	.shipping-details .shipping-options { float:left; padding-left:30px; max-width:600px; }
+	.shipping-details .shipping-options .option { padding-bottom:5px; margin-bottom:5px; border-bottom:1px solid #999; }
+
+	.eco { padding:0px 6px; display:inline-block; border:1px solid #6f6; background-color:#cfc; border-radius:8px; }
+
+	.payment-details { overflow:auto; }
+	.payment-details .billing-address { float:left; padding-right:30px; border-right:1px solid #999; min-width:175px; }
+	.payment-details .payment-options { float:left; padding-left:30px; max-width:600px; }
+	.payment-details .payment-options .option { padding-bottom:5px; margin-bottom:5px; border-bottom:1px solid #999; }
+
+	.cart-type { width:40px; }
+
+	.address-block { margin-top:8px; }
+	.address-target { margin-left:15px; }
+
+	.checkout-progress { margin:25px auto 0px auto; padding:0px; /*border-top:#bbc3d3 solid 1px;*/ position:relative; text-align:center; }
+	.checkout-progress li.bar { width:720px; margin:0px auto; height:7px; position:relative; border-style:solid; border-color:#bbc3d3; border-width:0px 1px; padding:0px; display:block; }
+	.checkout-progress li.bar hr { border-color:#bbc3d3; height:1px; position:relative; top:3px; }
+	.checkout-progress .bullet { position:absolute; top:-2px; }
+	.checkout-progress.shipping .bullet { left:-5px; }
+	.checkout-progress.payment .bullet { left:270px; }
+	.checkout-progress.confirmation .bullet { right:200px; }
+	.checkout-progress.success .bullet { right:-5px; }
+	.checkout-progress li { display:inline-block; list-style-type:none; margin:0px 80px; padding:8px 0px 0px 0px; text-align:center; font-size:12px; color:#8c8c8c; }
+	.checkout-progress.shipping li.shipping { color:#000; }
+	.checkout-progress.payment li.payment { color:#000; }
+	.checkout-progress.confirmation li.confirmation { color:#000; }
+	.checkout-progress.success li.success { color:#000; }
+	#checkout-confirmation-breadcrumbs { top:5px; }
+
+	@media (max-width:980px) {
+		.sub-header.middle { margin-top:30px; border-top:1px solid #d8d8d8; padding-top:7px; background-color:#e5e5e5; padding-left:5px; }
+
+		.order-total strong { width:95px; }
+
+		.address-block .company-name { display:inline-block; }
+		.address-block .address-target { display:inline-block; }
+
+		.order-total .shipping-method { max-width:400px; }
+
+		.shipping-details .shipping-address { float:none; border-right-width:0px; border-bottom:1px solid #ccc; margin-bottom:10px; }
+		.shipping-details .shipping-address br { display:none; }
+		.shipping-details .shipping-options { float:none; max-width:none; }
+		.shipping-details .shipping-options .option { border-bottom-color:#ccc; }
+
+		.payment-details .billing-address { float:none; border-right-width:0px; border-bottom:1px solid #ccc; margin-bottom:10px; }
+		.payment-details .billing-address br { display:none; }
+		.payment-details .payment-options { float:none; max-width:none; }
+		.payment-details .payment-options .option { border-bottom-color:#ccc; }
+
+		.checkout-progress { margin:10px auto; }
+		.checkout-progress li.bar { display:none; }
+		.checkout-progress li { margin:0px 40px; padding:3px 8px; }
+		.checkout-progress.shipping li.shipping { background-color:#cfc; }
+		.checkout-progress.payment li.payment { background-color:#cfc; }
+		.checkout-progress.confirmation li.confirmation { background-color:#cfc; }
+		.checkout-progress.success li.success { background-color:#cfc; }
+	}
+
+	@media (max-width:720px) {
+		.order-total .shipping-method { max-width:200px; }
+	}
+
+	@media (max-width:580px) {
+		.cart-display { display:block; }
+		.cart-display thead { display:none; }
+		.cart-display tbody { display:block; }
+		.cart-display tr { display:block; border-top:1px solid #ccc; border-bottom:1px solid #888; overflow:auto; }
+		.cart-display tr.has-addons { border-bottom-width:0px; }
+		.cart-display tr.included, .cart-display tr.optional { border-top-width:0px; border-bottom-width:0px; padding-left:15px; }
+		.cart-display tr.included.last, .cart-display tr.optional.last { border-bottom-width:1px; }
+		.cart-display td { display:block; border-bottom-width:0px !important; }
+		.cart-display .qty { float:right; width:50px; }
+		.cart-display .product-name { float:left; width:175px; }
+		.cart-display .included .product-name, .cart-display .optional .product-name { padding-left:0px; }
+		.cart-display .model { float:left; }
+		.cart-display .price { display:block; width:auto; clear:both; }
+		.cart-display .price.unit { display:none; }
+		.cart-display .qty::before { content:"Qty: "; }
+		.cart-display .price.total::before { content:"Item Total: "; }
+
+		.order-total { padding-right:40px; }
+		.order-total strong { display:block; width:auto; margin-right:-40px; }
+	}
+
+	@media (max-width:450px) {
+		.confirm-button { width:90%; }
+		.cart-display .model { width:175px; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<div class="tools breadcrumbs" id="checkout-confirmation-breadcrumbs">{{{breadcrumbs}}}</div>
+
+	{{{message_stack}}}
+
+	{{#error}}
+	<div class="main-body-inner-container error-stack">
+		<h2 class="sub-header">Errors:</h2>
+		{{{.}}}
+	</div>
+	{{/error}}
+
+	<div class="main-body-inner-container">
+		<h2 class="sub-header">Confirm Your Order:</h2>
+
+		<form action="/checkout_confirmation.php" method="post" class="confirmation-form">
+			<input type="hidden" name="action" value="process-order">
+
+			<div class="complete-order">
+				ALMOST FINISHED!<br>
+				<input type="image" src="//media.cablesandkits.com/static/img/complete-order-button.png" alt="Confirm Order" title="Confirm Order" class="confirm-button">
+			</div>
+
+			{{#cannot_place_any_order}}
+			<div class="net-terms-warning">
+				YOUR CREDIT TERMS HAVE BEEN SUSPENDED. ALL ORDERS WILL BE HELD UNTIL FURTHER NOTICE. PLEASE CONTACT OUR <a href="mailto:accounting@cablesandkits.com">ACCOUNTING DEPARTMENT</a> TO RESOLVE.
+			</div>
+			{{/cannot_place_any_order}}
+			{{#prepaid_only}}
+			<div class="net-terms-warning">
+				Your credit terms have been TEMPORARILY SUSPENDED. You must prepay via credit card or paypal to release this order immediately. Please contact our <a href="mailto:accounting@cablesandkits.com">accounting department</a> to resolve any pending issues and have your terms reinstated.
+			</div>
+			{{/prepaid_only}}
+			{{#over_limit}}
+			<div class="net-terms-warning">
+				This order will place you over your credit limit.  You have {{remaining_credit}} available credit.  This order will be held until your previous invoices have been paid. You still have the option to place your order via Credit Card or Paypal.
+			</div>
+			{{/over_limit}}
+
+			<div class="checkout-note">
+				{{#admin?}}
+				<input type="checkbox" name="send_confirmation_email" class="send_confirmation_email" checked="checked"> Send a confirmation email to {{order_email_address}}.<br><br>
+				<input type="checkbox" name="log_out_as_user" class="log_out_as_user"> Log out from user account.<br>
+				<input type="checkbox" name="view_order_in_admin" class="view_order_in_admin"> Immediately view order in Matrix (automatically logs out user).<br><br>
+					{{#cc_expected?}}
+				<input type="checkbox" name="send_payment_request" class="send_payment_request"> Send payment request email.<br><br>
+					{{/cc_expected?}}
+				{{/admin?}}
+				{{^admin?}}
+					An order confirmation email will be sent to <strong>{{order_email_address}}</strong>.
+				{{/admin?}}
+			</div>
+		</form>
+
+		{{#has_products?}}
+		<div class="products">
+			<strong>Products</strong> <a href="/shopping_cart.php" class="edit-order">(Edit)</a>
+			<table class="cart-display">
+				<thead>
+					<tr>
+						<th class="qty">Qty</th>
+						<th class="product-name">Product</th>
+						<th class="model">Model #</th>
+						<th class="price unit">Price</th>
+						<th class="price total">Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#products}}
+					<tr class="product-row {{#has_addons?}}has-addons{{/has_addons?}}">
+						<td class="qty">{{quantity}}</td>
+						<td class="product-name">{{products_name}}</td>
+						<td class="model">{{products_model}}</td>
+						<td class="price unit">{{unit_price}}</td>
+						<td class="price total">{{line_price}}</td>
+					</tr>
+						{{#included}}
+					<tr class="included {{#last?}}last{{/last?}}">
+						<td class="product-name" colspan="2">{{products_name}} - included</td>
+						<td class="model">{{products_model}}</td>
+						<td class="price total" colspan="2">-</td>
+					</tr>
+						{{/included}}
+						{{#options}}
+					<tr class="optional {{#last?}}last{{/last?}}">
+						<td class="qty">{{quantity}}</td>
+						<td class="product-name"><strong>Option:</strong> {{products_name}}</td>
+						<td class="model">{{products_model}}</td>
+						<td class="price unit">{{unit_price}}</td>
+						<td class="price total">{{line_price}}</td>
+					</tr>
+						{{/options}}
+					{{/products}}
+				</tbody>
+			</table>
+
+			<div class="order-total">
+				Product Total: <strong class="product-total">{{product_total}}</strong>
+			</div>
+		</div>
+		{{/has_products?}}
+
+		{{#has_quotes?}}
+		<div class="quotes">
+			<strong>Quote</strong> <a href="/shopping_cart.php" class="edit-order">(Edit)</a>
+			{{#quotes}}
+			<table class="cart-display">
+				<thead>
+					<tr>
+						<th class="qty">Qty</th>
+						<th class="product-name">Product</th>
+						<th class="model">Model #</th>
+						<th class="price">Price</th>
+						<th class="price">Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#products}}
+					<tr class="product-row {{#has_addons?}}has-addons{{/has_addons?}}">
+						<td class="qty">{{quantity}}</td>
+						<td class="product-name">{{products_name}}</td>
+						<td class="model">{{products_model}}</td>
+						<td class="price unit">{{unit_price}}</td>
+						<td class="price total">{{line_price}}</td>
+					</tr>
+						{{#included}}
+					<tr class="included {{#last?}}last{{/last?}}">
+						<td class="product-name" colspan="2">{{products_name}} - included</td>
+						<td class="model">{{products_model}}</td>
+						<td class="price total" colspan="2">-</td>
+					</tr>
+						{{/included}}
+						{{#options}}
+					<tr class="optional {{#last?}}last{{/last?}}">
+						<td class="qty">{{quantity}}</td>
+						<td class="product-name"><strong>Option:</strong> {{products_name}}</td>
+						<td class="model">{{products_model}}</td>
+						<td class="price unit">{{unit_price}}</td>
+						<td class="price total">{{line_price}}</td>
+					</tr>
+						{{/options}}
+					{{/products}}
+				</tbody>
+			</table>
+
+			<div class="order-total">
+				Quote Total: <strong class="quote-total">{{quote_total}}</strong>
+			</div>
+			{{/quotes}}
+		</div>
+		{{/has_quotes?}}
+
+		{{#order_totals}}
+		<div class="order-total">
+			{{#is_shipping}}
+			<strong class="subtitle">Shipping</strong> <a href="/checkout_shipping.php" class="edit-order">(Edit)</a> -
+			<span class="shipping-method">{{description}}</span>:
+			{{/is_shipping}}
+			{{^is_shipping}}
+			{{description}}:
+			{{/is_shipping}}
+			<strong class="{{class}}">{{total}}</strong>
+		</div>
+		{{/order_totals}}
+
+		<h2 class="sub-header middle">Shipping Details:</h2>
+		<a href="/checkout_shipping.php" class="edit-order">(Edit)</a>
+		<div class="shipping-details">
+			<div class="shipping-address">
+				<strong>Ship To Address:</strong><br>
+				{{#shipping_address}}
+				{{> partial-enhanced-address-format.mustache.html }}
+				{{/shipping_address}}
+			</div>
+			<div class="shipping-options">
+				<div class="option">Shipping Method: <strong>{{shipping_method}}</strong></div>
+
+				{{#shipping_account?}}
+				<div class="option">We will ship this order using your {{#carrier}}<strong>{{.}}</strong>{{/carrier}} shipping account # <strong>[{{account_number}}]</strong>, and you will be billed by the carrier directly.</div>
+				{{/shipping_account?}}
+				{{#blind?}}
+				<div class="option">This order will be shipped blind - it will appear to come from your address, and we will not include branding on or in the box.</div>
+				{{/blind?}}
+				{{#reference_number?}}
+				<div class="option">This order will include the following PO/Reference Number on the label: <strong>{{.}}</strong></div>
+				{{/reference_number?}}
+				{{#reclaimed_materials?}}
+				<div class="option">
+					<div class="eco">
+						<img src="/images/static/img/ck-think-green-1-small2.png" style="margin-right:8px;">
+						Thanks for saving the planet by using reclaimed packaging materials!
+					</div>
+				</div>
+				{{/reclaimed_materials?}}
+			</div>
+		</div>
+
+		<h2 class="sub-header middle">Billing Details:</h2>
+		<a href="/checkout_payment.php" class="edit-order">(Edit)</a>
+		<div class="payment-details">
+			<div class="billing-address">
+				<strong>Billing Address:</strong><br>
+				{{#billing_address}}
+				{{> partial-enhanced-address-format.mustache.html }}
+				{{/billing_address}}
+			</div>
+			<div class="payment-options">
+				<div class="option">Payment Method: <strong>{{payment_method}}</strong></div>
+
+				{{#additional_billing_info}}
+				<div class="option">{{description}}: <strong>{{{info}}}</strong></div>
+				{{/additional_billing_info}}
+
+				{{#send_checks?}}
+				<div class="option">
+					<strong>Make Checks Payable To:</strong><br>
+					AtlanTech Resellers, Inc.<br><br>
+
+					<strong>Send Checks To:</strong><br>
+					CablesAndKits.com<br>
+					4555 Atwater Ct.<br>
+					Suite A<br>
+					Buford, GA 30518<br>
+					{{contact_phone}}<br>
+
+					{{#checkmo?}}
+					<br><strong>Note:</strong> Your Order will not ship until we receive payment.
+					{{/checkmo?}}
+				</div>
+				{{/send_checks?}}
+			</div>
+		</div>
+
+		{{#comments}}
+		<h2 class="sub-header middle">Your Order Comments/Instructions:</h2>
+		<a href="/checkout_payment.php" class="edit-order">(Edit)</a>
+		<div><strong>{{.}}</strong></div>
+		{{/comments}}
+
+		{{#admin_comments}}
+		<h2 class="sub-header middle">Admin Order Comments:</h2>
+		<a href="/checkout_payment.php" class="edit-order">(Edit)</a>
+		<div><strong>{{.}}</strong></div>
+		{{/admin_comments}}
+
+		<form action="/checkout_confirmation.php" method="post" class="confirmation-form bottom">
+			<input type="hidden" name="action" value="process-order">
+
+			<div class="complete-order">
+				ALMOST FINISHED!<br>
+				<input type="image" src="//media.cablesandkits.com/static/img/complete-order-button.png" alt="Confirm Order" title="Confirm Order" class="confirm-button">
+			</div>
+
+			{{#cannot_place_any_order}}
+			<div class="net-terms-warning">
+				YOUR CREDIT TERMS HAVE BEEN SUSPENDED. ALL ORDERS WILL BE HELD UNTIL FURTHER NOTICE. PLEASE CONTACT OUR <a href="mailto:accounting@cablesandkits.com">ACCOUNTING DEPARTMENT</a> TO RESOLVE.
+			</div>
+			{{/cannot_place_any_order}}
+			{{#prepaid_only}}
+			<div class="net-terms-warning">
+				Your credit terms have been TEMPORARILY SUSPENDED. You must prepay via credit card or paypal to release this order immediately. Please contact our <a href="mailto:accounting@cablesandkits.com">accounting department</a> to resolve any pending issues and have your terms reinstated.
+			</div>
+			{{/prepaid_only}}
+			{{#over_limit}}
+			<div class="net-terms-warning">
+				This order will place you over your credit limit.  You have {{remaining_credit}} available credit.  This order will be held until your previous invoices have been paid. You still have the option to place your order via Credit Card or Paypal.
+			</div>
+			{{/over_limit}}
+
+			<div class="checkout-note">
+				{{#admin?}}
+				<input type="checkbox" name="send_confirmation_email" class="send_confirmation_email" checked="checked"> Send a confirmation email to {{order_email_address}}.<br><br>
+				<input type="checkbox" name="log_out_as_user" class="log_out_as_user"> Log out from user account.<br>
+				<input type="checkbox" name="view_order_in_admin" class="view_order_in_admin"> Immediately view order in Matrix (automatically logs out user).<br><br>
+					{{#cc_expected?}}
+				<input type="checkbox" name="send_payment_request" class="send_payment_request"> Send payment request email.<br><br>
+					{{/cc_expected?}}
+				{{/admin?}}
+				{{^admin?}}
+					An order confirmation email will be sent to <strong>{{order_email_address}}</strong>.
+				{{/admin?}}
+			</div>
+		</form>
+	</div>
+
+	<ul class="checkout-progress confirmation">
+		<li class="bar"><hr><img class="bullet" src="//media.cablesandkits.com/checkout_bullet.gif"></li>
+		<li class="shipping">Delivery Information</li>
+		<li class="payment">Payment Information</li>
+		<li class="confirmation">Confirmation</li>
+		<li class="success">Finished!</li>
+	</ul>
+</div>
+
+<!-- CK Page Control -->
+<script>
+	jQuery('.confirmation-form').submit(function() {
+		jQuery('.confirm-button').attr('disabled', true);
+	});
+
+	jQuery('.send_confirmation_email').click(function() {
+		jQuery('.send_confirmation_email').attr('checked', jQuery(this).is(':checked'));
+	});
+	jQuery('.view_order_in_admin').click(function() {
+		if (jQuery(this).is(':checked')) {
+			jQuery('.log_out_as_user').attr('checked', true);
+			jQuery('.view_order_in_admin').attr('checked', true);
+		}
+		else jQuery('.view_order_in_admin').attr('checked', false);
+	});
+	jQuery('.log_out_as_user').click(function() {
+		if (!jQuery(this).is(':checked')) {
+			jQuery('.log_out_as_user').attr('checked', false);
+			jQuery('.view_order_in_admin').attr('checked', false);
+		}
+		else jQuery('.log_out_as_user').attr('checked', true);
+	});
+</script>
+
+<!-- Google Remarketing -->
+<script>
+	var google_conversion_id = 1070544332;
+	var google_conversion_language = "en";
+	var google_conversion_format = "3";
+	var google_conversion_color = "666666";
+	var google_conversion_label = "kWT6COjn-QEQzOu8_gM"; // checkout-confirmation
+	var google_conversion_value = 0;
+</script>
+<script src="https://www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+	<div style="display:inline;">
+		<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/1070544332/?label=kWT6COjn-QEQzOu8_gM&amp;guid=ON&amp;script=0">
+	</div>
+</noscript>

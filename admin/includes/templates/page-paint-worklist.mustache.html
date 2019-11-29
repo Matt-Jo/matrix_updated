@@ -1,0 +1,91 @@
+<style>
+	#page-body { width:100%; }
+	.paint-worklist { border-collapse:separate; border-spacing:2px; width:90%; }
+	.paint-worklist th, .paint-worklist td { padding:2px 5px; }
+	.paint-worklist th { padding-right:20px; }
+	.paint-worklist .no-data { font-size:1.2em; font-weight:bold; text-align:center; padding:10px; }
+	#totals { text-align:center; font-size:1.5em; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Paint Worklist</h3>
+	<main>
+		<table class="tablesorter">
+			{{#totals}}
+			<tr id="totals">
+				<th>Allocated: {{total_allocated_to_order}}</th>
+				<th>Zero Available: {{total_zero_available}}</th>
+				<th>In Stock: {{total_in_stock}}</th>
+				<th>Total: {{total_entries}}</th>
+			</tr>
+			{{/totals}}
+		</table>
+		<table class="tablesorter paint-worklist">
+			<thead>
+				<tr>
+					<th>Hold Id</th>
+					<th>IPN</th>
+					<th>Serial</th>
+					<th>Days On Hold</th>
+					<th>Bin #</th>
+					<th>Paint Hold</th>
+					<th>Total on Hold</th>
+					<th>Available</th>
+					<th>On Hand</th>
+					<th>Allocated</th>
+					<th>Urgency</th>
+					<th>Work Order</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#paint_holds}}
+				<tr>
+					<td><a href="/admin/inventory_hold_list.php#hold-id-{{hold_id}}" target="_blank">{{hold_id}}</a></td>
+					<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{ipn}}</a></td>
+					<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}&search_serial={{serial}}&selectedTab=8" target="_blank">{{serial}}</a></td>
+					<td>{{days_on_hold}}</td>
+					<td>{{bin_location}}</td>
+					<td>{{paint_hold}}</td>
+					<td>{{total_hold}}</td>
+					<td>{{available}}</td>
+					<td>{{on_hand}}</td>
+					<td>{{allocated}}</td>
+					<td>{{urgency}}</td>
+					<td>
+						{{#orders}}
+						<a href="/admin/orders_new.php?status=11&oID={{{.}}}&action=edit" target="_blank">{{{.}}} </a>
+						{{/orders}}
+					</td>
+				</tr>
+				{{/paint_holds}}
+			</tbody>
+		</table>
+	</main>
+</td>
+<script>
+	var urgency_priority = [
+		'In Stock',
+		'Zero Available',
+		'Allocated to Order'
+	];
+	jQuery.tablesorter.addParser({
+		id: 'urgency',
+		is: function(s) { return false; },
+		format: function(s) {
+			return urgency_priority.indexOf(s);
+		},
+		type: 'numeric'
+	});
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			3: { sorter: 'digit' },
+			10: { sorter: 'urgency' }
+		},
+		sortList: [[10,1], [3,1], [1,1]]
+	});
+</script>

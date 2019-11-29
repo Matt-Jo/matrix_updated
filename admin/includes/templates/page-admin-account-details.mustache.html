@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+	#page-body { width:100%; }
+	#admin-account-cards .card { max-width:20rem; }
+	.error { font-size:.75em; color:#dc2d07; padding:2px; }
+</style>
+<td id="page-body">
+	<h3>Howdy, {{first_name}}!</h3>
+	{{#success}}
+	<div class="alert alert-success">
+		{{.}}
+	</div>
+	{{/success}}
+	{{#error}}
+	<div class="alert alert-danger" role="alert">
+		{{.}}
+	</div>
+	{{/error}}
+	<div id="admin-account-cards" class="card-deck">
+		<div id="password-card" class="card shadow">
+			<h5 class="card-header">Password</h5>
+			<div class="card-body">
+				<form action="/admin/admin-account-details" method="post">
+					<input type="hidden" name="action" value="update-password">
+					<div class="form-group">
+						<label for="current-password">Current Password</label>
+						<input type="password" id="current-password" name="current_password" class="form-control" placeholder="************">
+					</div>
+					<div class="form-group">
+						<label for="new-password">New Password</label>
+						<input type="password" id="new-password" name="new_password" class="form-control" placeholder="************">
+					</div>
+					<div class="form-group"
+						<label for="new-password-confirmation">Confirm New Password</label>
+						<input type="password" id="new-password-confirmation" name="new_password_confirmation" class="form-control" placeholder="************">
+					</div>
+					<button class="btn btn-primary">Update</button>
+				</form>
+			</div>
+		</div>
+		<div id="phone-number-card" class="card shadow">
+			<h5 class="card-header">Phone Number</h5>
+			<div class="card-body">
+				<form action="/admin/admin-account-details" method="post">
+					<input type="hidden" name="action" value="update-phone-number">
+					<div class="form-group">
+						<input type="text" id="phone-number" name="phone_number" class="form-control" placeholder="***-***-****" value="{{phone_number}}">
+					</div>
+					<button class="btn btn-primary">Update</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</td>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+
+</script>

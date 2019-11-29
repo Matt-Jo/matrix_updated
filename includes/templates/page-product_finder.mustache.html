@@ -1,0 +1,189 @@
+<link rel="stylesheet" href="{{static_files}}/css/product-finder.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.1.3/mustache.min.js"></script>
+{{! these styles use mustache fields, so we still include them here }}
+<style>
+	.pagination .results-view .resview.list.on { background-image:url({{static_files}}/img/results-list-view-on.jpg); }
+	.pagination .results-view .resview.list.off { background-image:url({{static_files}}/img/results-list-view-off.jpg); }
+	.pagination .results-view .resview.grid.on { background-image:url({{static_files}}/img/results-grid-view-on.jpg); }
+	.pagination .results-view .resview.grid.off { background-image:url({{static_files}}/img/results-grid-view-off.jpg); }
+</style>
+<div class="main-body full-width">
+	<!--section id="finder-page-header" class="main-content full-width">
+		<h2 class="pf-header">{{finder.specific_category}}</h2>
+	</section-->
+	<section id="product-finder" class="main-content full-width">
+		<h2 class="pf-header">{{finder.main_category}} - Quick Order Tool</h2>
+		<div class="pf-options-main">
+			<div class="opt">
+				<h3 class="opt-header">1. Category</h3>
+				<ul id="opt-category" {{!class="{{^categories} }only{{/categories} }"}}>
+					{{#finder.categories}}
+					<li><a href="#" class="category-select find-val {{#selected?}}selected{{/selected?}}" data-key="Category" data-val="{{id}}" data-desc="{{{name}}}"><input type="radio" name="category" {{#selected?}}checked{{/selected?}}> {{{name}}}</a></li>
+					{{/finder.categories}}
+				</ul>
+			</div>
+			<div class="opt-next">
+				<img src="{{static_files}}/img/pf-next-opt.jpg" alt="Next">
+			</div>
+			<div class="opt">
+				<h3 class="opt-header">2. Color</h3>
+				<ul id="opt-color">
+					{{#finder.colors}}
+					<li><a href="#" class="color-select find-val {{selhex}} {{^enabled?}}disabled{{/enabled?}}" style="background-color:{{hex}}; color:{{hex}}" data-key="Color" data-val="{{color}}" title="{{color}}"><div class="chk">&#x2714;</div><div class="crss">&#x2716;</div></a></li>
+					{{/finder.colors}}
+				</ul>
+			</div>
+			<div class="opt-next">
+				<img src="{{static_files}}/img/pf-next-opt.jpg" alt="Next">
+			</div>
+			<div class="opt" style="margin-right:5px;">
+				<h3 class="opt-header">3. Length in Feet</h3>
+				<ul id="opt-length">
+					{{#finder.lengths}}
+					<li><a href="#" class="length-select find-val {{#top?}}top{{/top?}} {{#left?}}left{{/left?}}" data-key="Length" data-val="{{length}}" title="{{length}}">{{display_length}}<div class="chk">&#x2714;</div><div class="crss">&#x2716;</div></a></li>
+					{{/finder.lengths}}
+				</ul>
+			</div>
+		</div>
+		<div class="pf-options-advanced">
+			<a href="#" id="advanced-toggle">[ Advanced Options ] <span class="selections">{{finder.selections}}</span></a>
+			<div class="pf-options-clear">
+				<a href="#" id="clear-all">[ Clear Selections ]</a>
+			</div>
+			<div class="pf-options-hidden">
+				<div class="opt-group">
+					<input type="radio" class="find-val selected" name="Shielded" value="No" checked data-key="Shielded"> <span class="advanced-opt-label" id="Shielded-No">Non-Shielded</span><br>
+					<input type="radio" class="find-val" name="Shielded" value="Yes" data-key="Shielded"> <span class="advanced-opt-label" id="Shielded-Yes">Shielded</span><br>
+				</div>
+				<div class="opt-group">
+					<input type="radio" class="find-val selected" name="Boot" value="Booted" checked data-key="Boot"> <span class="advanced-opt-label" id="Boot-Booted">Booted</span><br>
+					<input type="radio" class="find-val" name="Boot" value="Non-Booted" data-key="Boot"> <span class="advanced-opt-label" id="Boot-Non-Booted">Non-Booted</span><br>
+				</div>
+				<div class="opt-group">
+					<input type="radio" class="find-val selected" name="Crossover" value="No" checked data-key="Crossover"> <span class="advanced-opt-label" id="Crossover-No">Straight Through</span><br>
+					<input type="radio" class="find-val" name="Crossover" value="Yes" data-key="Crossover"> <span class="advanced-opt-label" id="Crossover-Yes">Crossover</span><br>
+				</div>
+			</div>
+		</div>
+		<div class="pf-result-summary">
+			<div class="placeholder">&#8203;<!-- zero-width space keeps the vertical spacing when other elements are hidden --></div>
+
+			<div class="results"><a href="#" class="show-all-results">{{finder.results_cnt}} Results [ <span>see all</span> ]</a></div>
+
+			<div class="pagination">
+				<!-- fill with template -->
+			</div>
+
+			<div class="pf-options-loading">
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+			</div>
+		</div>
+		<div class="pf-result-product">
+			<!-- fill with template -->
+		</div>
+		<div class="pf-result-summary bottom">
+			<div class="placeholder">&#8203;<!-- zero-width space keeps the vertical spacing when other elements are hidden --></div>
+
+			<div class="pagination">
+				<!-- fill with template -->
+			</div>
+		</div>
+	</section>
+
+	{{#categories}}
+	<section id="shop-by-category" class="main-content full-width">
+		<h2 class="pf-header">Shop by Category</h2>
+		<div class="grid grid-pad">
+			{{#cats}}
+				<div class="pf-category col-4-12">
+					<a href="{{link}}" data-name="{{{name}}}" class="category-header">
+						<div class="cat-name">{{{name}}} <span>&gt;</span></div>
+						<div class="cat-img"><img src="{{cdn}}/{{img}}" alt="{{{name}}}"></div>
+						<div class="cat-desc">{{{description}}}</div>
+					</a>
+					{{#subcategories}}
+					<a href="{{link}}" class="subcat-link">{{name}}</a>
+					{{/subcategories}}
+				</div>
+				{{/cats}}
+		</div>
+		<table cellpadding="0" cellspacing="0" border="0" class="category-list">
+			<tbody>
+				<tr>
+					{{#cats}}
+					<td class="pf-category">
+						<a href="{{link}}" data-name="{{{name}}}" class="category-header">
+							<div class="cat-name">{{{name}}} <span>&gt;</span></div>
+							<div class="cat-img"><img src="{{cdn}}/{{img}}" alt="{{{name}}}"></div>
+							<div class="cat-desc">{{{description}}}</div>
+						</a>
+						{{#subcategories}}
+						<a href="{{link}}" class="subcat-link">{{name}}</a>
+						{{/subcategories}}
+					</td>
+					{{/cats}}
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	{{/categories}}
+
+	<section id="shop-by-application" class="main-content full-width">
+		<h2 class="pf-header">Shop by {{sbacat}} Application</h2>
+		{{#applications}}
+			{{#newrow?}}
+				{{^toprow?}}
+		<hr class="app-row-separator">
+				{{/toprow?}}
+		<table cellpadding="0" cellspacing="0" border="0" style="margin:0px auto;">
+			<tbody>
+				<tr>
+			{{/newrow?}}
+					<td class="pf-application {{#rowbreak?}}rowbreak{{/rowbreak?}}">
+						<a href="{{link}}" data-name="{{{name}}}" class="application-header">
+							<div class="app-name">{{name}}</div>
+							<div class="app-img"><img src="{{cdn}}/{{img}}" alt="{{name}}"></div>
+						</a>
+						{{#subcategories}}
+						<div style="text-align:center;">
+							{{#subcats}}
+						<a href="{{link}}" class="application-link">{{name}}</a>
+							{{/subcats}}
+						</div>
+						{{/subcategories}}
+					</td>
+			{{#rowbreak?}}
+				</tr>
+			</tbody>
+		</table>
+			{{/rowbreak?}}
+		{{/applications}}
+	</section>
+
+	<section id="q-and-a" class="main-content full-width">
+		<h2 class="pf-header">Questions &amp; Answers</h2>
+		<div class="yotpo yotpo-main-widget" data-product-id="cat-{{yotpo_page_id}}" data-name="{{finder.main_category}}" data-url="{{yotpo_page_url}}" data-mode="questions"></div>
+	</section>
+</div>
+{{! these elements use mustache fields so we still include them here }}
+<script>
+	var default_cPath = '{{cPath}}';
+	var cPath = '{{cPath}}';
+	var focus = '{{major}}';
+	var major = '{{major}}';
+	var minor = '{{minor}}';
+	var page = '{{page}}';
+	var cdn = '{{cdn}}';
+	var static_files = '{{static_files}}';
+</script>
+<script src="/images/static/js/product-finder.js?v=4"></script>

@@ -1,0 +1,71 @@
+<style>
+	#page-body { width:100%; }
+	#product-feed-exceptions { white-space:pre; border-collapse:separate; border-spacing:2px; width:90%; }
+	#export_button { margin-bottom:1.5em; }
+	#filter_form { display:block; }
+	#product-feed-exceptions th, #receiving-worklist td { padding:2px 5px; }
+	#product-feed-exceptions th { padding-right:20px; }
+	#product-feed-exceptions .no-data { font-size:1.2em; font-weight:bold; text-align:center; padding:10px; }
+	#table_description { font-size: .65em; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+<h4>Product Feed Exceptions</h4>
+	<p id="table_description">*This page excludes products set to inactive, ipn's set to discontinued, and anything with zero stock</p>
+	<a id="export_button" href="/admin/product-feed-exceptions.php?selected_box=marketing&export=product_exceptions" target="_blank"><button>Export Exceptions</button></a>
+	<form id="filter_form" method="POST" action="/admin/product-feed-exceptions.php?selected_box=marketing" name="feed_selection_form">
+		<label for="feed_name_selection">Feed:</label>
+		<select id="feed_name_selection" name="feed_name_selection">
+			<option value="all">All</option>
+		{{#feed_list}}
+			<option value="{{feed}}">{{feed}}</option>
+		{{/feed_list}}
+		</select>
+		<label for="feed_reason_selection">Reason:</label>
+		<select id="feed_reason_selection" name="feed_reason_selection">
+			<option value="all">All</option>
+		{{#feed_reason}}
+			<option value="{{reason}}">{{reason}}</option>
+		{{/feed_reason}}
+		</select>
+		<button type="submit">Submit</button>
+	</form>
+	<table id="product-feed-exceptions" class="tablesorter">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Feed</th>
+				<th>Reason</th>
+				<th>IPN</th>
+				<th>Condition</th>
+				<th>Product</th>
+				<th>Category</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#product_exceptions}}
+			<tr>
+				<td>{{feed_failure_tracking_id}}</td>
+				<td>{{feed}}</td>
+				<td>{{reason}}</td>
+				<td><a href="/admin/ipn_editor.php?ipnId={{stock_name}}" target="_blank">{{stock_name}}</a></td>
+				<td>{{conditions_name}}</td>
+				<td>{{products_model}}</td>
+				<td>{{category}}</td>
+			</tr>
+			{{/product_exceptions}}
+		</tbody>
+	</table>
+</td>
+<script>
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			3: { sorter: 'digit' }
+		}
+	});
+</script>

@@ -1,0 +1,702 @@
+<link href="includes/javascript/simplemodal.css?v=1.01" rel="stylesheet" type="text/css" media="screen">
+<style>
+	.main-body-container { margin-bottom:15px; width:auto; }
+	.main-body-inner-container { margin:0px 0px 20px 0px; padding:20px; font-size:13px; line-height:1.5em; }
+
+	.main-body-header { display:inline-block; }
+
+	.sub-header { color:#777; font-size:18px; border-bottom:1px solid #ccc; margin:0px 0px 15px 0px; padding-bottom:7px; }
+
+	.main-body-inner-container a { font-weight:bold; color:#3f6b94; }
+
+	.template-basic .main-body-inner-container.error-stack { background-color:#fee; border-color:#c00; }
+
+	.addresses { font-size:14px; }
+
+	.address { border-radius:5px; padding:3px 8px; border:1px solid #fff; cursor:pointer; margin-bottom:5px; }
+	.addr .address-spacer { white-space:pre-wrap; }
+	.addr .address-spacer br { display:none; }
+	.address .shipping-address-id { position:relative; top:2px; margin-right:12px; }
+	.address a { margin-left:12px; }
+	.address.selected { background-color:#dfebff; border-color:#3f6b94; }
+	.address:hover { background-color:#ffffdf; border-color:#94943f; }
+
+	.other-addresses { margin:5px 0px; display:none; }
+
+	.add-new-address .enter-new-address { margin-top:0px; top:0px; }
+
+	.add-new-address { display:none; background-color:#eef; border:1px solid #ccc; border-radius:5px; margin:15px 0px 5px 0px; font-size:14px; padding:7px; }
+	.add-new-address h3 { color:#777; font-size:16px; border-bottom:1px solid #ccc; margin:0px 0px 12px 0px; padding-bottom:4px; }
+	.add-new-address .address-field { margin-bottom:6px; display:inline-block; width:48%; min-width:320px; }
+	.add-new-address .address-field label { display:inline-block; width:120px; }
+
+	.add-new-address .new-address-state-block { display:inline; }
+
+	.add-new-address #address-err { background-color:#fee; border:1px solid #c00; padding:4px; display:none; }
+
+	.req { color:#f00; }
+
+	.po-box-notice { font-size:12px; text-align:center; color:black; background-color:#ff9; padding:3px; margin:5px 0px; }
+
+	.ship-option { padding:6px 6px; }
+	.disabled-option { color:#aaa; }
+	.ship-option input { position:relative; top:3px; padding-right:3px; }
+	.eco { border:1px solid #6f6; background-color:#efe; border-radius:8px; margin:20px 10px 0px 0px; }
+
+	.ship-option-modal { position:absolute; padding:10px 12px; /*background-color:*/ }
+
+	.ciInfo h3 { color:#325b6f; }
+
+	.account-on-file, .account-alternate { padding-left:30px; line-height:22px; }
+	.alternate-account { display:inline-block; width:100px; }
+
+	.disabled-shipping-account { font-size:16px; color:#c00; margin:10px 40px; }
+
+	.international-warning { background-color:#ff0; margin:0px; padding:4px 14px 4px 34px; font-size:14px; display:none; }
+	.international-warning.is-international { display:block; }
+
+	.shipping-methods-holder.loading { text-align:center; font-size:18px; padding:10px; }
+
+	.order-comments { width:99%; }
+
+	.admin-block { background-color:#ffc; border-top:1px solid #bbb; margin:5px 0px 0px 0px; padding:5px; }
+	.admin-block textarea { background-color:#ffe; }
+
+	.checkout-submit { text-align:right; margin-top:10px; }
+
+	.checkout-progress { margin:25px auto 0px auto; padding:0px; /*border-top:#bbc3d3 solid 1px;*/ position:relative; text-align:center; }
+	.checkout-progress li.bar { width:720px; margin:0px auto; height:7px; position:relative; border-style:solid; border-color:#bbc3d3; border-width:0px 1px; padding:0px; display:block; }
+	.checkout-progress li.bar hr { border-color:#bbc3d3; height:1px; position:relative; top:3px; }
+	.checkout-progress .bullet { position:absolute; top:-2px; }
+	.checkout-progress.shipping .bullet { left:-5px; }
+	.checkout-progress.payment .bullet { left:270px; }
+	.checkout-progress.confirmation .bullet { right:200px; }
+	.checkout-progress.success .bullet { right:-5px; }
+	.checkout-progress li { display:inline-block; list-style-type:none; margin:0px 80px; padding:8px 0px 0px 0px; text-align:center; font-size:12px; color:#8c8c8c; }
+	.checkout-progress.shipping li.shipping { color:#000; }
+	.checkout-progress.payment li.payment { color:#000; }
+	.checkout-progress.confirmation li.confirmation { color:#000; }
+	.checkout-progress.success li.success { color:#000; }
+	.choose-other-address { display:none; }
+	#alternate-account-container { display:none; }
+	#checkout-breadcrumbs { top:5px; }
+
+	@media (max-width:980px) {
+		.address { border-bottom:1px solid #888; }
+
+		.checkout-progress { margin:10px auto; }
+		.checkout-progress li.bar { display:none; }
+		.checkout-progress li { margin:0px 40px; padding:3px 8px; }
+		.checkout-progress.shipping li.shipping { background-color:#cfc; }
+		.checkout-progress.payment li.payment { background-color:#cfc; }
+		.checkout-progress.confirmation li.confirmation { background-color:#cfc; }
+		.checkout-progress.success li.success { background-color:#cfc; }
+	}
+
+	@media (max-width:700px) {
+		.add-new-address { text-align:center; }
+	}
+
+	@media (max-width:500px) {
+		.address { padding-left:30px; }
+		.addr .address-spacer { white-space:normal; }
+		.addr .address-spacer br { display:initial; }
+
+		.add-new-address .address-field { width:200px; min-width:0px; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<div class="tools breadcrumbs" id="checkout-breadcrumbs">{{{breadcrumbs}}}</div>
+
+	{{#error}}
+	<div class="main-body-inner-container error-stack">
+		<h2 class="sub-header">Errors:</h2>
+		{{{.}}}
+	</div>
+	{{/error}}
+
+	<form id="shipping-method-form" action="/checkout_shipping.php" method="post">
+		<input type="hidden" name="action" value="select-shipping">
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Choose Shipping Address:</h2>
+			<div class="addresses">
+				{{#default_address}}
+				<div class="address selected addr-{{address_id}}" data-address-id="{{address_id}}">
+					<input type="radio" class="shipping-address-id addr-{{address_id}}" name="shipping_address_id" value="{{address_id}}" required checked data-address-id="{{address_id}}" data-is-default="{{#is_default}}1{{/is_default}}" data-is-international="{{#is_international}}1{{/is_international}}"> <span class="addr">{{> partial-address-format.mustache.html}}</span>
+					{{! <a href="#" class="edit-address" data-address-id="{{address_id} }">Edit</a> }}
+				</div>
+				{{/default_address}}
+
+				<div><a href="#" class="choose-other-address">Choose Other Address</a></div>
+				<div class="other-addresses">
+					{{#addresses}}
+					<div class="address addr-{{address_id}}" data-address-id="{{address_id}}">
+						<input type="radio" class="shipping-address-id addr-{{address_id}}" name="shipping_address_id" value="{{address_id}}" required data-address-id="{{address_id}}" data-is-default="{{#is_default}}1{{/is_default}}" data-is-international="{{#is_international}}1{{/is_international}}"> <span class="addr">{{> partial-address-format.mustache.html}}</span>
+						{{! <a href="#" class="edit-address" data-address-id="{{address_id} }">Edit</a> }}
+					</div>
+					{{/addresses}}
+					{{#more?}}
+					Don't see your address here? <a href="/checkout_address.php?target=shipping">Choose from all of your addresses</a>
+					{{/more?}}
+				</div>
+
+				<div class="po-box-notice">***Please note: If your address is a P.O. Box we cannot ship to it, please provide a physical address. If you have any questions, please contact your <a href="mailto:{{contact_email}}" title="{{contact_phone}}">Sales Team</a>.</div>
+
+				<a href="#" class="enter-new-address">Enter New Address</a>
+
+				<div class="add-new-address">
+					<h3>Add New Billing Address:</h3>
+					<p>Fields marked with <span class="req">(*)</span> are required</p>
+					<p id="address-err"></p>
+
+					<input type="hidden" id="edit-address-id" name="edit-address-id" value="">
+
+					<div class="address-field">
+						<label for="use-this-address">Ship to this address:</label> <input id="new-address-use" type="checkbox" name="use-this-address">
+					</div><br>
+					<div class="address-field">
+						<label for="address-firstname" class="req">*First Name:</label> <input id="new-address-firstname" type="text" name="address-firstname">
+					</div>
+					<div class="address-field">
+						<label for="address-lastname" class="req">*Last Name:</label> <input id="new-address-lastname" type="text" name="address-lastname">
+					</div>
+					<div class="address-field">
+						<label for="address-company">Company:</label> <input id="new-address-company" type="text" name="address-company">
+					</div><br>
+					<div class="address-field">
+						<label for="address-street1" class="req">*Address:</label> <input id="new-address-street1" type="text" name="address-street1">
+					</div>
+					<div class="address-field">
+						<label for="address-street2">Suite/Unit:</label> <input id="new-address-street2" type="text" name="address-street2">
+					</div>
+					<div class="address-field">
+						<label for="address-city" class="req">*City:</label> <input id="new-address-city" type="text" name="address-city">
+					</div>
+					<div class="address-field">
+						<label for="address-state" class="req">*State/Province:</label>
+						<div class="new-address-state-block">
+							{{#states.0}}
+							<select id="new-address-state" name="address-state">
+								<option value="">Choose</option>
+								{{#states}}
+								<option value="{{zone_name}}" {{#selected?}}selected{{/selected?}}>{{zone_name}}</option>
+								{{/states}}
+							</select>
+							{{/states.0}}
+							{{^states.0}}
+							<input id="new-address-state" type="text" name="address-state">
+							{{/states.0}}
+						</div>
+					</div>
+					<div class="address-field">
+						<label for="address-postcode" class="req">*Zip Code:</label> <input id="new-address-postcode" type="text" name="address-postcode">
+					</div>
+					<div class="address-field">
+						<label for="address-country" class="req">*Country:</label>
+						<select id="new-address-country" name="address-country">
+							<option>Choose</option>
+							{{#countries}}
+							<option value="{{countries_id}}" {{#selected?}}selected{{/selected?}}>{{countries_name}}</option>
+							{{/countries}}
+						</select>
+					</div>
+					<div class="address-field">
+						<label for="address-phone" class="req">*Phone:</label> <input id="new-address-phone" type="text" name="address-phone">
+					</div>
+
+					<hr>
+					<button type="button" id="add-address-submit">Add Address</button>
+					<button type="button" class="enter-new-address">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Select Shipping Options:</h2>
+			<div class="ship-option">
+				<input type="checkbox" class="blind" name="dropship" value="1" {{^blind-allowed?}}disabled{{/blind-allowed?}} {{#blind}}checked{{/blind}}>
+				<span class="blind {{^blind-allowed?}}disabled-option{{/blind-allowed?}}"><strong>Blind Shipment</strong> (Order will appear to come from your address and will not include a packing slip).</span>
+			</div>
+			<div class="ship-option">
+				<input type="checkbox" name="po_marker" value="1" {{#ref-number}}checked{{/ref-number}}>
+				<strong>Print this PO/Reference Number on the label:</strong>
+				<input type="text" id="purchase-order-number" name="purchase_order_number" value="{{ref-number}}" style="position:relative;left:5px;top:-1px;">
+			</div>
+			<div class="ship-option eco">
+				<input type="checkbox" id="use-reclaimed-packaging" name="use_reclaimed_packaging" {{#use_reclaimed_packaging}}checked{{/use_reclaimed_packaging}}>
+				<img src="/images/static/img/ck-think-green-1-small2.png" style="margin-right:8px;">
+				<strong>Save the Earth! Use a reclaimed box and/or packaging materials to ship my order.</strong> <a href="#" class="ci-modal" data-modal-id="ci_use_reclaimed_packaging" data-modal-height="600"><img src="//media.cablesandkits.com/static/img/question_mark_circle.png"></a>
+				<div id="ci_use_reclaimed_packaging" class="ciInfo">
+					<h3>What does "Reclaimed Box/Packaging Materials" mean?</h3>
+					<p>In an effort to “reduce and reuse” we may use a box and/or packaging materials that have been reclaimed from an inbound shipment or a customer RMA to pack and ship your orders. These are boxes and filler material that are perfectly usable but that have traditionally not been used due to being cosmetically challenged or “imperfect”. Rather than throw away or recycle these items, we can reuse these materials to send you your order. Make the planet smile – reduce/reuse!</p>
+					{{! In efforts to care for our planet, we are offering you the opportunity to receive your orders in a reclaimed box and/or with reclaimed packaging materials.  These are boxes and filler that are perfectly usable, the only reason we don't use them already is because they aren't brand new.  Rather than throw away or recycle these items, at your option we can reuse these materials to send you your items. }}
+					<div class="desktop-only">
+						<img src="/images/static/img/box-new.jpg"> New Boxes &amp; Materials<br>
+						<img src="/images/static/img/box-reclaimed.jpg"> Reclaimed Boxes &amp; Materials
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Use Your Shipping Account:</h2>
+			<div class="ship-option">
+				<input type="radio" class="shipping_account" id="pay-ck-for-shipping" name="shipping_account" value="shipper" data-carrier="ups" required checked>
+				<label for="pay-ck-for-shipping">Bill shipping to your order</label>{{! 4 }}
+			</div>
+			{{^shipping_account.shipping_account_disabled?}}
+			<div class="ship-option" id="use-alternate-account-container">
+				<input type="radio" class="shipping_account" id="use-alternate-account" name="shipping_account" value="customer-alternate" required>
+				<label for="use-alternate-account">Bill shipment to this alternate shipping account</label>{{! 0 }}
+				<div class="account-alternate" id="alternate-account-container">
+					<select class="alternate-account" id="select-alternate-account" name="alternate_account_selection" style="vertical-align:bottom; font-size:10px;">
+						<option data-carrier="ups" value="ups">UPS Account</option>
+						<option data-carrier="fedex" value="fedex">FedEx Account</option>
+					</select>
+					<input type="text" class="shipping_account_alternate" id="alternate-shipping-account" name="shipping_account_alternate" value="{{shipping_account_alternate}}" placeholder="Shipping Account Number">
+				</div>
+			</div>
+			{{/shipping_account.shipping_account_disabled?}}
+			{{#shipping_account}}
+			<strong>Your account is set to ship using your shipping account.</strong>
+			{{#shipping_account_disabled?}}
+			<div class="disabled-shipping-account">You cannot select your UPS or FedEx account for Oversized/Best Fit Freight orders. For specific shipping arrangements, please contact <a href="mailto:{{contact_email}}" title="{{contact_phone}}">your sales team</a>.</div>
+			{{/shipping_account_disabled?}}
+			{{^shipping_account_disabled?}}
+			<div class="ship-option">
+				<input type="radio" class="shipping_account" id="use-on-file-customer-account" name="shipping_account" value="customer-on-file" required {{#customer_on_file}}checked{{/customer_on_file}}>
+				<label for="use-on-file-customer-account">Bill this shipment to our shipping account on file</label>{{! 2 }}
+				<div class="account-on-file">
+					<select name="on_file_shipping_account_selection" id="on-file-shipping-account-selection">
+						{{#ups_account}}
+						<option data-carrier="ups" value="ups[{{.}}]">UPS Account: <strong>{{.}}</strong></option>
+						{{/ups_account}}
+						{{#fedex_account}}
+						<option data-carrier="fedex" value="fedex[{{.}}]">Fedex Account: <strong>{{.}}</strong></option>
+						{{/fedex_account}}
+					</select>
+				</div>
+			</div>
+			{{/shipping_account_disabled?}}
+			{{/shipping_account}}
+		</div>
+		<div class="main-body-inner-container">
+			<h2 class="sub-header" style="margin-bottom:0px; border-bottom:0px;">Select Shipping Method:</h2>
+			<div class="international-warning {{#international?}}is-international{{/international?}}">
+				Attention! The recipient will be responsible for Brokerage Fees, Duties, and Taxes imposed by the governing authorities of the destination country. These charges are billed directly to the recipient and may be collected before, during or after delivery of the products. CablesAndKits has no say or control over the fees charged (with few exceptions). If you have any questions please contact us prior to placing your order.
+			</div>
+
+			<div class="shipping-methods-holder loading">LOADING...</div>
+		</div>
+
+		<div class="main-body-inner-container">
+			<h2 class="sub-header">Order Comments/Instructions:</h2>
+			<p>If you have comments or instructions about your order please enter them here. We do not include any information you enter here in your order, it is only a method for you to communicate with us concerning this order.</p>
+			<textarea class="order-comments" name="comments" wrap="soft" cols="60" rows="5">{{comments}}</textarea>
+			{{#admin?}}
+			<div class="admin-block">
+				<p>Please add any admin notes for this order here.</p>
+				<textarea class="order-comments" name="admin_comments" wrap="soft" cols="60" rows="5">{{admin_comments}}</textarea>
+			</div>
+			{{/admin?}}
+			<div class="checkout-submit">
+				<input type="image" src="//media.cablesandkits.com/static/img/continue-button.png" alt="Continue" title=" Continue ">
+			</div>
+		</div>
+	</form>
+
+	<ul class="checkout-progress shipping">
+		<li class="bar"><hr><img class="bullet" src="//media.cablesandkits.com/checkout_bullet.gif"></li>
+		<li class="shipping">Delivery Information</li>
+		<li class="payment">Payment Information</li>
+		<li class="confirmation">Confirmation</li>
+		<li class="success">Finished!</li>
+	</ul>
+</div>
+<script src="includes/javascript/jquery-ui-1.8.custom.min.js"></script>
+<script src="includes/javascript/jquery.simplemodal.1.4.3.min.js"></script>
+<script>
+	jQuery('.checkout-submit input').on('click', function (event) {
+		if (jQuery('#use-alternate-account').is(':checked') && jQuery('#alternate-shipping-account').val() == '') alert('You have choosen to use your own shipping account. Before continuing, please enter your account number or choose a different shipping payment option');
+
+		let purchase_order_number = jQuery('#purchase-order-number').val();
+		if (purchase_order_number != '') {
+			jQuery.ajax({
+				url: 'checkout_shipping.php',
+				method: 'get',
+				dataType: 'json',
+				data: {
+					ajax: 1,
+					action: 'confirm-po-number',
+					purchase_order_number: purchase_order_number
+				},
+				timeout: 12000,
+				beforeSend: function () {
+					event.preventDefault();
+				},
+				success: function(data) {
+					if (data) {
+						let confirmation = confirm('Are you sure you want to use a po/reference number that has already been used on one of your orders before?');
+						if (!confirmation) return false;
+					}
+
+					jQuery('#shipping-method-form').submit();
+				}
+			});
+		}
+	});
+
+	var customer_carrier_selection;
+	jQuery('.shipping_account:checked').each(function(opt) {
+		if (jQuery(this).val() == 'shipper') customer_carrier_selection = jQuery(this).attr('data-carrier');
+		else if (jQuery(this).val() == 'customer-alternate') customer_carrier_selection = jQuery('#select-alternate-account').find(':selected').attr('data-carrier');
+		else if (jQuery(this).val() == 'customer-on-file') customer_carrier_selection = jQuery('#on-file-shipping-account-selection').find(':selected').attr('data-carrier');
+	});
+	jQuery('#select-alternate-account, #on-file-shipping-account-selection').on('change', function () {
+		let refresh = false;
+		let input_id = jQuery(this).attr('id');
+		let carrier = jQuery(this).find(':selected').attr('data-carrier');
+		if (input_id == 'on-file-shipping-account-selection') {
+			if (jQuery('#use-on-file-customer-account').is(':checked') && carrier != customer_carrier_selection) refresh = true;
+		}
+		else if (input_id == 'select-alternate-account') {
+			if (jQuery('#use-alternate-account').is(':checked') && carrier != customer_carrier_selection) refresh = true;
+		}
+		customer_carrier_selection = carrier;
+		if (refresh) refresh_quotes(customer_carrier_selection);
+	});
+
+	jQuery('.shipping_account').on('change', function () {
+		let input_id = jQuery(this).attr('id');
+		let refresh = false;
+		if (input_id != 'use-alternate-account' && !jQuery('#use-alternate-account').is(':checked')) jQuery('#alternate-account-container').hide();
+		else jQuery('#alternate-account-container').show();
+
+		if (input_id == 'pay-ck-for-shipping') {
+			if (jQuery(this).is(':checked') && jQuery(this).attr('data-carrier') != customer_carrier_selection) {
+				customer_carrier_selection = jQuery(this).attr('data-carrier');
+				refresh = true;
+			}
+		}
+		else if (input_id == 'use-alternate-account') {
+			if (jQuery(this).is(':checked')) {
+				jQuery('#alternate-account-container').show();
+				if (jQuery('#select-alternate-account').find(':selected').attr('data-carrier') != customer_carrier_selection) {
+					customer_carrier_selection = jQuery('#select-alternate-account').find(':selected').attr('data-carrier');
+					refresh = true;
+				}
+			}
+		}
+		else if (input_id == 'use-on-file-customer-account') {
+			if (jQuery(this).is(':checked')) {
+				if (jQuery('#on-file-shipping-account-selection').find(':selected').attr('data-carrier') != customer_carrier_selection) {
+					customer_carrier_selection = jQuery('#on-file-shipping-account-selection').find(':selected').attr('data-carrier');
+					refresh = true;
+				}
+			}
+		}
+		if (refresh) refresh_quotes(customer_carrier_selection);
+	});
+
+	if (jQuery('.other-addresses > .address').length > 0) jQuery('.choose-other-address').show();
+	jQuery('#new-address-country').change(reload_zones);
+
+	function reload_zones(zone) {
+		jQuery.ajax({
+			url: '/checkout_shipping.php',
+			type: 'get',
+			dataType: 'json',
+			data: { action: 'reload-zones', ajax: 1, countries_id: jQuery('#new-address-country').val() },
+			timeout: 8000,
+			success: function(data) {
+				if (data.states.length > 0) {
+					let $select = jQuery('<select id="new-address-state" name="address-state"><option value="">Choose</option></select>');
+
+					for (var i=0; i<data.states.length; i++) {
+						$select.append('<option value="'+data.states[i].zone_code+'" '+(data.states[i].zone_code==zone?'selected':'')+'>'+data.states[i].zone_name+'</option>');
+					}
+
+					jQuery('.new-address-state-block').html($select);
+				}
+				else {
+					jQuery('.new-address-state-block').html('<input id="new-address-state" type="text" name="address-state">');
+				}
+			}
+		});
+	}
+
+	jQuery('.enter-new-address').click(function(e) {
+		e.preventDefault();
+
+		jQuery('.add-new-address h3').html('Add New Shipping Address');
+		jQuery('.add-new-address #add-address-submit').html('Add Address');
+
+		jQuery('#edit-address-id').val('');
+		jQuery('#new-address-firstname').val('');
+		jQuery('#new-address-lastname').val('');
+		jQuery('#new-address-company').val('');
+		jQuery('#new-address-street1').val('');
+		jQuery('#new-address-street2').val('');
+		jQuery('#new-address-city').val('');
+		jQuery('#new-address-state').val('');
+		jQuery('#new-address-postcode').val('');
+		jQuery('#new-address-country').val({{default_country}});
+		jQuery('#new-address-phone').val('');
+
+		jQuery('#address-err').html('').hide();
+
+		jQuery('.add-new-address').toggle();
+		jQuery('#new-address-use').attr('checked', jQuery('.add-new-address').is(':visible'));
+	});
+
+	jQuery('#add-address-submit').click(function(e) {
+		jQuery('#address-err').html('').hide();
+
+		let fields = { action: 'save-address', ajax: 1, edit_address_id: jQuery('#edit-address-id').val() };
+
+		fields.first_name = jQuery('#new-address-firstname').val();
+		fields.last_name = jQuery('#new-address-lastname').val();
+		fields.company = jQuery('#new-address-company').val();
+		fields.address1 = jQuery('#new-address-street1').val();
+		fields.address2 = jQuery('#new-address-street2').val();
+		fields.city = jQuery('#new-address-city').val();
+		fields.state = jQuery('#new-address-state').val();
+		fields.postcode = jQuery('#new-address-postcode').val();
+		fields.country_id = jQuery('#new-address-country').val();
+		fields.phone = jQuery('#new-address-phone').val();
+
+		if (!fields.first_name) {
+			jQuery('#address-err').html('Please enter first name.').show();
+			return;
+		}
+		if (!fields.last_name) {
+			jQuery('#address-err').html('Please enter last name.').show();
+			return;
+		}
+		if (!fields.address1) {
+			jQuery('#address-err').html('Please enter address.').show();
+			return;
+		}
+		if (!fields.city) {
+			jQuery('#address-err').html('Please enter city.').show();
+			return;
+		}
+		if (!fields.state) {
+			jQuery('#address-err').html('Please enter state.').show();
+			return;
+		}
+		if (!fields.postcode) {
+			jQuery('#address-err').html('Please enter zip code.').show();
+			return;
+		}
+		if (!fields.country_id) {
+			jQuery('#address-err').html('Please enter country.').show();
+			return;
+		}
+		if (!fields.phone) {
+			jQuery('#address-err').html('Please enter phone.').show();
+			return;
+		}
+
+		jQuery.ajax({
+			url: '/checkout_shipping.php',
+			type: 'post',
+			dataType: 'json',
+			data: fields,
+			//timeout: 8000,
+			success: function(data) {
+				if (data.error) {
+					jQuery('#address-err').html(data.error).show();
+					return;
+				}
+
+				let $address = jQuery('<div class="address addr-'+data.address_id+'" data-address-id="'+data.address_id+'"><input type="radio" class="shipping-address-id addr-'+data.address_id+'" name="shipping_address_id" value="'+data.address_id+'" required data-address-id="'+data.address_id+'" data-is-default="" data-is-international="'+data.is_international+'"> <span class="addr">'+data.address+'</span><a href="#" class="edit-address" data-address-id="'+data.address_id+'">Edit</a></div>');
+
+				if (data.edit) jQuery('.addr-'+data.address_id).replaceWith($address);
+				else jQuery('.other-addresses').prepend($address).show();
+
+				if (jQuery('#new-address-use').is(':checked')) select_address.call($address);
+
+				jQuery('.add-new-address').hide();
+				jQuery('#edit-address-id').val('');
+				jQuery('#new-address-firstname').val('');
+				jQuery('#new-address-lastname').val('');
+				jQuery('#new-address-company').val('');
+				jQuery('#new-address-street1').val('');
+				jQuery('#new-address-street2').val('');
+				jQuery('#new-address-city').val('');
+				jQuery('#new-address-state').val('');
+				jQuery('#new-address-postcode').val('');
+				jQuery('#new-address-country').val({{default_country}});
+				jQuery('#new-address-phone').val('');
+
+				jQuery('#new-address-use').attr('checked', false);
+
+				jQuery('#address-err').hide();
+				jQuery('.choose-other-address').show();
+			},
+			error: function() {
+				alert('There was a problem recording this address to your account; please contact your sales team.');
+			}
+		});
+	});
+
+	jQuery('.addresses').on('click', '.address', select_address);
+	jQuery('.addresses').on('click', '.edit-address', function(e) {
+		e.preventDefault();
+
+		jQuery.ajax({
+			url: '/checkout_shipping.php',
+			type: 'get',
+			dataType: 'json',
+			data: {
+				action: 'get-address-data',
+				ajax: 1,
+				address_id: jQuery(this).attr('data-address-id')
+			},
+			timeout: 8000,
+			success: function(data) {
+				jQuery('.add-new-address h3').html('Edit Shipping Address');
+				jQuery('.add-new-address #add-address-submit').html('Edit Address');
+				jQuery('.add-new-address').show();
+				jQuery('#edit-address-id').val(data.address_id);
+				jQuery('#new-address-firstname').val(data.address.first_name);
+				jQuery('#new-address-lastname').val(data.address.last_name);
+				jQuery('#new-address-company').val(data.address.company_name);
+				jQuery('#new-address-street1').val(data.address.address1);
+				jQuery('#new-address-street2').val(data.address.address2);
+				jQuery('#new-address-city').val(data.address.city);
+				jQuery('#new-address-postcode').val(data.address.postcode);
+				jQuery('#new-address-country').val(data.address.countries_id);
+				jQuery('#new-address-phone').val(data.address.telephone);
+
+				jQuery('#new-address-use').attr('checked', true);
+
+				reload_zones(data.address.state_region_code);
+			}
+		});
+	});
+
+	{{#new_address}}
+	{
+		jQuery('.add-new-address h3').html('Add New Shipping Address');
+		jQuery('.add-new-address #add-address-submit').html('Add Address');
+
+		jQuery('#edit-address-id').val('{{new_address.edit-address-id}}');
+		jQuery('#new-address-firstname').val('{{new_address.address-firstname}}');
+		jQuery('#new-address-lastname').val('{{new_address.address-lastname}}');
+		jQuery('#new-address-company').val('{{new_address.address-company}}');
+		jQuery('#new-address-street1').val('{{new_address.address-street1}}');
+		jQuery('#new-address-street2').val('{{new_address.address-street2}}');
+		jQuery('#new-address-city').val('{{new_address.address-city}}');
+		jQuery('#new-address-postcode').val('{{new_address.address-postcode}}');
+		jQuery('#new-address-country').val('{{new_address.address-country}}');
+		jQuery('#new-address-phone').val('{{new_address.address-phone}}');
+
+		reload_zones('{{new_address.address-state}}');
+
+		jQuery('#address-err').html('').hide();
+
+		jQuery('.add-new-address').show();
+		jQuery('#new-address-use').attr('checked', true);
+	};
+	{{/new_address}}
+
+	function select_address() {
+		let address_id = jQuery(this).attr('data-address-id');
+
+		$inp = jQuery('input.addr-'+address_id+'');
+
+		$inp.attr('checked', true);
+		refresh_quotes(customer_carrier_selection);
+		jQuery('.address').removeClass('selected');
+
+		$addr = jQuery('.address.addr-'+address_id);
+		$addr.addClass('selected');
+
+		if ($inp.attr('data-is-default') == 1) {
+			jQuery('input.blind').attr('disabled', true).attr('checked', false);
+			jQuery('span.blind').addClass('disabled-option');
+		}
+		else {
+			jQuery('input.blind').attr('disabled', false);
+			jQuery('span.blind').removeClass('disabled-option');
+		}
+
+		if ($inp.attr('data-is-international') == 1) jQuery('.international-warning').addClass('is-international');
+		else jQuery('.international-warning').removeClass('is-international');
+	}
+
+	jQuery('.choose-other-address').click(function(e) {
+		e.preventDefault();
+		if (jQuery('.other-addresses .address.selected').length > 0) return;
+		jQuery('.other-addresses').toggle();
+	});
+
+	jQuery('.ci-modal').click(function(e) {
+		e.preventDefault();
+
+		let $self = jQuery(this);
+
+		jQuery('#'+$self.attr('data-modal-id')).modal({
+			containerCss:{
+				backgroundColor: '#ffffff',
+				color: '#000000',
+				width: 550,
+				height: $self.attr('data-modal-height')
+			},
+			overlayClose:true,
+			onClose: function(dialog) {
+				jQuery('#nav').css('z-index', '30000');
+				jQuery.modal.close();
+			}
+		});
+		jQuery('#wrap').css('z-index', '0');
+		jQuery('#nav').css('z-index', '0');
+	});
+
+	jQuery('.shipping_account').click(function() {
+		if (jQuery(this).val() == 'shipper') jQuery('#shipping-methods').removeClass('customer-account');
+		else jQuery('#shipping-methods').addClass('customer-account');
+	});
+
+	var refreshing;
+
+	function refresh_quotes(customer_carrier) {
+		if (refreshing) refreshing.abort();
+		jQuery('.shipping-methods-holder').addClass('loading').html('LOADING...');
+
+		refreshing = jQuery.ajax({
+			url: 'checkout_shipping.php',
+			type: 'get',
+			dataType: 'html',
+			data: { ajax: 1, action: 'get-shipping-quotes', shipping_address_id: jQuery('.shipping-address-id:checked').val(), shipping_account: jQuery('.shipping_account:checked').val(), customer_carrier: customer_carrier },
+			timeout: 12000,
+			success: function(data) {
+				refreshing = undefined;
+				jQuery('.shipping-methods-holder').removeClass('loading').html(data);
+			},
+			error: function() {
+				refreshing = undefined;
+				jQuery('.shipping-methods-holder').html('ERROR: please contact <a href="mailto:{{contact_email}}" title="{{contact_phone}}">your sales team</a>');
+			}
+		});
+	}
+
+	refresh_quotes(customer_carrier_selection);
+</script>
+
+<script>
+	var google_conversion_id = 1070544332;
+	var google_conversion_language = "en";
+	var google_conversion_format = "3";
+	var google_conversion_color = "666666";
+	var google_conversion_label = "ivX3CPDm-QEQzOu8_gM"; // checkout-shipping
+	var google_conversion_value = 0;
+</script>
+<script src="https://www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+	<div style="display:inline;">
+		<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/1070544332/?label=ivX3CPDm-QEQzOu8_gM&amp;guid=ON&amp;script=0">
+	</div>
+</noscript>

@@ -1,0 +1,96 @@
+<style>
+	#page-body { width:100%; }
+	.conditioning-worklist { border-collapse:separate; border-spacing:2px; width:90%; }
+	.conditioning-worklist th, .conditioning-worklist td { padding:2px 5px; }
+	.conditioning-worklist th { padding-right:20px; }
+	.conditioning-worklist .no-data { font-size:1.2em; font-weight:bold; text-align:center; padding:10px; }
+	#totals { text-align:center; font-size:1.5em; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Conditioning Worklist</h3>
+	<main>
+		<table class="tablesorter">
+			{{#totals}}
+			<tr id="totals">
+				<th>Allocated: {{total_allocated_to_order}}</th>
+				<th>Zero Available: {{total_zero_available}}</th>
+				<th>In Stock: {{total_in_stock}}</th>
+				<th>Total: {{total_entries}}</th>
+			</tr>
+			{{/totals}}
+		</table>
+		<table class="tablesorter conditioning-worklist">
+			<thead>
+				<tr>
+					<th>Hold Id</th>
+					<th>IPN</th>
+					<th>Qty</th>
+					<th>Serial</th>
+					<th>Days On Hold</th>
+					<th>Bin #</th>
+					<th>Conditioning Hold</th>
+					<th>Total on Hold</th>
+					<th>Available</th>
+					<th>On Hand</th>
+					<th>Allocated</th>
+					<th>Urgency</th>
+					<th>Work Order</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#conditioning_holds}}
+				<tr>
+					<td><a href="/admin/inventory_hold_list.php#hold-id-{{hold_id}}" target="_blank">{{hold_id}}</a></td>
+					<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{ipn}}</a></td>
+					<td>{{quantity}}</td>
+					<td>
+						{{^non-serialized}}<a href="/admin/ipn_editor.php?ipnId={{ipn}}&search_serial={{serial}}&selectedTab=8" target="_blank">{{serial}}</a>{{/non-serialized}}
+						{{#non-serialized}}[NONE]{{/non-serialized}}
+					</td>
+					<td>{{days_on_hold}}</td>
+					<td>{{bin_location}}</td>
+					<td>{{conditioning_hold}}</td>
+					<td>{{total_hold}}</td>
+					<td>{{available}}</td>
+					<td>{{on_hand}}</td>
+					<td>{{allocated}}</td>
+					<td>{{urgency}}</td>
+					<td>
+						{{#orders}}
+						<a href="/admin/orders_new.php?status=11&oID={{{.}}}&action=edit" target="_blank">{{{.}}} </a>
+						{{/orders}}
+					</td>
+				</tr>
+				{{/conditioning_holds}}
+			</tbody>
+		</table>
+	</main>
+</td>
+<script>
+	var urgency_priority = [
+		'In Stock',
+		'Zero Available',
+		'Allocated to Order'
+	];
+	jQuery.tablesorter.addParser({
+		id: 'urgency',
+		is: function(s) { return false; },
+		format: function(s) {
+			return urgency_priority.indexOf(s);
+		},
+		type: 'numeric'
+	});
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			4: { sorter: 'digit' },
+			11: { sorter: 'urgency' }
+		},
+		sortList: [[11,1], [4,1], [1,1]]
+	});
+</script>

@@ -1,0 +1,280 @@
+<style>
+	.scorched { text-transform:uppercase; font-weight:600; font-family: piedra; font-size:18px; color:#f62; background: -webkit-linear-gradient(#fa4, #f32); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+	.tall-break { line-height: 2em; }
+	.tall-break small { line-height: 1em; }
+	.tall-break em { line-height: 1em; font-family:Arial; color:#c00; }
+	.ud { max-width:1000px; font-family:Arial; }
+	.ud th, .ud td { border-style:solid; border-color:#000; border-width:0px 1px 1px 0px; padding:4px 8px; min-width:75px; }
+	.ud th { background-color:#dedede; }
+	.ud td { background-color:#fff; }
+	.ud tr:first-child th { border-top-width:1px; }
+	.ud tr th:first-child, .ud tr td:first-child { border-left-width:1px; }
+	.ud strong { font-size:.8em; text-decoration:underline; cursor:pointer; color:#cb2026; }
+	.ud a { color:#cb2026; }
+	.ud .info th, .ud .info td { font-size:.7em; }
+	.ud .info .opt { color:#c00; }
+	input.upload_map { width:75px; }
+	#scrollable-content { height:180px; overflow:auto; border:1px solid #000; }
+	.manage-products-container { border:1px solid black; padding:10px; }
+	.export-products legend { font-weight:bold; }
+    .export-products fieldset { display:block; border:2px groove threedface; border-image:initial; margin:1em; padding:1em; }
+	.input-label-container { border:1px solid #000; display:inline-block; margin:.3em; font-size:.8em; padding:.3em; border-radius:4%; }
+    .input-label-container input[type="checkbox"]:hover,
+    .input-label-container label:hover,
+    .input-label-container:hover { cursor:pointer; }
+    .input-label-container input[type="checkbox"] { padding:0; margin:0; }
+</style>
+<td id="page-body" class="export-products">
+	<h3>Manage Products</h3>
+	<fieldset>
+		<legend>Export Products</legend>
+		{{#export_link}}
+		<a href="/admin/data_management/product_update_rpt_{{url_params}}.csv">EXPORT</a> (right click, save as)<br><br>
+		{{/export_link}}
+		{{#output_errors}}
+		<h4>Upload Errors and Output:</h4>
+		<div id="scrollable-content">
+			{{#output}}OUTPUT:{{{.}}}{{/output}}
+			{{#errors}}ERRORS:{{{.}}}{{/errors}}
+		</div>
+		{{/output_errors}}
+		<form action="/admin/manage_products.php" method="post">
+			<input type="hidden" name="action" value="export">
+			<div class="tall-break">
+				<fieldset>
+					<legend>Instructions</legend>
+					<p>File will be tab delimited TXT. Save to your computer, right click, "Open With" and choose "Microsoft Excel". If that option isn't shown, select "Choose Default Program...", uncheck "Always use the selected program to open this type of file" and if necessary "Browse" to locate Excel.</p>
+				</fieldset>
+				<fieldset>
+					<legend>General</legend>
+					<select name="id-type" size="1">
+						<option value="ipn">IPNs</option>
+						<option value="model_number">Model #s</option>
+					</select>: (separated by white-space, e.g. space, tab or newline)<br>
+					<textarea name="identifiers" cols="35" rows="5"></textarea><br>
+					<small>(If this is used then category, cascade, vendor selection and active status fields are ignored)</small><br>
+					<input type="checkbox" name="active-only" id="active-only">
+					<label for="active-only">Export only active status products</label><br>
+				</fieldset>
+				<fieldset>
+                <legend>Column Options</legend>
+					{{#product_export_options}}
+					<div class="input-label-container">
+						<label for="{{id}}">{{title}}:</label>
+						<input type="checkbox" id="{{id}}" name="{{name}}" class="export-options" checked>
+					</div>
+					{{/product_export_options}}
+					<div>
+						<div class="input-label-container display-block">
+							<label for="uncheck-all"><b>Uncheck/Check All:</b></label>
+							<input type="checkbox" id="uncheck-all">
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>Filter Options</legend>
+					<label for="category_selector">Category:</label>
+					<select id="category_selector" name="category_id" size="1">
+						<option value="">ALL</option>
+						{{#top_level}}
+							<option value="{{id}}">{{name}}</option>
+						{{/top_level}}
+					</select>
+					<small>(You can get to sub-categories by going back to the dropdown once you've made a selection.)</small><br>
+					<small>(Categories marked with a * have products attached directly to them)</small><br>
+					<label for="cascade">Cascade:</label>
+					<input type="checkbox" id="cascade" name="cascade" checked> &darr;
+					[Cascade selection to products in all sub-categories]<br>
+					<label for="vendor_selection">Vendor Selection:</label>
+					<select id="vendor_selection" name="vendor_selection">
+						<option value="all">All</option>
+						{{#vendors}}
+						<option value="{{vendor_id}}">{{vendors_name}}</option>
+						{{/vendors}}
+					</select>
+				</fieldset>
+				<br>
+			</div>
+			<input type="submit" value="Export File">
+		</form>
+	</fieldset>
+	<fieldset>
+		<legend>Upload Product TXT file.</legend>
+		<form enctype="multipart/form-data" action="/admin/manage_products.php" method="post">
+			<input type="hidden" name="product_context" value="1">
+			<div class="tall-break">
+				<small><strong>Please save file as tab delimited TXT</strong></small><br>
+				File: <input type="file" name="product_csvfile"><br>
+				Header Row: <input type="text" style="width:30px;" name="skip_rows" value="1"><br>
+				<small>(this spreadsheet requires a header row, all rows before the header row will be skipped and data processing will start with the first row after the header row)</small><br>
+				<div style="line-height:normal; background-color:#fee;">
+					<input type="checkbox" name="clear_all"> <span class="scorched">Scorched Earth</span><br>
+					(if a field is referenced in a column header then the value will be used even if empty, the alternative is that blank values are ignored)<br>
+				</div>
+				<div class="ud">
+					<strong>Expected Headers:</strong> <small>(map the column names to custom values here)</small>
+					<div class="info" style="display:none;">
+						<em><small>(Order of the columns *does not* matter, <span class="opt">Red</span> columns are optional)</small></em>
+						<table cellpadding="0" cellspacing="0">
+							<tbody>
+								<tr>
+									<td rowspan="2"><a href="/admin/manage_products_blank.txt">Download Blank</a></td>
+									<th colspan="2" class="opt">It's only required to choose one of these</th>
+									<th colspan="2" class="opt">It's only required to choose one of these</th>
+									<th colspan="10">The rest of these are all optional for updates, and specified below which are optional for creation (and if there is a default that will be used if empty)</th>
+								</tr>
+								<tr>
+									<th>stock_id</th>
+									<th>ipn</th>
+									<th>products_id</th>
+									<th>model_number</th>
+									<th class="opt">upload_action</th>
+									<th>name</th>
+									<th class="opt">google_name</th>
+									<th class="opt">status</th>
+									<th>manufacturer</th>
+									<th class="opt">description</th>
+									<th class="opt">head_title</th>
+									<th class="opt">short_desc</th>
+									<th class="opt">use_seo_urls</th>
+									<th class="opt">seo_url_text</th>
+									<th>category_id, etc...</th>
+								</tr>
+								<tr>
+									<th>MAP FROM:</th>
+									<td><input class="upload_map" type="text" name="map[stock_id]"></td>
+									<td><input class="upload_map" type="text" name="map[ipn]"></td>
+									<td><input class="upload_map" type="text" name="map[products_id]"></td>
+									<td><input class="upload_map" type="text" name="map[model_number]"></td>
+									<td><input class="upload_map" type="text" name="map[upload_action]"></td>
+									<td><input class="upload_map" type="text" name="map[name]"></td>
+									<td><input class="upload_map" type="text" name="map[google_name]"></td>
+									<td><input class="upload_map" type="text" name="map[status]"></td>
+									<td><input class="upload_map" type="text" name="map[manufacturer]"></td>
+									<td><input class="upload_map" type="text" name="map[description]"></td>
+									<td><input class="upload_map" type="text" name="map[head_title]"></td>
+									<td><input class="upload_map" type="text" name="map[short_desc]"></td>
+									<td><input class="upload_map" type="text" name="map[use_seo_urls]"></td>
+									<td><input class="upload_map" type="text" name="map[seo_url_text]"></td>
+									<td><input class="upload_map" type="text" name="map[category_id]"></td>
+								</tr>
+								<tr>
+									<td>rename the columns</td>
+									<td colspan="4">Required Identifiers - if products_id is provided it must be an update *not* a creation, and if model_number doesn't match it will overwrite (EXCEPTION: if products_id is set to "NEW", then it will create a new entry even if the model_number matches)</td>
+									<td>If setting create/update per item, set it here</td>
+									<td>The product name</td>
+									<td>The product name that will be displayed on Google</td>
+									<td>turn listing on or off<br>(DEFAULT: OFF)</td>
+									<td>manufacturer name or ID</td>
+									<td>Info for Description on Product Page (DEFAULT: &lt;p&gt;&lt;strong&gt;[PRODUCT NAME]&lt;/strong&gt;&lt;/p&gt;)</td>
+									<td>The title tag that shows up in the browser tab (DEFAULT: [PRODUCT NAME])</td>
+									<td>The short product description (under product page name) (DEFAULT: [PRODUCT NAME])</td>
+									<td>Use New SEO URLs or not<br>(DEFAULT: OFF)</td>
+									<td>If using New SEO URLs, what text should be used<br>(DEFAULT: [NULL])</td>
+									<td>category columns, one column for each or a delimited list (any non-numeric character will work). you must use category IDs due to some different categories having the same name</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<select name="upload_action" size="1">
+					<!-- we might use the permission mask to only show the options that are allowed for the user -->
+					{{#upload_permissions}}
+					<option value="{{value}}">{{title}}</option>
+					{{/upload_permissions}}
+				</select><br>
+				<ul style="font-size:.8em;margin-top:5px;">
+					<li style="line-height:normal;">Create only means that if the item doesn't exist we create it otherwise it fails</li>
+					<li style="line-height:normal;">Update only means that if the item does exist we update it otherwise it fails</li>
+					<li style="line-height:normal;">Set Per Item only means that we use an upload action field in the spreadsheet itself to determine what we're trying to do with that line</li>
+				</ul>
+				<input type="checkbox" name="use_category_names" id="use_category_names">
+				<label for="use_category_names">Use Category Names <small>(uploading categories works best with IDs, but if you must use full names, mark it here so we'll know how to handle it. You'll still get warnings. If you put multiple entries in 1 column, they must be delimited with the pipe | )</small></label><br>
+				{{#change_model_number}}
+				<input type="checkbox" name="allow_model_change" id="allow_model_change">
+				<label for="allow_model_change">Allow Model # Changing <small>(If this is unchecked, you'll receive an error if the model number changed for a given product ID, otherwise it will allow you to change it)</small></label><br>
+				{{/change_model_number}}
+				<input type="submit" value="Import File"><br>
+			</div>
+		</form>
+	</fieldset>
+</td>
+<script src="https://use.edgefonts.net/piedra:n4:all.js"></script>
+<script>
+	var category_list = {
+		selected_list: [],
+		selections: [],
+		top_level: []
+	};
+
+	category_list.top_level = {{{encoded_top_level}}};
+	category_list.selections = {{{encoded_selections}}};
+
+	jQuery('#category_selector').change(function() {
+		var category_id = jQuery(this).val();
+		jQuery(this).find('option').each(function() {
+			if (jQuery(this).attr('value') == category_id) return;
+			jQuery(this).remove();
+		});
+		if (category_id == -1) {
+			// we're backing up
+			category_list.selected_list.pop();
+			if (category_list.selected_list.length) {
+				// there's a previously selected category to back up to
+				category_id = category_list.selected_list[category_list.selected_list.length - 1];
+
+				if (category_list.selected_list.length > 1) {
+					previous_category_id = category_list.selected_list[category_list.selected_list.length - 2];
+
+					for (var j=0; j<category_list.selections[previous_category_id].length; j++) {
+						if (category_list.selections[previous_category_id][j]['id'] == category_id) {
+							jQuery(this).prepend('<option value="'+category_id+'">'+category_list.selections[previous_category_id][j]['name']+' ['+(category_list.selected_list.length-1)+']</option>');
+						}
+					}
+				}
+				else {
+					for (var j=0; j<category_list.top_level.length; j++) {
+						if (category_list.top_level[j]['id'] == category_id) {
+							jQuery(this).prepend('<option value="'+category_id+'">'+category_list.top_level[j]['name']+'</option>');
+						}
+					}
+				}
+
+				jQuery(this).val(category_id);
+				for (var i=0; i<category_list.selections[category_id].length; i++) {
+					jQuery(this).append('<option value="'+category_list.selections[category_id][i]['id']+'">'+category_list.selections[category_id][i]['name']+' ['+category_list.selected_list.length+']</option>');
+				}
+			}
+			else {
+				// we're back at the top level
+				jQuery(this).find('option').remove();
+				jQuery(this).append('<option value="">All</option>');
+				jQuery(this).val('');
+				for (var i=0; i<category_list.top_level.length; i++) {
+					jQuery(this).append('<option value="'+category_list.top_level[i]['id']+'">'+category_list.top_level[i]['name']+'</option>');
+				}
+			}
+		}
+		else {
+			// we selected a category
+			category_list.selected_list.push(category_id);
+			jQuery(this).append('<option value="-1">Back One Level</option>');
+			for (var i=0; i<category_list.selections[category_id].length; i++) {
+				jQuery(this).append('<option value="'+category_list.selections[category_id][i]['id']+'">'+category_list.selections[category_id][i]['name']+' ['+category_list.selected_list.length+']</option>');
+			}
+		}
+	});
+
+	jQuery('.ud strong').click(function() {
+		jQuery('.ud .info').toggle();
+	});
+
+	jQuery('#uncheck-all').on('click', function() {
+		if (jQuery(".export-options").attr('checked')) {
+			jQuery(".export-options").attr('checked', false);
+		}
+		else {
+			jQuery(".export-options").attr('checked', true);
+		}
+    });
+</script>

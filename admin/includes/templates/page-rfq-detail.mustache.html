@@ -1,0 +1,478 @@
+<style>
+	#page-body { width:100%; }
+	.manage_ipns { margin-bottom:20px; }
+	.manage_ipns th, .manage_ipns td { padding:3px 7px; border-color:#000; border-style:solid; border-width:1px 0px 0px 1px; font-size:.9em; }
+	.manage_ipns th:last-child, .manage_ipns td:last-child { border-right-width:1px; }
+	.manage_ipns tbody:last-child td { border-bottom-width:1px; }
+
+	#rfq-responses.fc th, #rfq-responses.fc td { padding:4px 6px; }
+	#rfq-responses.fc td { border-style:solid; border-color:#000 #ccc; border-width:1px; }
+	#rfq-responses.fc th { padding-right:20px; }
+
+	/*.fc tr:first-child th, .fc tr:first-child td { border-top-width:1px; }
+	.fc th:first-child, .fc td:first-child { border-left-width:1px; }*/
+	#rfq-responses th, #rfq-responses th a { font-size: 12px; }
+	/*.row-0 td, .row-1 td { padding:3px; }
+	.row-1 td { background-color:#eee; }*/
+	table.tablesorter tbody tr.even.has-notes { background-color:#fee; }
+	table.tablesorter tbody tr.odd.has-notes { background-color:#edd; }
+	table.tablesorter tbody tr.even[data-w=1] td { background-color:#efe; }
+	table.tablesorter tbody tr.odd[data-w=1] td { background-color:#ded; }
+	/*a.sort-field { display:block; width:70px; margin:0px; }
+	.sort-field.none:hover::after { content: " \21e9"; font-size:1.4em; }
+	.sort-field.asc::after { content: " \21e7"; font-size:1.4em; }
+	.sort-field.asc:hover::after { content: " \21e9"; font-size:1.4em; }
+	.sort-field.desc::after { content: " \21e9"; font-size:1.4em; }
+	.sort-field.desc:hover::after { content: " \21e7"; font-size:1.4em; }*/
+	.hidsort { display:none; }
+
+	#ipn-list span { border-bottom:1px dotted #000; cursor:pointer; padding-bottom:1px; color:#00c; position:relative; bottom:1px; }
+
+	.creator { text-decoration:underline dotted; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<a href="/admin/rfq_list.php" class="button-link">&lt;- Back to List</a><br><br>
+
+	{{#manage}}
+	<a href="/admin/rfq_detail.php?rfq_id={{rfq_id}}&action=results" class="button-link">See Responses</a><br><br>
+
+	<form action="/admin/rfq_detail.php?action=update" method="post">
+		<input type="hidden" id="rfq_id" name="rfq_id" value="{{rfq_id}}">
+		<input type="hidden" id="ipn_count" value="{{ipn_count}}">
+
+		<div style="line-height:1.4em;">
+			[RFQ: <input class="reqtype" type="radio" name="request_type" value="RFQ" {{#rfq.rt_rfq}}checked{{/rfq.rt_rfq}}>]
+			[WTB: <input class="reqtype" type="radio" name="request_type" value="WTB" {{#rfq.rt_wtb}}checked{{/rfq.rt_wtb}}>]<br>
+
+			Nickname: <input type="text" name="nickname" value="{{rfq.nickname}}" maxlength="18"><br>
+			Expiration: <input type="date" name="expiration_date" value="{{rfq.expiration_date}}"><br>
+			Currently Active: {{#rfq.active?}}Yes{{/rfq.active?}} {{^rfq.active?}}No{{/rfq.active?}}<br>
+			Published: {{rfq.published_date}}<br><br>
+
+			Send To: <input type="text" name="send_to" id="send_to_field" value="" placeholder="[DEFAULT UNEDA]" style="background-color:#eef;"><br><br>
+
+			Subject: <input id="subject_line" type="text" name="subject_line" style="width:320px;" value="{{rfq.subject_line}}" maxlength="50"><br><br>
+
+			Greeting: <small>(changes will be saved to your account and used next time)</small><br>
+			<textarea name="greeting" rows="4" cols="60" style="background-color:#eef; {{#custom_greet}}border:2px solid #c00;{{/custom_greet}}">{{{greeting}}}</textarea><br><br>
+
+			Request Details: <small>(these instructions will be displayed on the email and on the response page for the vendors)</small><br>
+			<textarea name="request_details" rows="4" cols="60">{{{rfq.request_details}}}</textarea><br>
+		</div>
+
+		<hr>
+
+		<table border="0" cellspacing="0" cellpadding="0" class="manage_ipns">
+			<thead>
+				<tr>
+					<th>[X]</th>
+					<th>IPN</th>
+					<th>Model/Alias</th>
+					<th>Condition</th>
+					<th>Quantity</th>
+					<th id="qtyplus_lookup_header" class="check-all"> [+]</th>
+					<th>Comment</th>
+				</tr>
+			</thead>
+			<tbody id="ipn_list">
+				{{#ipns}}
+				<tr>
+					<td>
+						<input type="hidden" name="canonical_id[{{idx}}]" value="{{rfq_product_id}}">
+						<input type="checkbox" name="remove[{{idx}}]">
+					</td>
+					<td>{{stock_name}}</td>
+					<td><input type="text" name="alias[{{idx}}]" value="{{model_alias}}" maxlength="25"></td>
+					<td>
+						<select size="1" name="condition[{{idx}}]">
+							<option value="0">ANY</option>
+							{{#conditions}}
+							<option value="{{conditions_id}}" {{#selected?}}selected{{/selected?}}>{{conditions_name}}</option>
+							{{/conditions}}
+						</select>
+					</td>
+					<td><input type="text" name="quantity[{{idx}}]" value="{{quantity}}" style="width:45px;"></td>
+					<td><input type="checkbox" name="qtyplus[{{idx}}]" {{#qtyplus?}}checked{{/qtyplus?}}></td>
+					<td>
+						<textarea name="comment[{{idx}}]" rows="2" cols="30" maxlength="100">{{{comment}}}</textarea>
+					</td>
+				</tr>
+				{{/ipns}}
+			</tbody>
+			<tbody>
+				<tr>
+					<td></td>
+					<td><input type="text" name="ipn_lookup" id="ipn_lookup" value=""></td>
+					<td><input type="text" name="alias_lookup" value=""></td>
+					<td>
+						<select size="1" name="condition_lookup" id="condition_lookup">
+							<option value="0">ANY</option>
+							{{#conditions}}
+							<option value="{{conditions_id}}">{{conditions_name}}</option>
+							{{/conditions}}
+						</select>
+					</td>
+					<td><input type="text" name="quantity_lookup" value="" style="width:45px;"></td>
+					<td><input class="qtyplus_lookup" type="checkbox" name="qtyplus_lookup"></td>
+					<td>
+						<textarea name="comment_lookup" rows="2" cols="30" maxlength="100"></textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="line-height:1.4em;">
+			<div style="float:left;">
+				Signature: <small>(changes will be saved to your account and used next time)</small><br>
+				{{! the value of the textarea is in PHP to make for more elegant use of newlines }}
+				<textarea name="signature" rows="6" cols="60" style="background-color:#eef; {{#custom_sig}}border:2px solid #c00;{{/custom_sig}}">{{{signature}}}</textarea><br><br>
+				<input type="checkbox" name="alert_creator" {{#rfq.alert_creator}}checked{{/rfq.alert_creator}}> Alert {{rfq.admin_email_address}} of new responses
+			</div>
+			<div style="float:left;margin-left:215px;">
+				<input type="submit" name="submit" value="Save">
+				<input type="submit" name="submit" id="publish_button" value="Save & Publish">
+				{{#rfq.active?}}<input type="submit" name="submit" value="Force Expire">{{/rfq.active?}}
+			</div>
+		</div>
+	</form>
+	{{/manage}}
+
+	{{#results}}
+	<a href="/admin/rfq_detail.php?rfq_id={{rfq_id}}&action=edit" class="button-link">Edit This RFQ</a>
+	<div style="float: right;">
+		<input type="button" value="Create PO" style="margin-left: 30px;" onclick="createpo();">
+	</div>
+
+	<div style="display: none;" id="change_vendor_modal">
+		<h2>Select a new vendor</h2>
+		<input type="hidden" name="customer_id" value="" id="update_vendor_cust_id">
+		<input type="text" name="vendor_id" value="" id="vendor_autocomplete">
+	</div>
+
+	<table id="rfq-responses" border="0" width="100%" cellspacing="0" cellpadding="0" class="fc tablesorter">
+		<thead>
+			<tr>
+				<th>Customer</th>
+				<th>Company Name</th>
+				<th>Country</th>
+				<th>Zip Code</th>
+				<th>IPN</th>
+				<th>Requested Condition</th>
+				<th>Condition</th>
+				<th>Req. Qty</th>
+				<th>Offer Qty</th>
+				<th>Unit Price</th>
+				<th>Retail</th>
+				<th>Retail Gross Margin %</th>
+				<th>Reseller</th>
+				<th>Wholesale High</th>
+				<th>Wholesale Low</th>
+				<th>Transit Days</th>
+				<th>Est. Shipping</th>
+				<th>Landed Unit Cost</th>
+				<th>Notes</th>
+				<th>Free Shipping?</th>
+				<th>Entered</th>
+				<!--th>Want It</th-->
+				<th>Select</th>
+				<th>PO Qty</th>
+			</tr>
+		</thead>
+		<tbody id="ipn-list">
+			{{#responses}}
+			<tr id="response-{{rfq_response_product_id}}" class="ipn {{#has_notes?}}has-notes{{/has_notes?}}" data-v="{{customers_firstname}} {{customers_lastname}}" data-i="{{stock_name}}" data-s="{{shipping_included}}" data-w="{{interested}}">
+				<td>
+					<a href="/admin/customers_detail.php?selected_box=customers&customers_id={{customers_id}}" target="_blank">{{customers_firstname}} {{customers_lastname}}</a> &lt;<a href="mailto:{{customers_email_address}}">{{customers_email_address}}</a>&gt;<br>
+					{{#has_notes?}} <span title="{{notes}}" style="border-bottom:2px dashed #999;">[GEN. NOTES]</span>{{/has_notes?}}
+				</td>
+				<td>
+					{{#has_vendor?}}<a href="/admin/vendors.php?vendors_id={{vendor_id}}&action=edit" target="_blank">{{vendor_name}}</a>{{/has_vendor?}}<br>
+					<a href="javascript: void();" onclick="changeVendor({{customers_id}}, {{vendor_id}});">Change</a>|
+					<a href="/admin/po_list.php?vendor_search={{vendor_id}}#ui-tabs-8" target="_blank">Vendor POs</a>
+				</td>
+				<td>{{vendor_country}}</td>
+				<td>{{entry_postcode}}</td>
+				<td style="white-space:nowrap;" id="ipn_name_{{rfq_response_product_id}}"><a href="/admin/ipn_editor.php?ipnId={{stock_name}}" target="_blank">{{stock_name}}</a></td>
+				<td>{{requested_condition}}</td>
+				<td id="condition_{{rfq_response_product_id}}" condition_id="{{conditions_id}}">{{response_condition}}</td>
+				<td>{{requested_quantity}}</td>
+				<td id="quantity_{{rfq_response_product_id}}">{{quantity}}</td>
+				<td id="price_{{rfq_response_product_id}}" value="{{price}}">{{formatted_price}}</td>
+				<td>{{stock_price}}</td>
+				<td>{{stock_gross_margin_percentage}}</td>
+				<td>{{dealer_price}}</td>
+				<td>{{wholesale_high_price}}</td>
+				<td>{{wholesale_low_price}}</td>
+				<td id="lead_{{rfq_response_product_id}}" title="{{lead_time_date}}">
+					{{lead_time}}
+					{{#lead_time_vendor}}<span title="{{.}}">[v]</span>{{/lead_time_vendor}}
+				</td>
+				<td id="est_freight_{{rfq_response_product_id}}" value="{{freight}}" title="{{freight_weight}} lbs - {{service}}">{{formatted_freight}}</td>
+				<td id="landed_{{rfq_response_product_id}}" value="{{landed_cost}}">{{formatted_landed_cost}}</td>
+				<td id="notes_{{rfq_response_product_id}}">{{ipn_notes}}</td>
+				<td id="free_shipping_{{rfq_response_product_id}}">{{#shipping_included?}}YES{{/shipping_included?}}</td>
+				<td>{{created_date}}</td>
+				<!--td><span class="hidsort interested-{{rfq_response_product_id}}">{{interested}}</span><input type="checkbox" class="mark-interested" name="interested[{{rfq_response_product_id}}]" {{#interested?}}checked{{/interested?}}></a-->
+				<td><input type="checkbox" class="addToPo" vendor_email="{{customers_email_address}}" vendor_id="{{vendor_id}}" rrp_id="{{rfq_response_product_id}}" value="{{stock_id}}" price="{{price}}" qty="{{handle_qty}}"></td>
+				<td>
+					<input type="text" size="3" id="po_qty_{{rfq_response_product_id}}" value="" disabled>
+				</td>
+				<td>
+					<a href="javascript: void('0');" onclick="editResponse('{{rfq_response_product_id}}'); return false;">Edit</a>
+					<a href="javascript:void('0');" onclick="deleteResponse('{{rfq_response_product_id}}');">Delete</a>
+				</td>
+			</tr>
+			{{/responses}}
+			{{^responses.0}}
+			<tr>
+				<th colspan="23">
+					This request does not yet have any responses
+				</th>
+			</tr>
+			{{/responses.0}}
+		</tbody>
+	</table>
+	<div id="edit_response_modal" style="display: none;">
+		<form method="post" action="/admin/rfq_detail.php">
+			<h2>Edit RFQ Response</h2>
+			<div>
+				<label>IPN:</label> <div id="modal_ipn"></div>
+			</div>
+			<div>
+				<label>Condition:</label>
+				<select id="edit_condition" name="edit_condition">
+					{{#conditions}}
+					<option value="{{conditions_id}}">{{conditions_name}}</option>
+					{{/conditions}}
+				</select>
+			</div>
+			<div>
+				<label>Quantity:</label>
+				<input type="text" size="40" id="edit_quantity" value="" name="edit_quantity">
+			</div>
+			<div>
+				<label>Price:</label>
+				<input type="text" size="40" id="edit_price" value="" name="edit_price">
+			</div>
+			<div>
+				<label>Notes:</label>
+				<textarea id="edit_notes" cols="40" rows="10" name="edit_notes"></textarea>
+			</div>
+			<!--div>
+				<label>Free Shipping:</label>
+				<input type="checkbox" id="edit_free_shipping" name="edit_free_shipping">
+			</div-->
+			<input type="hidden" value="" id="edit_response_product_id" name="edit_response_product_id">
+			<input type="hidden" id="rfq_id" name="rfq_id" value="{{rfq_id}}">
+			<input type="hidden" value="edit_response" name="action">
+			<input type="submit" value="Save">
+		</form>
+	</div>
+	{{/results}}
+</td>
+<script>
+	function add_ipn(data) {
+		var ipn_count = parseInt(jQuery('#ipn_count').val());
+		var $select = jQuery('#condition_lookup').clone().removeAttr('id').attr('name', 'condition['+ipn_count+']').val(data.condition_id);
+		jQuery('#ipn_list').append('<tr><td><input type="hidden" name="canonical_id['+ipn_count+']" value=""><input type="checkbox" name="remove['+ipn_count+']"></td><td>'+data.stock_name+'<input type="hidden" name="stock_id['+ipn_count+']" value="'+data.stock_id+'"></td><td><input type="text" name="alias['+ipn_count+']" value="'+data.model_number+'"></td><td id="condition_'+ipn_count+'"></td><td><input type="text" name="quantity['+ipn_count+']" id="qty_'+ipn_count+'" value="1" style="width:45px;"></td><td><input class="qtyplus_lookup" type="checkbox" name="qtyplus['+ipn_count+']"></td><td><textarea name="comment['+ipn_count+']" rows="2" cols="30" maxlength="100"></textarea></td></tr>');
+		jQuery('#condition_'+ipn_count).append($select);
+		jQuery('#ipn_count').val(ipn_count+1);
+
+		setTimeout(function () { jQuery('#qty_'+ipn_count).select(); }, 0);
+	}
+
+	jQuery('.reqtype').click(function() {
+		var subj = jQuery('#subject_line').val();
+
+		if (subj == '') subj = jQuery(this).val()+': ';
+		else subj = subj.replace(/^(RFQ|WTB):/, jQuery(this).val()+':');
+
+		jQuery('#subject_line').val(subj);
+	});
+
+	jQuery('#publish_button').mouseover(function() {
+		if (jQuery('#send_to_field').val() == '') jQuery('#send_to_field').val('{{default_to}}');
+	});
+
+	jQuery('#publish_button').click(function() {
+		jQuery(this).attr('data-clicked', 1);
+	});
+
+	jQuery('#publish_button').mouseout(function() {
+		if (jQuery(this).attr('data-clicked') != '1' && jQuery('#send_to_field').val() == '{{default_to}}') jQuery('#send_to_field').val('');
+	});
+
+	jQuery('#ipn_lookup').autocomplete({
+		minChars: 3,
+		source: function(request, response) {
+			jQuery.ajax({
+				minLength: 2,
+				url: '/admin/serials_ajax.php?action=ipn_autocomplete',
+				dataType: 'json',
+				data: {
+					term: request.term,
+					search_type: 'ipn',
+					result_type: 'rfq'
+				},
+				success: response
+			});
+		},
+		select: function(event, ui) {
+			add_ipn(ui.item);
+		}
+	});
+
+	jQuery('#qtyplus_lookup_header').click(function() {
+		if ((this).hasClassName('check-all')) {
+			jQuery('.qtyplus_lookup').attr('checked', true);
+			jQuery(this).removeClass('check-all');
+			jQuery(this).addClass('check-none');
+		}
+		else if ((this).hasClassName('check-none')) {
+			jQuery('.qtyplus_lookup').removeAttr('checked');
+			jQuery(this).removeClass('check-none');
+			jQuery(this).addClass('check-all');
+		}
+	});
+
+	function editResponse(responseId) {
+		jQuery('#modal_ipn').html(jQuery('#ipn_name_'+responseId).html());
+		jQuery('#edit_condition').val(jQuery('#condition_'+responseId).attr('condition_id'));
+		jQuery('#edit_quantity').val(jQuery('#quantity_'+responseId).html());
+		jQuery('#edit_price').val(jQuery('#price_'+responseId).attr('value'));
+		jQuery('#edit_notes').html(jQuery('#notes_'+responseId).html());
+		/*if ($jQuery('#free_shipping_'+response_id).html() == 'YES') jQuery('#edit_free_shipping').attr('checked', true);
+		else jQuery('#edit_free_shipping').attr('checked', false);*/
+		jQuery('#edit_response_product_id').val(responseId);
+
+		jQuery('#edit_response_modal').dialog({
+			modal: true,
+			height: 600,
+			width: 600
+		});
+	}
+
+	function deleteResponse(responseId) {
+		if (confirm('Are you sure you want to delete this response?')) location.href = '/admin/rfq_detail.php?action=delete_response&rfq_id={{rfq_id}}&delete_rrp_id='+responseId;
+	}
+
+	jQuery('.addToPo').click(function() {
+		rrp_id = jQuery(this).attr('rrp_id');
+		qty = jQuery(this).attr('qty');
+		if (jQuery(this).is(':checked')) {
+			jQuery('#po_qty_'+rrp_id).attr('disabled', false);
+			jQuery('#po_qty_'+rrp_id).val(qty);
+		}
+		else {
+			jQuery('#po_qty_'+rrp_id).attr('disabled', true);
+			jQuery('#po_qty_'+rrp_id).val('');
+		}
+	});
+
+	function createpo() {
+		var po_ipns_add = [];
+		var p_vendor = '';
+		var qty = [];
+		var prices = [];
+		var ctr = 0;
+		var error = false;
+
+		jQuery('.addToPo:checked').each(function() {
+			po_ipns_add[ctr] = jQuery(this).val();
+			rrp_id = jQuery(this).attr('rrp_id');
+			qty[ctr] = jQuery('#po_qty_'+rrp_id).val();
+			prices[ctr] = jQuery(this).attr('price');
+
+			if (p_vendor == '') {
+				p_vendor = jQuery(this).attr('vendor_id');
+				p_email = jQuery(this).attr('vendor_email');
+			}
+
+			if (p_vendor != jQuery(this).attr('vendor_id')) {
+				alert('All items must be quoted from the same vendor. Please make some adjustments and try again.');
+				error = true;
+			}
+
+			ctr++;
+		});
+
+		if (error == true) return false;
+
+		window.location.href = 'po_editor.php?action=new&method=autofill&p_email='+p_email+'&p_vendor='+p_vendor+'&po_list='+po_ipns_add+'&qty='+qty+'&prices='+prices;
+		return false;
+	}
+
+	jQuery('#rfq-responses').tablesorter({
+		theme: 'blue',
+		widgets: ['zebra']
+	});
+
+	/*jQuery('.mark-interested').click(function() {
+		var data = { action: 'mark-interested' };
+		data[jQuery(this).attr('name')] = jQuery(this).is(':checked')?1:0;
+
+		jQuery.ajax({
+			url: '/admin/rfq_detail.php',
+			type: 'POST',
+			dataType: 'json',
+			data: data,
+			timeout: 10000,
+			success: function(data, textStatus, jqXHR) {
+				if (data == null) return;
+
+				if (data.status == 1) {
+					jQuery('#response-'+data.rfq_response_product_id).attr('data-w', data.interested_status);
+					jQuery('.interested-'+data.rfq_response_product_id).text(data.interested_status);
+					jQuery('#rfq-responses').trigger('updatecache');
+				}
+				else {
+					jQuery(this).click();
+					alert('There was some unknown error marking this as wanted. Please try again.');
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				jQuery(this).click();
+				alert('There was some unknown error marking this as wanted. Please try again.');
+			}
+		});
+	});*/
+
+	jQuery('#vendor_autocomplete').autocomplete({
+		minChars: 3,
+		source: function(request, response) {
+			jQuery.ajax({
+				minLength: 2,
+				url: '/admin/serials_ajax.php?action=vendor_autocomplete',
+				dataType: 'json',
+				data: {
+					term: request.term,
+				},
+				success: response
+			});
+		},
+		select: function(event, ui) {
+			customer_id = jQuery('#update_vendor_cust_id').val();
+			location.href='/admin/rfq_detail.php?rfq_id={{rfq_id}}&action=update_vendor&customers_id='+customer_id +'&vID='+ui.item.vendor_id;
+			return false;
+		}
+	});
+
+	function changeVendor(customer_id, vendor_id) {
+		jQuery('#update_vendor_cust_id').val(customer_id);
+		jQuery('#change_vendor_modal').dialog({
+			modal: true,
+			width: 400,
+			height: 400,
+			title: 'Change vendor',
+			buttons: {
+				Cancel : function() {
+					jQuery(this).dialog('close');
+				}
+			}
+		});
+	}
+</script>

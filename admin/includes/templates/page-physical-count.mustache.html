@@ -1,0 +1,514 @@
+<style>
+	.physcount { border-collapse:collapse; }
+	.physcount th, .physcount td { border:1px solid #000; padding:4px 8px; font-size:14px; }
+	.physcount th { background-color:#fff; }
+
+	#scan-errors { display:none; border:1px solid #ffc; background-color:#fcc; font-weight:bold; margin-bottom:10px; padding:4px; }
+
+	.error { background-color:#fcc; }
+	.error th, .error td { background-color:#fcc; }
+
+	.waiting { background-color:#ffc; }
+	.waiting th, .waiting td { background-color:#ffc; }
+
+	#count_upload_results { border-collapse:collapse; font-size:12px; }
+	.spreadsheet-upload-errors { color:#c00; font-weight:bold; }
+	.error .spreadsheet-field { border-color:#f00; }
+	.spreadsheet-field.error { background-color:#fcc; }
+	.spreadsheet-field { padding:2px; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<ul id="physical_count_tabs">
+		<li id="physical_counts">Physical Counts</li>
+		{{#upload}}
+		<li id="physical_count_upload" class="">Upload Physical Count</li>
+		{{/upload}}
+		<li id="physical_count_ipns" class="">Physical IPNs {{^ipns}}[E]{{/ipns}}</li>
+		<li id="physical_count_bins" class="">Physical Bins {{^bins}}[E]{{/bins}}</li>
+		<li id="scan_count" class="">Scan Count {{^ipns}}[E]{{/ipns}}</li>
+	</ul>
+	<div id="physical_count_tabs-body">
+		<div id="physical_counts-content">
+			<form enctype="multipart/form-data" id="counts-form" action="/admin/physical-count.php" method="post">
+				<input type="hidden" name="action" value="manage_count">
+				<table id="physical_count_list" class="physcount">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Start Date</th>
+							<th>End Date</th>
+							<th>Status</th>
+							<th>Action</th>
+							<th>Upload</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>NEW</td>
+							<td><input type="text" placeholder="Count Nickname" name="new_count_name"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><input type="submit" value="Create"></td>
+							<td></td>
+						</tr>
+						{{#physical_counts}}
+						<tr class="{{#active}}active{{/active}}">
+							<td>{{physical_count_id}}</td>
+							<td>{{count_name}}</td>
+							<td>{{start_date}}</td>
+							<td>{{end_date}}</td>
+							<td>{{#active}}Active{{/active}}</td>
+							<td>
+								{{#active}}
+								<a href="/admin/physical-count.php?action=finish&amp;physical_count_id={{physical_count_id}}" class="finish">[Finish]</a>
+								{{/active}}
+								{{^any_active?}}
+									{{#startable}}
+								<a href="/admin/physical-count.php?action=start&amp;physical_count_id={{physical_count_id}}" class="start">[Start]</a>
+									{{/startable}}
+								{{/any_active?}}
+							</td>
+							<td>
+								{{#active}}
+								<label for="count_upload"><strong>Upload:</strong></label><br>
+								<input type="file" id="count_upload" name="count_upload" accept=".xlsx"><br>
+								<input type="submit" value="Upload">
+								{{/active}}
+							</td>
+						</tr>
+						{{/physical_counts}}
+					</tbody>
+				</table>
+			</form>
+		</div>
+		{{#upload}}
+		<div id="physical_count_upload-content">
+			<script src="/images/static/js/ck-j-spreadsheet-upload.max.js?v=0.19"></script>
+			{{#err}}
+			<div>There was a problem with receiving your product upload file: {{{.}}}</div>
+			{{/err}}
+			{{^err}}
+			<form action="/admin/physical-count.php" method="post">
+				<input type="hidden" name="physical_count_id" value="{{physical_count_id}}">
+				<input type="hidden" name="action" value="send-count">
+				[<input type="radio" name="ipn_identifier" value="stock_id" checked> Stock ID | <input type="radio" name="ipn_identifier" value="ipn"> IPN]
+				[<input type="radio" name="qty_type" value="difference" checked> Diff | <input type="radio" name="qty_type" value="direct"> Direct]<br>
+				<input type="submit" value="Submit">
+				<table id="count_upload_results" border="0" cellpadding="0" cellspacing="0">
+					<tbody>
+						{{#data}}
+						<tr>
+							{{#.}}
+							<td>{{{.}}}</td>
+							{{/.}}
+						</tr>
+						{{/data}}
+					</tbody>
+				</table>
+			</form>
+			{{/err}}
+		</div>
+		{{/upload}}
+		<div id="physical_count_ipns-content">
+			<table id="physical_count_ipn_list" class="physcount">
+				<thead>
+					<tr>
+						<th colspan="3"></th>
+						<th colspan="4">System Initial</th>
+						<th colspan="4">System @ Entry</th>
+						<th colspan="3">Entered Values</th>
+						<th colspan="2"></th>
+					</tr>
+					<tr>
+						<th>IPN</th>
+						<th>Serialized?</th>
+						<th>Serial #</th>
+						<th>Count</th>
+						<th>Bin 1</th>
+						<th>Bin 2</th>
+						<th>Serial Bin</th>
+						<th>Count</th>
+						<th>Bin 1</th>
+						<th>Bin 2</th>
+						<th>Serial Bin</th>
+						<th>Count</th>
+						<th>Diff</th>
+						<th>Bin #</th>
+						<th>Counted</th>
+						<th>Counted Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#ipns}}
+					<tr class="{{#serialized}}serialized{{/serialized}} {{^serialized}}non-serialized{{/serialized}} {{#counted?}}counted{{/counted?}}">
+						<th>{{ipn}}</th>
+						<th>{{#serialized?}}Y{{/serialized?}}</th>
+						<th>{{serial}}</th>
+						<th>{{system_count_at_start}}</th>
+						<th>{{system_bin1_at_start}}</th>
+						<th>{{system_bin2_at_start}}</th>
+						<th>{{system_binserial_at_entry}}</th>
+						<th>{{system_count_at_entry}}</th>
+						<th>{{system_bin1_at_entry}}</th>
+						<th>{{system_bin2_at_entry}}</th>
+						<th>{{system_binserial_at_entry}}</th>
+						<th>{{count}}</th>
+						<th>{{difference}}</th>
+						<th>{{bin_number}}</th>
+						<th>{{#counted?}}Y{{/counted?}}</th>
+						<th>{{count_date}}</th>
+					</tr>
+					{{/ipns}}
+				</tbody>
+			</table>
+		</div>
+		<div id="physical_count_bins-content">
+			<table id="physical_count_bin_list" class="physcount">
+				<thead>
+					<tr>
+						<th>Bin #</th>
+						<th>Empty?</th>
+						<th>Counted</th>
+						<th>Counted Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#bins}}
+					<tr class="{{#slotted}}slotted{{/slotted}} {{#counted?}}counted{{/counted?}}">
+						<td>{{bin_number}}</td>
+						<td>{{^has_product?}}Y{{/has_product?}}</td>
+						<td>{{#counted?}}Y{{/counted?}}</td>
+						<td>{{count_date}}</td>
+					</tr>
+					{{/bins}}
+				</tbody>
+			</table>
+		</div>
+		<div id="scan_count-content">
+			<div id="scan-errors">
+			</div>
+			<form id="scan-form" action="/admin/physical-count.php" method="post">
+				<input type="hidden" name="physical_count_id" value="{{physical_count_id}}">
+				<input type="hidden" id="scan-action" name="action" value="add-complete">
+				<table id="physical_count_scanner" class="physcount">
+					<thead>
+						<tr>
+							<th>Bin #</th>
+							<th>Style</th>
+							<th>IPN</th>
+							<th>Serial</th>
+							<th>Next</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><input id="scan_bin_number" type="text" name="bin_number"></td>
+							<td>
+								[<input id="scan_bin_slotted" checked type="radio" name="bin_style" value="slotted"> Slotted]
+								[<input id="scan_bin_bulk" type="radio" name="bin_style" value="bulk"> Bulk]
+							</td>
+							<td><input id="scan_ipn" type="text" name="ipn" disabled></td>
+							<td><input id="scan_serial" type="text" name="serial"></td>
+							<td><input type="button" id="scan-next" value="Next"></td>
+						</tr>
+						<tr>
+							<td colspan="5">
+								Session:<br>
+								<input type="button" id="scan-complete" value="Complete Session">
+							</td>
+						</tr>
+					</tbody>
+					<tbody id="session">
+					</tbody>
+				</table>
+				<div>
+					<input type="text" id="scan-form-controller" style="height:1px;">
+				</div>
+			</form>
+		</div>
+	</div>
+</td>
+<script>
+	{{#upload}}
+	jQuery('#count_upload_results').spreadsheet_upload({
+		headers: [
+			{ value:'ipn', label:'IPN', required:true },
+			{ value:'serial', label:'Serial #' },
+			{ value:'bin', label:'Bin #', required:true },
+			{ value:'qty', label:'Qty', required:true }
+		],
+		validators: {
+			/*ipn: function(col_idx, record_error, clear_error) {
+				msg_recorded = false;
+			},
+			qty: function(col_idx, record_error, clear_error) {
+				msg_recorded = false;
+				/*jQuery(this).find('.col-'+col_idx).each(function(idx) {
+					if (!jQuery(this).is(':disabled') && parseInt(jQuery(this).val()) != jQuery(this).val()) {
+						if (!msg_recorded) record_error(jQuery(this), col_idx, 'There are invalid quantity values.');
+						else record_error(jQuery(this), col_idx);
+						msg_recorded = true;
+					}
+					else {
+						clear_error(jQuery(this), col_idx);
+					}
+				});* /
+			},
+			bin: function(col_idx, record_error, clear_error) {
+				msg_recorded = false;
+			}*/
+		}
+	});
+	{{/upload}}
+
+	var errsound = new Audio('{{static_files}}/audio/error.wav');
+
+	function play_error() {
+		errsound.currentTime = 0;
+		errsound.play();
+	}
+	
+	new ck.tabs({
+		tabs_id: 'physical_count_tabs',
+		tab_bodies_id: 'physical_count_tabs-body',
+		default_tab_index: {{#upload}}1{{/upload}}{{^upload}}0{{/upload}},
+		content_suffix: '-content'
+	});
+
+
+	var ipns, serials;
+
+	jQuery.ajax({
+		url: '/admin/physical-count.php',
+		type: 'get',
+		dataType: 'json',
+		data: { action: 'prefill', ajax: 1 },
+		success: function(data) {
+			ipns = data.ipns;
+			serials = data.serials;
+			serials['[[EMPTY]]'] = '[[NONE]]';
+		}
+	});
+
+	jQuery('#scan_count').on('click', function() {
+		jQuery('#scan_bin_number').focus();
+	});
+
+	function wait() {
+		jQuery('#scan-form').addClass('waiting');
+	}
+
+	function is_waiting() {
+		if (jQuery('#scan-form').hasClass('waiting')) {
+			play_error();
+			return true;
+		}
+		return false;
+	}
+
+	function clear_waiting() {
+		jQuery('#scan-form').removeClass('waiting');
+	}
+
+	function create_error(err) {
+		play_error();
+		jQuery('#scan-form').addClass('error');
+		var $cls = jQuery('<a href="#">[CLOSE]</a>').on('click', clear_error);
+		jQuery('#scan-errors').html(err+' ').append($cls).toggle(true);
+	}
+
+	function error_exists() {
+		if (jQuery('#scan-form').hasClass('error')) {
+			play_error();
+			return true;
+		}
+		return false;
+	}
+
+	function clear_error(e) {
+		e.preventDefault();
+		jQuery('#scan-errors').html('').toggle(false);
+		jQuery('#scan-form').removeClass('error');
+	}
+
+	var control_codes = {
+		'##BIN': 1,
+		'##SLOTTED': 2,
+		'##BULK': 3,
+		'##SERIAL': 4,
+		'##IPN': 5,
+		'##EMPTY': 6,
+		'##NEXT': 7,
+		'##COMPLETE': 8		
+	};
+
+	function control(code) {
+		if (code === 1) jQuery('#scan_bin_number').val('').focus();
+		else if (code === 2 || code === 3 || code === 4 || code === 5) {
+			if (code === 2) jQuery('#scan_bin_slotted').click();
+			else if (code === 3) jQuery('#scan_bin_bulk').click();
+			jQuery('#scan_serial').val('').focus();
+		}
+		else if (code === 6) {
+			jQuery('#scan_serial').focus().val('[[EMPTY]]');
+		}
+		else if (code === 7) {
+			jQuery('#scan-action').val('add-next');
+			jQuery('#scan-form').submit();
+		}
+		else if (code === 8) {
+			jQuery('#scan-action').val('add-complete');
+			jQuery('#scan-form').submit();
+		}
+	}
+
+	jQuery('#scan_bin_slotted, #scan_bin_bulk').on('click', function() {
+		jQuery('#scan_serial').focus();
+	});
+
+	jQuery('#scan-form').on('click', function(e) {
+		if (e.target.nodeName == 'INPUT') return;
+		jQuery('#scan-form-controller').focus();
+	});
+
+	jQuery('#scan_bin_number, #scan_ipn, #scan_serial, #scan-form-controller').on('keyup', function(e) {
+		if (error_exists()) {
+			e.preventDefault();
+			return false;
+		}
+
+		if (is_waiting()) {
+			e.preventDefault();
+			return false;
+		}
+
+		var key = e.keyCode || e.which;
+
+		if (key === 13) {
+			e.preventDefault();
+
+			var parts = jQuery(this).val().split('##');
+
+			if (parts[1] != undefined) {
+				jQuery(this).val(parts[0]);
+				jQuery(this).blur();
+				if (control_codes['##'+parts[1]] != undefined) {
+					control(control_codes['##'+parts[1]]);
+					// if we've changed the field value, leave it alone
+					//if (control_codes[parts[1]] != undefined) jQuery(this).val('');
+					return;
+				}
+			}
+
+			if (jQuery(this).prop('id') == 'scan_bin_number') control(control_codes['##SERIAL']);
+		}
+	});
+
+	jQuery('#scan_serial').on('blur', function() {
+		if (jQuery(this).val() == '') return;
+		wait();
+
+		if (serials[jQuery(this).val().toUpperCase()] == undefined) {
+			create_error('Serial # Unknown; Please enter IPN');
+			jQuery('#scan_ipn').prop('disabled', false).focus();
+		}
+		else {
+			jQuery('#scan_ipn').val(serials[jQuery(this).val().toUpperCase()]);
+			jQuery('#scan-form-controller').focus();
+		}
+
+		clear_waiting();
+	});
+
+	jQuery('#scan_ipn').on('blur', function() {
+		if (jQuery(this).val() == '') return;
+		wait();
+
+		if (ipns[jQuery(this).val().toUpperCase()] == undefined) {
+			create_error('IPN Unknown; Please research with the Count Authority');
+		}
+		else jQuery('#scan-form-controller').focus();
+
+		clear_waiting();
+	});
+
+	jQuery('#scan-next').on('click', function(e) {
+		control(control_codes['##NEXT']);
+	});
+
+	jQuery('#scan-complete').on('click', function(e) {
+		control(control_codes['##COMPLETE']);
+	});
+
+	jQuery('#scan-form').submit(function(e) {
+		var $self = jQuery(this);
+
+		if (error_exists()) {
+			e.preventDefault();
+			return false;
+		}
+
+		if (is_waiting()) {
+			e.preventDefault();
+			return false;
+		}
+
+		if ($self.hasClass('straight')) return true;
+
+		wait();
+
+		e.preventDefault();
+
+		jQuery('#scan_ipn').prop('disabled', false);
+
+		var fields = $self.serialize();
+
+		jQuery.ajax({
+			url: '/admin/physical-count.php',
+			type: 'post',
+			dataType: 'json',
+			data: fields+'&ajax=1',
+			success: function(data) {
+				if (data.err) {
+					create_error(data.err);
+					clear_waiting();
+					return;
+				}
+
+				if (jQuery('#scan-action').val() == 'add-complete') {
+					jQuery('#session').html('');
+					jQuery('#scan_bin_number').val('').focus();
+				}
+				else if (jQuery('#scan-action').val() == 'add-next') {
+					jQuery('#session').prepend('<tr><td>'+data.bin+'</td><td>'+data.bin_style+'</td><td>'+jQuery('#scan_ipn').val()+'</td><td>'+data.serial+'</td><td></td></tr>');
+					if (jQuery('#scan_bin_slotted').is(':checked')) jQuery('#scan_bin_number').val('').focus();
+					else jQuery('#scan_serial').focus();
+				}
+
+				jQuery('#scan_ipn').val('').prop('disabled', true);
+				jQuery('#scan_serial').val('');
+
+				if (!jQuery('#physical_count_ipns').hasClass('updated')) {
+					jQuery('#physical_count_ipns').addClass('updated').append(' *');
+				}
+				if (!jQuery('#physical_count_bins').hasClass('updated')) {
+					jQuery('#physical_count_bins').addClass('updated').append(' *');
+				}
+
+				//jQuery('#scan_bin_number').focus();
+
+				clear_waiting();
+			},
+			error: function() {
+				$self.addClass('straight').submit();
+			}
+		});
+	});
+</script>

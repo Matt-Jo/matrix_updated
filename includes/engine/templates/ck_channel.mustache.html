@@ -1,0 +1,117 @@
+<a class="add_block" id="new_{{block_key}}" href="#add_new_{{block_key}}">Add New {{block_label}}</a>
+<div class="add_block_target" id="add_new_{{block_key}}">
+	Add a new {{block_label}}:
+	<form action="{{admin_action}}" method="post">
+		<input type="hidden" name="action" value="add-{{block_key}}">
+		<input type="hidden" name="source_page" value="{{source_page}}">
+		<input type="hidden" name="target_page" value="{{target_page}}">
+
+		<style>
+			.channel_admin { width:500px; margin-top:20px; }
+			.channel_admin .field { margin:4px 0px; padding:4px 7px; background-color:#fcb; overflow:hidden; }
+			.channel_admin .field label { float:left; }
+			.channel_admin .field label small { margin-left:5px; }
+			.channel_admin .field .input { float:right; }
+			.channel_admin .field .input[required] { border:1px solid #c00; }
+			.channel_admin .multiply { font-size:.8em; }
+			.channel_admin .divide { font-size:.8em; float:right; clear:both;  }
+			.channel_admin .entry { margin:5px 0px; padding:3px; border:1px solid #000;background-color:#eee; }
+		</style>
+
+		<div class="channel_admin {{block_key}}-admin">
+			<fieldset class="primary">
+				{{#fields}}
+				<div class="field">
+					<label><strong>{{field_label}}</strong>:<small>{{comment}}</small></label>
+					{{&field_display}}
+				</div>
+				{{/fields}}
+			</fieldset>
+
+			{{#accessory_fields}}
+			<fieldset class="accessory">
+				Add Attached {{&accessory_name}}: {{#multiple}}<a class="multiply" href="#add_more_{{accessory_key}}" data-blockcount="1">[ADD MORE]</a>{{/multiple}}
+				<div class="entry close-{{accessory_key}}-0" id="add_more_{{accessory_key}}">
+					{{#multiple}}<a class="divide" href="#close-{{accessory_key}}-0">[X]</a><br>{{/multiple}}
+					{{#fields}}
+					<div class="field">
+						<label><strong>{{field_label}}</strong>:<small>{{comment}}</small></label>
+						{{&field_display}}
+					</div>
+					{{/fields}}
+				</div>
+			</fieldset>
+			{{/accessory_fields}}
+		</div>
+
+		<script>
+			jQuery('.add_block').click(function(event) {
+				event.preventDefault();
+				jQuery(jQuery(this).attr('href')).toggle();
+				return false;
+			});
+			jQuery('.multiply').click(function(event) {
+				event.preventDefault();
+				if (jQuery(jQuery(this).attr('href')).hasClass('closed')) {
+					jQuery(jQuery(this).attr('href')).removeClass('closed').find('input, select, textarea').removeAttr('disabled');
+				}
+				else {
+					var new_block = jQuery(jQuery(this).attr('href')).clone(true);
+					new_block.removeAttr('id');
+					var blockset = jQuery(this).closest('.accessory');
+					var blockcount = parseInt(jQuery(this).attr('data-blockcount'));
+					jQuery(this).attr('data-blockcount', (blockcount + 1));
+
+					var elemidx = new_block.find('.divide').attr('href');
+					var elemclass = elemidx.replace(/^#/, '');
+					new_block.removeClass(elemclass);
+
+					var parts = elemclass.split('-');
+					parts.pop();
+					var idx = blockcount; // blockcount always represents the count, idx represents the zero based index
+
+					elemclass = parts.join('-')+'-'+idx;
+					elemidx = '#'+elemclass;
+
+					new_block.addClass(elemclass);
+					new_block.find('.divide').attr('href', elemidx);
+
+					new_block.find('input, select, textarea').each(function() {
+						var nameidx = jQuery(this).attr('name').replace(/\[[0-9]+\]/, '['+idx+']');
+						jQuery(this).attr('name', nameidx);
+					});
+
+					new_block.appendTo(blockset);
+				}
+				return false;
+			});
+			jQuery('.divide').click(function(event) {
+				event.preventDefault();
+				var container = jQuery(this).closest('.accessory');
+				var adder = container.find('.multiply');
+				// let's never decrement, so we'll be sure to always get a unique number
+				//var blockcount = parseInt(adder.attr('data-blockcount'));
+				//blockcount--;
+				//adder.attr('data-blockcount', blockcount);
+				if (container.find('.entry').length > 1) {
+					jQuery(jQuery(this).attr('href').replace(/^#/, '.')).remove();
+					var id = adder.attr('href').replace(/^#/, '');
+					if (jQuery('#'+id).length == 0) {
+						container.find('.entry:eq(0)').attr('id', id);
+					}
+				}
+				else {
+					jQuery(jQuery(this).attr('href').replace(/^#/, '.')).addClass('closed').find('input, select, textarea').attr('disabled', 'disabled');
+				}
+				return false;
+			});
+		</script>
+
+		{{#actions}}
+		<input type="submit" name="action" value="{{action}}">
+		{{/actions}}
+		{{^actions}}
+		<input type="submit" name="action" value="Submit">
+		{{/actions}}
+	</form>
+</div>

@@ -1,0 +1,305 @@
+<style>
+	.delete-card-button { border:none; background-color:rgba(0, 0, 0, 0); }
+</style>
+<div id="payments-area">
+	<table id="credit-cards-table" class="customer-account-table">
+		<thead>
+			<tr>
+				<th>Card Type</th>
+				<th>Ending In</th>
+				<th>Name on Card</th>
+				<th>Expiration</th>
+				<th></th>
+			</tr>
+		</thead>
+		{{#credit_cards}}
+		<tr class="cc-{{card_id}} {{#cc-selected?}}selected{{/cc-selected?}}">
+			<td><img class="card-type" src="{{card_img}}" alt="{{card_type}}" title="{{card_type}}"></td>
+			<td>****{{ending_in}}</td>
+			<td>{{name_on_card}}</td>
+			<td>{{expiration}}</td>
+			<td>
+				<form method="POST" action="/my-account/payment">
+					<input type="hidden" name="action" value="delete-card">
+					<input type="hidden" name="card_id" value="{{card_id}}">
+					<button type="submit" class="delete-card-button">
+						<i class="fas fa-trash-alt"></i>
+					</button>
+				</form>
+			</td>
+		</tr>
+		{{/credit_cards}}
+		{{^credit_cards}}
+		<tr class="no-cards">
+			<td colspan="5">No Credit Cards On File</td>
+		</tr>
+		{{/credit_cards}}
+	</table>
+	<!--<button class="add-card">Add Credit Card</button>-->
+</div>
+
+<script src="https://js.braintreegateway.com/web/3.6.3/js/client.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.6.3/js/hosted-fields.min.js"></script>
+<script>
+</script>
+
+<!-- Braintree Control -->
+<script>
+	var bt_addresses = {
+	{{#default_address}}
+	{{address_id}}: {
+		postalCode: '{{{default_address.safe_header.postcode}}}}',
+				/*firstName: '{{{default_address.safe_header.first_name}}}',
+				 lastName: '{{{default_address.safe_header.last_name}}}',*/
+			company: '{{{default_address.safe_header.company_name}}}',
+			streetAddress: '{{{default_address.safe_header.address1}}}',
+			extendedAddress: '{{{default_address.safe_header.address2}}}',
+			locality: '{{{default_address.safe_header.city}}}',
+			region: '{{{default_address.safe_header.state}}}',
+			countryCodeAlpha2: '{{{default_address.safe_header.countries_iso_code_2}}}',
+	},
+	{{/default_address}}
+	{{#addresses}}
+	{{address_id}}: {
+		postalCode: '{{{safe_header.postcode}}}',
+				/*firstName: '{{{safe_header.first_name}}}',
+				 lastName: '{{{safe_header.last_name}}}',*/
+			company: '{{{safe_header.company_name}}}',
+			streetAddress: '{{{safe_header.address1}}}',
+			extendedAddress: '{{{safe_header.address2}}}',
+			locality: '{{{safe_header.city}}}',
+			region: '{{{safe_header.state}}}',
+			countryCodeAlpha2: '{{{safe_header.countries_iso_code_2}}}',
+	},
+	{{/addresses}}
+	};
+
+	jQuery('body').on('bt:load', function() {
+		jQuery('.payment-type.paypal').removeClass('disabled');
+		jQuery('.payment-method.paypal').attr('disabled', false);
+		jQuery('.add-new-cc.has-billing-address').attr('disabled', false);
+	});
+
+	braintree.client.create({ authorization: '{{braintree_client_token}}' }, function(err, clientInstance) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+
+		jQuery('body').trigger('bt:load');
+
+		braintree.hostedFields.create({
+				client: clientInstance,
+				fields: {
+					number: {
+						selector: '#bt-card-number'
+					},
+					cvv: {
+						selector: '#bt-cvv',
+						type: 'password'
+					},
+					expirationDate: {
+						selector: '#bt-expiration-date',
+						placeholder: 'MM/YY'
+					}
+				}
+			},
+			function(err, hostedFieldsInstance) {
+				if (err) {
+					jQuery('#cc-err').html('Error: '+err).show();
+					return;
+				}
+
+				jQuery('.add-new-cc').click(function() {
+					jQuery('.add-new-cc-form').toggle();
+				});
+
+				jQuery('#add-card-submit').click(function(e) {
+					jQuery('#cc-err').hide();
+
+					if (jQuery('#new-card-firstname').val() == '' || jQuery('#new-card-lastname').val() == '') {
+						jQuery('#cc-err').html('Please enter the name on the card.').show();
+						return;
+					}
+
+					let billing_address_id = jQuery('.billing-address-id:checked').val();
+					if (jQuery('.billing-same').is(':checked')) billing_address_id = jQuery('.shipping_address_id').val();
+
+					jQuery('#add-card-submit').attr('disabled', true);
+					e.preventDefault();
+					hostedFieldsInstance.tokenize(
+						{
+							cardholderName: jQuery('#new-card-firstname').val()+' '+jQuery('#new-card-lastname').val(),
+							billingAddress: bt_addresses[billing_address_id]
+						},
+						function(err, payload) {
+							jQuery('#add-card-submit').attr('disabled', false);
+
+							if (err) {
+								switch (err.code) {
+									case 'HOSTED_FIELDS_FIELDS_EMPTY':
+										jQuery('#cc-err').html('All fields are empty! Please fill out the form.').show();
+										break;
+									case 'HOSTED_FIELDS_FIELDS_INVALID':
+										jQuery('#cc-err').html('Some fields are invalid: '+err.details.invalidFieldKeys).show();
+										break;
+									case 'HOSTED_FIELDS_FAILED_TOKENIZATION':
+										jQuery('#cc-err').html('Card failed. Is the card valid? Are all fields filled out correctly?').show();
+										break;
+									case 'HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR':
+										jQuery('#cc-err').html('Network error occurred when tokenizing.').show();
+										break;
+									default:
+										jQuery('#cc-err').html('Something bad happened! '+err).show();
+								}
+								return;
+							}
+
+							let fields = {
+								ajax: 1,
+								action: 'record-credit-card',
+								card_nonce: payload.nonce,
+								first_name: jQuery('#new-card-firstname').val(),
+								last_name: jQuery('#new-card-lastname').val(),
+								email: jQuery('#new-card-email').val(),
+								private_card: jQuery('#new-card-is-private').is(':checked')?1:0,
+								billing_address_id: billing_address_id
+							};
+
+							jQuery.ajax({
+								url: '/checkout_payment.php',
+								type: 'post',
+								dataType: 'json',
+								data: fields,
+								timeout: 8000,
+								success: function(data) {
+									if (data.error) {
+										jQuery('#cc-err').html(data.error).show();
+										return;
+									}
+
+									jQuery('.no-cards').remove();
+
+									let $ccin = jQuery('<input type="radio" class="payment-method cc" name="payment_method" value="cc-'+data.card_id+'" required data-method-type="cc">');
+									let $incell = jQuery('<td></td>').append($ccin);
+									let $imgcell = jQuery('<td><img class="card-type" src="'+data.card_img+'" alt="'+data.card_type+'" title="'+data.card_type+'"></td>');
+									let $endcell = jQuery('<td>****'+data.ending_in+'</td>');
+									let $namecell = jQuery('<td>'+data.name_on_card+'</td>');
+									let $expcell = jQuery('<td>'+data.expiration+'</td>');
+									jQuery('<tr class="cc-'+data.card_id+'"></tr>').append($incell).append($imgcell).append($endcell).append($namecell).append($expcell).appendTo('.cc-list');
+
+									$ccin.attr('checked', true).trigger('click');
+
+									jQuery('.add-new-cc-form').hide();
+									jQuery('#new-card-firstname').val('');
+									jQuery('#new-card-lastname').val('');
+									jQuery('#new-card-is-private').attr('checked', false);
+
+									hostedFieldsInstance.clear('number');
+									hostedFieldsInstance.clear('cvv');
+									hostedFieldsInstance.clear('expirationDate');
+
+									jQuery('#cc-err').hide();
+								},
+								error: function() {
+									alert('There was a problem recording this card to your account; please contact your sales team.');
+								}
+							});
+						}
+					);
+				});
+			});
+
+		braintree.paypal.create({
+				client: clientInstance
+			},
+			function (err, paypalInstance) {
+				if (err) {
+					if (err.code === 'PAYPAL_BROWSER_NOT_SUPPORTED') jQuery('.paypal-err').html('This browser is not supported.').show();
+					else jQuery('.paypal-err').html('Error: '+err).show();
+					return;
+				}
+
+				let paypal_continue = false;
+
+				jQuery('.submit-continue').click(function(e) {
+					paypal_continue = false;
+
+					if (!jQuery('.payment-method.paypal').is(':checked')) return;
+
+					if (jQuery('.payment-method-extra.paypal').val() == '' || jQuery('.payment-method-extra.paypal').val().length <= 0) {
+						e.preventDefault();
+
+						paypal_continue = true;
+
+						jQuery('.payment-method.paypal').trigger('click');
+
+						return false;
+					}
+				});
+
+				jQuery('.payment-method.paypal').click(function(e) {
+					jQuery('.paypal-err').hide();
+
+					if (jQuery('.payment-method-extra.paypal').val() != '' && jQuery('.payment-method-extra.paypal').val().length > 0) {
+						jQuery('.payment-type.paypal').addClass('complete');
+						if (paypal_continue) jQuery('.payment-form').submit();
+						return;
+					}
+
+					jQuery('.payment-type.paypal').removeClass('complete');
+
+					paypalInstance.tokenize({
+							flow: 'checkout',
+							amount: '{{order_total}}',
+							currency: 'USD',
+							displayName: 'CablesAndKits.com',
+							locale: 'en_US',
+							enableShippingAddress: false,
+						},
+						function(err, payload) {
+							if (err) {
+								// Handle tokenization errors or premature flow closure
+								switch (err.code) {
+									case 'PAYPAL_POPUP_CLOSED':
+										jQuery('.paypal-err').text('Customer closed PayPal popup.').show();
+										break;
+									case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
+										jQuery('.paypal-err').text('PayPal tokenization failed. See details: '+err.details).show();
+										break;
+									case 'PAYPAL_FLOW_FAILED':
+										jQuery('.paypal-err').text('Unable to initialize PayPal flow. Are your options correct? '+err.details).show();
+										break;
+									default:
+										jQuery('.paypal-err').text('Error: '+err).show();
+										break;
+								}
+								return;
+							}
+
+							if (payload.nonce.length > 0) {
+								jQuery('.payment-method-extra.paypal').val(payload.nonce);
+								jQuery('.payment-type.paypal').addClass('complete');
+								if (paypal_continue) jQuery('.payment-form').submit();
+								else {
+									// we only need to record the nonce out of band if we're not immediately submitting the form
+									jQuery.ajax({
+										url: '/checkout_payment.php',
+										type: 'post',
+										dataType: 'json',
+										data: { ajax: 1, action: 'record-paypal-nonce', paypal_nonce: payload.nonce },
+										timeout: 8000,
+										success: function(data) {
+											// do nothing
+										},
+										error: function() {
+											alert('There was a problem recording this paypal transaction on our end; please contact your sales team.');
+										}
+									});
+								}
+							}
+						});
+				});
+			});
+	});
+</script>

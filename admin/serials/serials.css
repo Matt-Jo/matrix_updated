@@ -1,0 +1,39 @@
+div#add_product_dialog_container, div#nonserials_dialog_container, div#serials_dialog_container { font-family:Verdana,Arial,sans-serif; font-size:12px; }
+div#add_product_dialog, div#nonserials_dialog, div#serials_dialog, div#serials_release_dialog { border-left: 1px solid #555; border-bottom: 1px solid #555; border-right: 1px solid #555; background-color: #fff; position: absolute; padding: 0px; padding-bottom: 10px; width: 300px; }
+div#serials_dialog, div#add_product_dialog { width: 750px; }
+
+#nonserials_menu_close, #serials_menu_close { right: 5px; top: 5px; }
+div#serials_release_dialog { text-align: center; }
+div#previously_entered_serials { text-align:right; clear: both; margin: 5px 10px; }
+
+#add_product_diaglog_titlebar, #nonserials_diaglog_titlebar, #serials_diaglog_titlebar { background-image: url(/admin/images/serials/title-bar-fade.png); margin: 0px; padding-top: 3px; height: 32px; max-height: 32px; font-weight: bold; text-align: center; width: 100%; }
+
+p.serials_dialog_title { font-size:0px; font-weight:bold; text-align: center; padding: 7px 0px; }
+div.autocomplete, div#subserial_autocomplete_choices, div#autocomplete_choices { background-color:#fff; z-index: 100; }
+div.autocomplete ul { list-style-type:none; margin:0px; padding:0px; }
+div.autocomplete ul li.selected { background-color: #00ccff;}
+div.autocomplete ul li { font-family:Verdana; font-size:12px; list-style-type:none; display:block; margin:0; cursor:pointer; }
+table#serial_entry_table { padding: 5px; }
+
+table#serial_info_table, table#serial_info_table td { }
+table.serial_saved_table { margin-left: auto; margin-right: auto; }
+table.serial_saved_table, table.serial_saved_table td { background-color: #333; padding: 1px; }
+table.serial_saved_table td { background-color: #fff; padding: 3px; }
+#nonserial_entry_table { min-width: 250px; margin-left: auto; margin-right: auto; }
+
+#nonserial_entry_table td { width: 33%; padding: 3px; }
+.receiving_session_name, .receiving_session_count, .receiving_session_actions { width: 150px; height: 24px; padding: 5px 5px; float: left; overflow: hidden; }
+.receiving_session_count { width: 60px; }
+
+.receiving_session_actions { width: 40px; }
+.receiving_session_actions a img { border: none; padding: 0px; margin: 0px; }
+.receiving_session_row { float: left; margin-bottom: 2px; }
+
+.review_product_row { background-color: #ffb3b5; }
+
+table.vendor_table { padding:0px; margin: 0px; }
+table.vendor_table tr { padding: 0px; margin: 0px; }
+table.vendor_table tr th, table.vendor_table tr td { text-align: left; padding: 5px 10px; margin: 0px; }
+table.vendor_table tr td a img { border:none; }
+tr.hl { background-color: rgb(204, 204, 204); }
+

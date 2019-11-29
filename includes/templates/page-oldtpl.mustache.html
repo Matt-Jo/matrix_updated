@@ -1,0 +1,24 @@
+<table cellspacing="0" cellpadding="0" border="0" width="100%" class="centertable" style="margin-bottom:15px;">
+	<tr>
+		{{#body.left_nav?}}
+		<td width="170" valign="top" style="background-color:#f9f7f8;text-align:left;border-style:solid; border-color:#cecece; border-width:0px 0px 2px 1px;">
+			<table cellspacing="0" cellpadding="8px" border="0">
+			{{{.}}}
+			</table>
+		</td>
+		{{/body.left_nav?}}
+
+		<td width="80%" valign="top" style="border-style:solid; border-color:#cecece; border-width:0px 1px 2px 1px;">
+			{{#body.breadcrumb?}}
+			<style>
+				.lt-ie9 div.tools { width:100%; }
+			</style>
+			<div class="tools">
+				{{{.}}}
+			</div>
+			{{/body.breadcrumb?}}
+
+			{{{body.content}}}
+		</td>
+	</tr>
+</table>

@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "ihg access"
+AuthUserFile .htpasswd-ihg
+Require valid-user

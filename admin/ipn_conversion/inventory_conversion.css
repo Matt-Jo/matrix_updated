@@ -1,0 +1,116 @@
+div{
+              font-family: Verdana,Arial,sans-serif;
+}
+div.conversion_column{
+        float:left;
+        width:49%;
+        min-height: 300px;
+}
+div.conversion_column:first-child{
+        border-right: 1px solid #000;
+}
+div.column_header{
+        background-color: #B7DEE8;
+        font-family: Verdana,Arial,sans-serif;
+        font-size: 18px;
+        padding: 5px;
+}
+div.column_input, div#column_output{
+       font-family: Verdana,Arial,sans-serif;
+       font-size: 14px;
+       margin-top: 10px;
+       padding: 5px;
+       float: left;
+}
+div.column_input div, div#column_output div{
+        float: left;
+        width: 100px;
+}
+
+div.ipn_auto {
+  position:absolute;
+  width:250px;
+  background-color:white;
+  border:1px solid #888;
+  margin:0;
+  padding:0;
+  z-index: 1;
+}
+div.ipn_auto ul {
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+div.ipn_auto ul li.selected { background-color: #ffb;}
+div.ipn_auto ul li {
+  list-style-type:none;
+  display:block;
+  margin:0;
+  padding:2px;
+  height:32px;
+  cursor:pointer;
+}
+
+
+
+
+
+div.column_data{
+        clear: both;
+        margin-top: 10px;
+        position: relative;
+}
+
+div#input_dialog_container{
+font-family:Verdana,Arial,sans-serif;
+font-size:12px;
+}
+div#popup_dialog {
+   top: 200px;
+   border-left: 1px solid #555;
+   border-bottom: 1px solid #555;
+   border-right: 1px solid #555;
+   border-top: 1px solid #555;
+   background-color: #fff;
+   position: absolute;
+   padding: 0px;
+   padding-bottom: 10px;
+   width: 500px;
+   z-index: 1;
+}
+div#input_dialog{
+   width: 500px;
+}
+div#popup_content{
+   padding: 5px;
+}
+div.serial, div.serial_cost{
+        float:left;
+        font-family:Verdana,Arial,sans-serif;
+        font-size:12px;
+        width:182px;
+        margin-right: 2px;
+}
+div.serial_cost{
+        width: 48px;
+        text-align: right;
+}
+.header{
+        background-color: #ccc;
+}
+table#input_result_table, table#output_result_table{
+        width: 100%;
+}
+div.costs{
+        width: 100%;
+        text-align: right;
+        position: absolute;
+        bottom: 0px;
+        margin-right: 10px;
+}
+div.output_column{
+
+}
+div.column_data{
+        min-height: 400px;
+}

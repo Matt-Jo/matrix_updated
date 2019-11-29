@@ -1,0 +1,337 @@
+<style>
+	#prices { margin-top:15px; }
+	#regular-price { text-decoration:line-through; font-size:24px; margin-bottom:10px; display:none; }
+	#item-price { font-size:32px; font-weight:bold; color:#d22842; }
+	#special-price-notice { font-size:11px; color:#d22842; margin:15px 0px -15px 0px; display:none; }
+	#sibling-variants { background-color:#fff; border-style:solid; border-color:#cecece; border-width:2px 0px; padding:5px 8px; margin-top:15px; }
+	.variant { margin:6px 0px; }
+	.variant-name { font-size:20px; vertical-align:top; text-align:right; font-weight:normal; padding:10px 8px 0px 6px; }
+	.variant-body { padding:6px 0px; }
+	.variant-list { display:inline-block; vertical-align:top; margin:0px; padding:0px; /*max-width:300px;*/ }
+	.variant-option { display:inline-block; list-style-type:none; }
+	.variant-option .variant-link { display:block; margin:1px; border-style:solid; border-color:#acacac; border-width:2px 1px; line-height:100%; font-size:15px; min-width:25px; text-align:center; padding:3px 4px 1px 3px; }
+	.variant-link.selected { color:#fff; background-color:#3b8baa; }
+	.variant-link.disabled { cursor:default; color:#ddd; }
+	.variant-option .variant-link:hover { text-decoration:none; }
+	.variant-list .variant-option .color-variant.variant-link { height:16px; width:18px; min-width:18px; border-radius:6px; margin:1px; padding:2px; position:relative; z-index:1; }
+	.color-variant.variant-link .chk { display:none; }
+	.color-variant.variant-link.selected { text-decoration:none; border-color:#000; box-shadow:0px 0px 6px #000; }
+	.color-variant.variant-link.selected .chk { display:inline; color:#fff; position:absolute; bottom:1px; right:1px; font-size:10px; }
+	.color-variant.variant-link.selected.black .chk { color:#000; }
+	.color-variant.variant-link.disabled { opacity:0.25; cursor:default; }
+	.color-variant.variant-link .crss { display:none; }
+	.color-variant.variant-link.disabled .crss { display:inline; color:#000; position:absolute; bottom:1px; right:1px; font-size:10px; }
+	#sibling-in-stock { margin:5px 10px; border-top:1px solid #cecece; font-size:18px; padding-top:10px; }
+	#in-stock-number { color:#3b8baa; font-size:22px;  }
+	#in-stock-indicator {  }
+	#in-stock-ships {  }
+	#in-stock-additional { font-size:12px; display:none; }
+	#ck-advantages { display:flex; justify-content:space-around; font-size:15px; padding:15px 0 15px 0; text-align:center; background-color:#fefef6; border-bottom:2px solid #cecece; }
+	#ck-advantages i { color:#e21836; font-size:21px; padding-right:5px; }
+	#ck-advantages span { display:flex; align-items:center; color:#555; }
+
+	.clear-selections {}
+
+	@media (max-width:980px) {
+		#regular-price { font-size:40px; line-height:.8em; }
+		#item-price { font-size:50px; line-height:.8em; }
+	}
+
+	@media (max-width:767px) {
+		#sibling-variants table, #sibling-variants thead, #sibling-variants tbody, #sibling-variants tr, #sibling-variants th, #sibling-variants td { display:block; }
+		#sibling-variants th { text-align:left; padding-top:0px; }
+		#sibling-variants td { padding-left:6px; }
+
+		.variant-option .variant-link { font-size:20px; }
+		.variant-list .variant-option .color-variant.variant-link { height:23px; width:25px; min-width:25px; }
+		#ck-advantages { justify-content:center; }
+		#ck-advantages span { width:30%; text-align:left; }
+	}
+</style>
+<div id="prices">
+	<div id="regular-price" data-price="{{regular_price_number}}">{{regular_price}}</div>
+	<div id="item-price" data-price="{{price_number}}">{{price}}</div>
+
+	<div id="special-price-notice">
+		Sale quantities are limited to in-stock quantities. If you need more than what is in-stock,<br>
+		click <a href="https://lc.chat/now/8165031/" onclick="return chat_popup(this.href)">here</a> to chat with a CK representative.
+	</div>
+</div>
+
+<div id="sibling-variants">
+	<table class="variants-grid">
+		<a href="#" class="clear-selections">Clear Selections</a>
+		<tbody>
+			{{#variants}}
+			<tr class="variant">
+				<th class="variant-name">
+					{{variance_display}}:
+					{{#descriptor}}
+					<br><small>({{.}})</small>
+					{{/descriptor}}
+				</th>
+				<td class="variant-body">
+					<ul class="variant-list variance-set-{{variance_id}}">
+						{{#values}}
+						<li class="variant-option"><a href="#" class="variant-link {{#selected}}selected{{/selected}} {{#products_ids}}prod-{{.}} {{/products_ids}}" data-variance-id="{{variance_id}}" data-variant-type="{{variance_key}}" data-option-value="{{value_key}}">{{value_display}}</a></li>
+						{{/values}}
+					</ul>
+				</td>
+			</tr>
+			{{/variants}}
+		</tbody>
+	</table>
+	<div id="sibling-in-stock">
+		<span id="in-stock-number">{{{in_stock_number}}}</span>
+		<span id="in-stock-indicator">{{{in_stock_indicator}}}</span>
+		<span id="in-stock-ships">{{{in_stock_ships}}}</span>
+		<div id="in-stock-additional">{{{in_stock_additional}}}</div>
+	</div>
+</div>
+
+<div id="ck-advantages">
+	<span><i class="fas fa-shield-alt"></i>Lifetime Warranty</span>
+	<span><i class="far fa-hands-helping"></i>30 Day Satisfaction</span>
+	<span><i class="far fa-shipping-timed"></i>Late Shipping till 8pm</span>
+</div>
+
+<div id="product-schema">
+	{{> partial-product-schema.mustache.html }}
+</div>
+<script>
+	let color_map = {
+		'Blue':		{'hex': '#0072bc', 'color': 'Blue'},
+		'Black':	{'hex': '#000',	'color': 'Black'},
+		'Gray':		{'hex': '#acacac', 'color': 'Gray'},
+		'Green':	{'hex': '#049548', 'color': 'Green'},
+		'Red':		{'hex': '#f30319', 'color': 'Red'},
+		'Yellow':	{'hex': '#fee905', 'color': 'Yellow', 'selhex': 'black'},
+		'White':	{'hex': '#fff',	'color': 'White', 'selhex': 'black'},
+		'Ivory':	{'hex': '#e2d5c4', 'color': 'Ivory', 'selhex': 'black'},
+		'Orange':	{'hex': '#f26522', 'color': 'Orange'},
+		'Purple':	{'hex': '#88026d', 'color': 'Purple'},
+		'Pink':		{'hex': '#f26d7d', 'color': 'Pink'}
+	};
+
+	jQuery('.variant-link[data-variant-type=color]').each(function() {
+		let cm = color_map[jQuery(this).attr('data-option-value')];
+
+		jQuery(this).addClass('color-variant').css('background-color', cm['hex']).css('color', cm['hex']).attr('title', cm['color']).html(jQuery('<div class="chk">&#x2714;</div><div class="crss">&#x2716;</div>'));
+
+		if (cm['selhex']) jQuery(this).addClass(cm['selhex']);
+	});
+
+	let vstyles = new ck.styleset('variants');
+	{{#variants}}
+	vstyles.add_selector('.variance-set-{{variance_id}} .variant-option .variant-link').add_stylestring('min-width:{{variance_size}}em;');
+	{{/variants}}
+	vstyles.render();
+
+	let variant_count = {{variant_count}};
+	let lookup_data = {{{lookup_data}}};
+	let base_url = '{{base_url}}';
+
+	let family_defaults = {{{family_defaults}}};
+
+	let variant_fields = {};
+
+	jQuery(document).ready(function() {
+		jQuery('.variant-link').click(function(e) {
+			e.preventDefault();
+
+			if (jQuery(this).hasClass('disabled') || jQuery(this).hasClass('selected')) return;
+
+			jQuery('#add-to-cart-result').removeClass('success').removeClass('failure');
+
+			jQuery('.variant-link[data-variant-type="'+jQuery(this).attr('data-variant-type')+'"]').removeClass('selected');
+
+			jQuery(this).addClass('selected');
+
+			make_selection(false);
+		});
+
+		variant_fields = {
+			$breadcrumbs: jQuery('#breadcrumbs'),
+			$model_number: jQuery('#model-number-field'),
+			$page_title: jQuery('head title'),
+			$title: jQuery('#item-name'),
+			$summary: jQuery('#summary'),
+			$hero_link: jQuery('#product-hero a'),
+			$hero_image: jQuery('#product-hero img'),
+			$carousel_links: jQuery('#image-carousel a'),
+			$item_price: jQuery('#item-price'),
+			$regular_price: jQuery('#regular-price'),
+			$in_stock_number: jQuery('#in-stock-number'),
+			$in_stock_indicator: jQuery('#in-stock-indicator'),
+			$in_stock_ships: jQuery('#in-stock-ships'),
+			$in_stock_additional: jQuery('#in-stock-additional'),
+			$products_id: jQuery('#products_id'),
+			//$discontinued: jQuery('#discontinued'),
+			$quantity: jQuery('#product-quantity'),
+			$description: jQuery('#description .product-info-content'),
+			$schema: jQuery('#product-schema'),
+		};
+
+		make_selection(true);
+	});
+
+	let products = {};
+
+	function make_selection(preloaded) {
+		let products_ids = [];
+		let num_selections = 0;
+
+		let qstring = {};
+
+		jQuery('.variant-list').removeClass('protected-variance');
+
+		jQuery('.variant-link.selected').each(function() {
+			let variance_id = jQuery(this).data('variance-id');
+			let variance_key = jQuery(this).data('variant-type');
+			let value_key = jQuery(this).data('option-value');
+
+			qstring[variance_key] = value_key;
+
+			num_selections++;
+
+			products_ids = products_ids.concat(lookup_data[variance_key]['values'][value_key]['products_ids']);
+
+			jQuery('.variant-list.variance-set-'+variance_id).addClass('protected-variance');
+		});
+
+		if (num_selections == variant_count) jQuery('.variant-list').removeClass('protected-variance');
+
+		let products_id, scount = 0, pcount = 0;
+
+		products_ids = products_ids.reduce(function(pids, pid) {
+			if (pids[pid] == undefined) pids[pid] = 1;
+			else pids[pid]++;
+
+			if (pids[pid] > scount) {
+				scount = pids[pid];
+				pcount = scount;
+				if (num_selections == variant_count) pcount--;
+				products_id = pid;
+			}
+			return pids;
+		}, {});
+
+		jQuery('.variant-list:not(.protected-variance) .variant-link').removeClass('protected').removeClass('disabled');
+
+		for (let pid in products_ids) {
+			if (products_ids[pid] >= pcount) {
+				jQuery('.variant-link.prod-'+pid).addClass('protected');
+			}
+		}
+
+		jQuery('.variant-link:not(.protected)').addClass('disabled');
+
+		if (preloaded) return;
+
+		if (num_selections == variant_count && products_id != undefined) {
+			let new_url = base_url+'fp-'+products_id+'/?'+jQuery.param(qstring);
+
+			history.replaceState(qstring, null, new_url);
+
+			jQuery('.main-body-inner-container').addClass('fade');
+
+			if (products[products_id] != undefined) {
+				setTimeout(function() {
+					display_selection(products[products_id]);
+				}, 500);
+			}
+			else {
+				jQuery.ajax({
+					url: new_url,
+					type: 'get',
+					dataType: 'json',
+					data: { action: 'load-selection', ajax: 1 },
+					success: function(data) {
+						products[products_id] = data.product;
+						display_selection(data.product);
+					}
+				});
+			}
+		}
+		else {
+			display_selection(family_defaults);
+		}
+	}
+
+	function display_selection(sel) {
+		variant_fields.$breadcrumbs.html(sel.breadcrumbs);
+		variant_fields.$model_number.html(sel.model_number);
+		variant_fields.$page_title.html(sel.page_title);
+		variant_fields.$title.html(sel.title);
+		variant_fields.$summary.html(sel.summary);
+
+		if (sel.images.length > 0) {
+			variant_fields.$hero_link.attr('href', '{{cdn}}/'+sel.images[0].image_large);
+			variant_fields.$hero_image.attr('src', '{{cdn}}/'+sel.images[0].image_large).attr('title',	sel.attribute_safe.name).attr('alt', sel.attribute_safe.name);
+
+			let carousel_idx;
+
+			variant_fields.$carousel_links.each(function(idx) {
+				carousel_idx = idx+1;
+
+				if (!sel.images[idx]) jQuery(this).remove();
+				else {
+					jQuery(this).attr('href', '{{cdn}}/'+sel.images[idx].image_large).attr('rel', "useZoom: 'Zoomer', smallImage: '{{cdn}}/"+sel.images[idx].image_large+"'");
+					jQuery(this).find('img').attr('src', '{{cdn}}/'+sel.images[idx].image_thumb).attr('title', sel.attribute_safe.name).attr('alt', sel.attribute_safe.name);
+				}
+			});
+
+			for (carousel_idx; carousel_idx<sel.images.length; carousel_idx++) {
+				jQuery('#image-carousel').append(' <a href="{{cdn}}/'+sel.images[carousel_idx].image_large+'" class="cloud-zoom-gallery" rel="useZoom: \'Zoomer\', smallImage: \'{{cdn}}/'+sel.images[carousel_idx].image_large+'\'"><img src="{{cdn}}/'+sel.images[carousel_idx].image_thumb+'" title="'+sel.attribute_safe.name+'" alt="'+sel.attribute_safe.name+'"></a>');
+			}
+
+			variant_fields.$carousel_links = jQuery('#image-carousel a');
+
+			jQuery('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();
+		}
+
+		variant_fields.$item_price.html(sel.price).attr('data-price', sel.price_number);
+
+		if (sel.regular_price) {
+			variant_fields.$regular_price.html(sel.regular_price).attr('data-price', sel.regular_price_number).show();
+			jQuery('#special-price-notice').show();
+		}
+		else {
+			variant_fields.$regular_price.hide();
+			jQuery('#special-price-notice').hide();
+		}
+
+		variant_fields.$in_stock_number.html(sel.in_stock_number);
+		variant_fields.$in_stock_indicator.html(sel.in_stock_indicator);
+		variant_fields.$in_stock_ships.html(sel.in_stock_ships);
+
+		if (sel.in_stock_additional) variant_fields.$in_stock_additional.html(sel.in_stock_additional).show();
+		else variant_fields.$in_stock_additional.hide();
+
+		variant_fields.$products_id.val(sel.products_id);
+
+		variant_fields.$quantity.val(1);
+
+		variant_fields.$description.html(sel.description);
+		variant_fields.$schema.html(sel.schema);
+
+		if (sel.products_id == '') {
+			jQuery('#add-current-to-cart').addClass('fade');
+			jQuery('#add-current-to-cart input').attr('disabled', true);
+		}
+		else {
+			jQuery('#add-current-to-cart').removeClass('fade');
+			jQuery('#add-current-to-cart input').attr('disabled', false);
+		}
+
+		jQuery('.main-body-inner-container').removeClass('fade');
+	}
+
+	jQuery('.clear-selections').on('click', function(e) {
+		e.preventDefault();
+		jQuery('#add-to-cart-result').removeClass('success').removeClass('failure');
+		jQuery('.variant-link').removeClass('selected').addClass('protected').removeClass('disabled');
+
+		display_selection(family_defaults);
+	});
+</script>

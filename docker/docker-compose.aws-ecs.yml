@@ -1,0 +1,37 @@
+version: '3'
+services:
+  apache_img:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/cak_apache_img:latest
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: ${AWS_LOGS_GROUP_NAME}
+        awslogs-region: ${AWS_REGION_NAME}
+        awslogs-stream-prefix: cak-apache
+  php_img:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/cak_php_img:latest
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: ${AWS_LOGS_GROUP_NAME}
+        awslogs-region: ${AWS_REGION_NAME}
+        awslogs-stream-prefix: cak-php
+  memcached_img:
+    image: memcached:1.5
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: ${AWS_LOGS_GROUP_NAME}
+        awslogs-region: ${AWS_REGION_NAME}
+        awslogs-stream-prefix: cak-memcached
+  utils_img:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/cak_utils_img:latest
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: ${AWS_LOGS_GROUP_NAME}
+        awslogs-region: ${AWS_REGION_NAME}
+        awslogs-stream-prefix: cak-utils
+
+
+

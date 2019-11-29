@@ -1,0 +1,13 @@
+{{#start?}}
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{{/start?}}
+{{#sitemaps}}
+	<sitemap>
+		<loc>{{url}}</loc>
+		<lastmod>{{last_modified}}</lastmod>
+	</sitemap>
+{{/sitemaps}}
+{{#end?}}
+</sitemapindex>
+{{/end?}}

@@ -1,0 +1,119 @@
+		<div class="pf-result-summary">
+			<div class="placeholder">&#8203;<!-- zero-width space keeps the vertical spacing when other elements are hidden --></div>
+			
+			<div class="results"><a href="#" class="show-all-results">{{finder.results_cnt}} Results [ <span>see all</span> ]</a></div>
+
+			<div class="pagination">
+				<!-- fill with template -->
+			</div>
+
+			<div class="pf-options-loading">
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+			</div>
+		</div>
+		<div class="pf-result-product">
+			<!-- fill with template -->
+		</div>
+		<div class="pf-result-summary bottom">
+			<div class="placeholder">&#8203;<!-- zero-width space keeps the vertical spacing when other elements are hidden --></div>
+			
+			<div class="pagination">
+				<!-- fill with template -->
+			</div>
+		</div>
+	</section>
+</div>
+</div>
+</div>
+
+	{{#categories}}
+	<div class="ck_rounded_box">
+		<div class="main rounded-corners">
+			<div class="grid grid-pad">
+				<section id="shop-by-category" class="main-content full-width">
+					<div class="col-1-1">
+						<h2 class="pf-header">Shop by {{#sbccat?}}{{.}}{{/sbccat?}}{{^sbccat?}}Category{{/sbccat?}}</h2>
+					</div>
+					<div class="col-1-1">
+						<div class="grid grid-pad pf-category-grid">
+							{{#cats}}
+								<div class="pf-category {{#rowbreak?}}rowbreak{{/rowbreak?}} col-4-12 same-height">
+									<div class="innerContent">
+										<a href="{{link}}" data-name="{{{name}}}" class="category-header">
+											<div class="cat-name">{{{name}}} <span>&gt;</span></div>
+											<div class="cat-img"><img src="{{cdn}}/{{img}}" alt="{{{name}}}"></div>
+											<div class="cat-desc">{{{description}}}</div>
+										</a>
+										{{#subcategories}}
+										<a href="{{link}}" class="subcat-link">{{name}}</a>
+										{{/subcategories}}
+									</div>
+								</div>
+							{{/cats}}
+						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+	{{/categories}}
+
+	{{#applications}}
+	<div class="ck_rounded_box">
+		<div class="main rounded-corners">
+			<div class="grid grid-pad">
+				<section id="shop-by-application" class="main-content full-width">
+					<h2 class="pf-header">Additional Items{{! Shop by { {sbacat} } Application }}</h2>
+					
+					<div class="col-1-1">
+						<div class="grid grid-pad pf-category-grid">
+							{{#apps}}
+								<div class="col-3-12 pf-application same-height">
+									<div class="innerContent">
+										<a href="{{link}}" data-name="{{{name}}}" class="application-header">
+											<div class="app-name">{{name}}</div>
+											<div class="app-img"><img src="{{cdn}}/{{img}}" alt="{{name}}"></div>
+										</a>
+										{{#subcategories}}
+										<div style="text-align:center;">
+											{{#subcats}}
+										<a href="{{link}}" class="application-link">{{name}}</a>
+											{{/subcats}}
+										</div>
+										{{/subcategories}}
+									</div>
+								</div>
+							{{/apps}}
+						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+	{{/applications}}
+
+	{{! <section id="q-and-a" class="main-content full-width">
+		<h2 class="pf-header">Questions &amp; Answers</h2>
+		<div class="yotpo yotpo-main-widget" data-product-id="cat-{ {yotpo_page_id} }" data-name="{ {finder.main_category} }" data-url="{ {yotpo_page_url} }" data-mode="questions"></div>
+	</section> }}
+</div>
+{{! these elements use mustache fields so we still include them here }}
+<script>
+	var default_cPath = '{{cPath}}';
+	var cPath = '{{cPath}}';
+	var focus = '{{major}}';
+	var major = '{{major}}';
+	var minor = '{{minor}}';
+	var page = '{{page}}';
+	var cdn = '{{cdn}}';
+	var static_files = '{{static_files}}';
+</script>
+<script src="/images/static/js/product-finder.max.js?v=8"></script>

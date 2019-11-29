@@ -1,0 +1,209 @@
+<style>
+	#page-body { width:100%; }
+	h4.section-heading { margin:0px; cursor:pointer; }
+
+	.lookup { border:1px solid #000; margin-bottom:20px; }
+	/*.values { margin:5px; display:none; }
+	.values.expand { display:block; }*/
+
+	.values input[disabled] { background-color:#fff; border:1px solid #aaa; padding:2px 1px 2px 1px; }
+
+	.val-details td { position:relative; }
+
+	.val-details.locked { background-color:#eee; }
+	.val-details.changed { background-color:#efe; }
+
+	.clickable { position:absolute; top:0px; right:0px; bottom:0px; left:0px; display:none; }
+	.locked .clickable { display:block; }
+
+	.no-entries { font-weight:bold; font-size:14px; text-align:center; }
+
+	.form-control { text-align:right; border-width:0px !important; }
+	.add-new-details { display:none; }
+	.add-new-details td { border-top-width:1px !important; }
+
+	.reload { font-size:10px; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3 class="page-heading">Dynamic Lookup Manager</h3>
+
+	<div class="choose-lookup">
+		Choose Lookup:
+		<select class="dynamic-lookup">
+			<option value="">Choose...</option>
+			{{#lookups}}
+			<option value="{{key}}">{{name}}</option>
+			{{/lookups}}
+		</select>
+		<a href="#" class="reload">[reload]</a>
+	</div>
+
+	<div class="lookup-details">
+		Please select a lookup to manage
+	</div>
+</td>
+<script>
+	let current_lookup;
+
+	jQuery('.reload').on('click', function(e) {
+		e.preventDefault();
+
+		current_lookup = '';
+
+		jQuery('.dynamic-lookup').trigger('change');
+	});
+
+	jQuery('.dynamic-lookup').on('change', function() {
+		let lookup = jQuery(this).val();
+
+		if (lookup == '' || lookup == current_lookup) return;
+
+		current_lookup = lookup;
+
+		jQuery.ajax({
+			url: '/admin/dynamic-lookup-manager',
+			type: 'get',
+			dataType: 'json',
+			data: { ajax: 1, action: 'fill-'+lookup },
+			success: function(data) {
+				let $form = jQuery('<form action="/admin/dynamic-lookup-manager" method="post" class="dlm-form"><input type="hidden" name="action" value="update-'+lookup+'"><input type="hidden" name="lookup" value="'+lookup+'"><input type="hidden" name="ajax" value="0" class="ajax-indicator"></form>');
+
+				let $table = jQuery('<table class="ck-table-manager values"></table>');
+				let $thead = jQuery('<thead></thead>');
+				let $header_row = jQuery('<tr></tr>');
+				let $tbody = jQuery('<tbody></tbody>');
+				let $tfoot = jQuery('<tfoot></tfoot>');
+				let $control_row = jQuery('<tr><td colspan="'+data.header.length+'" class="form-control"><button type="button" class="add-new">Add New</button> <button disabled type="submit" class="submit-changes">Submit</button></td></tr>');
+				let $add_row = jQuery('<tr class="val-details add-new-details"><td><input type="hidden" class="submit-new" name="submit-new" value="0"></td></tr>');
+
+				for (var i=0; i<data.header.length; i++) {
+					$header_row.append('<th>'+data.header[i].name+'</th>');
+
+					if (i == 0) continue;
+
+					let $cell = jQuery('<td></td>');
+
+					if (data.header[i].select != undefined) {
+						let $select = jQuery('<select name="new['+data.header[i].field+']"><option value="">Select...</option></select>');
+						for (var j=0; j<data.header[i].select.length; j++) {
+							$select.append('<option value="'+data.header[i].select[j].key+'" '+(data.header[i].select[j].selected?'selected':'')+'>'+data.header[i].select[j].name+'</option>');
+						}
+						$cell.append($select);
+					}
+					else if (data.header[i].checkbox != undefined) $cell.append('<input type="checkbox" name="new['+data.header[i].field+']">');
+					else $cell.append('<input type="text" name="new['+data.header[i].field+']">');
+
+					$add_row.append($cell);
+				}
+
+				if (data.rows != undefined && data.rows.length > 0) {
+					for (var i=0; i<data.rows.length; i++) {
+						let $row = jQuery('<tr class="val-details locked"></tr>');
+
+						for (var j=0; j<data.rows[i].length; j++) {
+							let $cell = jQuery('<td></td>');
+
+							if (data.rows[i][j].select != undefined) {
+								let $select = jQuery('<select name="updates['+data.rows[i][j].id+']['+data.rows[i][j].field+']" disabled><option value="">Select...</option></select>');
+								for (var k=0; k<data.rows[i][j].select.length; k++) {
+									$select.append('<option value="'+data.rows[i][j].select[k].key+'" '+(data.rows[i][j].select[k].selected?'selected':'')+'>'+data.rows[i][j].select[k].name+'</option>');
+								}
+								$cell.append($select).append('<div class="clickable"></div>');
+							}
+							else if (data.rows[i][j].checkbox != undefined) $cell.append('<input type="checkbox" name="updates['+data.rows[i][j].id+']['+data.rows[i][j].field+']" '+(data.rows[i][j].checked?'checked':'')+' disabled><div class="clickable"></div>');
+							else if (data.rows[i][j].text != undefined) $cell.append('<input type="text" name="updates['+data.rows[i][j].id+']['+data.rows[i][j].field+']" value="'+data.rows[i][j].value+'" disabled>');
+							else $cell.html(data.rows[i][j].value);
+
+							$row.append($cell);
+						}
+
+						$tbody.append($row);
+					}
+				}
+				else $tbody.append('<tr><td colspan="'+data.header.length+'" class="no-entries">No '+data.name+'</td></tr>');
+
+				$thead.append($header_row);
+				$tfoot.append($control_row).append($add_row);
+				$table.append($thead).append($tbody).append($tfoot);
+				$form.append($table);
+
+				jQuery('.lookup-details').html($form);
+
+				$form.on('submit', function(e) {
+					e.preventDefault();
+
+					jQuery('.ajax-indicator').val(1);
+
+					jQuery.ajax({
+						url: '/admin/dynamic-lookup-manager',
+						type: 'post',
+						dataType: 'json',
+						data: jQuery(this).serialize(),
+						success: function(data) {
+							jQuery('.val-details:not(.add-new-details)').addClass('locked').removeClass('changed').find('input, select, textarea').attr('disabled', true);
+							jQuery('.submit-changes').attr('disabled', true);
+							jQuery('.add-new-details').hide().removeClass('changed').find('input, select, textarea').val('').attr('checked', false);
+							jQuery('.no-entries').remove();
+
+							if (data.new_row) {
+								let $row = jQuery('<tr class="val-details locked"></tr>');
+
+								for (var i=0; i<data.new_row.length; i++) {
+									let $cell = jQuery('<td></td>');
+
+									if (data.new_row[i].select != undefined) {
+										let $select = jQuery('<select name="updates['+data.new_row[i].id+']['+data.new_row[i].field+']" disabled><option value="">Select...</option></select>');
+										for (var k=0; k<data.new_row[i].select.length; k++) {
+											$select.append('<option value="'+data.new_row[i].select[k].key+'" '+(data.new_row[i].select[k].selected?'selected':'')+'>'+data.new_row[i].select[k].name+'</option>');
+										}
+										$cell.append($select).append('<div class="clickable"></div>');
+									}
+									else if (data.new_row[i].checkbox != undefined) $cell.append('<input type="checkbox" name="updates['+data.new_row[i].id+']['+data.new_row[i].field+']" '+(data.new_row[i].checked?'checked':'')+' disabled><div class="clickable"></div>');
+									else if (data.new_row[i].text != undefined) $cell.append('<input type="text" name="updates['+data.new_row[i].id+']['+data.new_row[i].field+']" value="'+data.new_row[i].value+'" disabled>');
+									else $cell.html(data.new_row[i].value);
+
+									$row.append($cell);
+								}
+
+								$tbody.append($row);
+							}
+						}
+					});
+				});
+			},
+		});
+	});
+
+	jQuery('.lookup-details').on('click', '.val-details.locked', function(e) {
+		jQuery(this).removeClass('locked');
+		jQuery(this).find('input, select, textarea').attr('disabled', false);
+		if (jQuery(e.target).is('input[type=text]')) jQuery(e.target).select();
+		else jQuery(e.target).closest('td').find('input, select, textarea').focus();
+	});
+
+	jQuery('.lookup-details').on('keyup', '.values input[type=text]', function() {
+		jQuery(this).closest('.val-details').addClass('changed');
+		jQuery(this).closest('.values').find('.submit-changes').attr('disabled', false);
+	});
+
+	jQuery('.lookup-details').on('click', '.values input[type=checkbox]', function() {
+		jQuery(this).closest('.val-details').addClass('changed');
+		jQuery(this).closest('.values').find('.submit-changes').attr('disabled', false);
+	});
+
+	jQuery('.lookup-details').on('change', '.values select', function() {
+		jQuery(this).closest('.val-details').addClass('changed');
+		jQuery(this).closest('.values').find('.submit-changes').attr('disabled', false);
+	});
+
+	jQuery('.lookup-details').on('click', '.add-new', function() {
+		let $details = jQuery(this).closest('.values').find('.add-new-details');
+		$details.toggle();
+		$details.find('.submit-new').val($details.is(':visible')?1:0);
+	});
+</script>

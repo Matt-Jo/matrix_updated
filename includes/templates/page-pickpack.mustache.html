@@ -1,0 +1,403 @@
+{{#first_run?}}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{static_files}}/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="{{static_files}}/js/vendor/moment.min.js"></script>
+
+<style>
+	/* stylesheet for orderlist */
+	html, body { margin:0; font-family:tahoma,Verdana,Arial,sans-serif; font-size:.9em; }
+
+	.loading { background-color:#fcc; }
+
+	.spacing { visibility:hidden; }
+
+	#pick-list, #pack-list { page-break-after:always; width:8.5in; margin:0px auto 10px auto; padding:0px; }
+
+	.pick-list .tfoot { position:relative; page-break-inside:avoid; }
+
+	.pick-list { width:100%; border-collapse:collapse; }
+	.pick-list td, .pick-list tbody th { padding:0.2em 0.3em; border:1px solid #000; }
+	.unreleased { font-size:50px; color:#f00; padding:5px 0px 15px 0px; }
+	.blind { font-size:42px; color:#f00; padding:5px 0px 15px 0px; }
+	.eco { font-size:32px; color:#090; padding:5px 0px 15px 0px; }
+	.thead .notice { font-size:24px; padding:5px 0px 15px 0px; }
+	.notice { color:#00c; font-weight:bold; }
+
+	.pick-list .thead th, .pick-list .thead td { text-align:center; }
+
+	.pick-headers th { font-size:1.2em; }
+	td.pick-body { vertical-align:top; }
+
+	.customer-box { padding:0.2em 0.3em; border:1px solid #000; margin-bottom:15px; }
+	.customer-box .ship-from { color:#f00; }
+	/*.pick-address { margin:16px 0px 0px 12px; }*/
+	.customer-box .address-name { color:#00e; }
+
+	.pick-body .blind { font-size:1em; text-align:center; font-weight:bold; }
+	.pick-body .packing-slip { font-size:1em; text-align:center; font-weight:bold; color:#f00; margin-top:5px; }
+
+	.initials { margin:30px 10px 0px 10px; }
+	.sign-line { border-bottom:1px solid #000; float:left; width:100%; }
+
+	.product { padding:6px 0px; font-size:14px; /*border:1px solid #000;*/ }
+
+	.product .details { border-collapse:collapse; width:100%; }
+	.product .details td { border:1px solid #000;  text-align:center; }
+
+	.product .qty-slip { border:5px solid #000; padding:10px 5px; font-size:42px; height:100%; }
+	.product .id-row td { text-align:center; padding:20px; width:50%; }
+	.product .id-row .qty-box { padding:0px; border:0px; width:10px; }
+	.product .details .ipn { color:#00e; font-size:18px; }
+	.product.extra .details .ipn { color:#000; }
+
+	.multi-serial { font-weight:normal; font-size:12px; }
+	.multi-serial.allocated-serial { font-size:15px; }
+	.multi-serial.reserved-serial { font-size:18px; font-weight:bold; }
+	.multi-serial.required-serial { font-size:15px; font-weight:bold; }
+
+	.main-serial .reserved-serial { border-color:#000; border-style:solid; border-width:1px 0px 1px 1px; padding:3px 0px; }
+	.main-location .reserved-serial { border-color:#000; border-style:solid; border-width:1px 1px 1px 0px; padding:3px 0px; }
+
+	/*.needed-serial { font-weight:bold; font-size:15px; }
+	.extra-serial { font-weight:normal; font-size:12px; }*/
+
+	.recheck-included-items { font-size:9px; }
+	.check-bundle, .check-accessory { white-space:nowrap; }
+
+	#pack-list.blind { display:none; }
+
+	#pack-list { font-family:arial; color:#676465; padding:0px 12px; }
+
+	#pack-slip-logo { width:4in; }
+	.pack-rtn-address { float:right; font-weight:bold; margin-top:10px; }
+	#pack-slip-bar { width:100%; margin-top:20px; }
+
+	.pack-note { text-align:center; margin:20px 0px; }
+
+	.addresses { margin-bottom:30px; overflow:auto; }
+	.pack-address { background-color:#f3f3f4; border-radius:15px; /*display:inline-block;*/ float:left; padding:15px 0px; width:385px; margin:0px 10px; }
+	.pack-address .address-body { background-color:#e3e3e5; color:#000; padding:10px 8px; font-size:1.1em; height:160px; }
+	.pack-address .address-block { margin:13px 0px; }
+	.pack-address .address-target { padding-left:18px; }
+	.pack-address .address-target .address-name { margin-left:-18px; }
+
+	.order-header { margin:0px 0px 30px 0px; color:#333; }
+	.order-header-detail { margin-left:20px; }
+
+	.order-lines { margin:0px 4px; color:#000; }
+	.line-table { width:100%; }
+	.order-lines th, .order-lines td { padding:3px 6px; border-style:solid; border-color:#fff; border-width:0px 0px 1px 1px; }
+	.order-lines th { background-color:#ccc; font-weight:normal; text-align:left; }
+	.order-lines td { background-color:#e3e3e5; }
+	.order-lines .qty-slip { width:50px; }
+	.order-lines .product { width:540px; }
+	.order-lines .model {  }
+	#customer-comments { border-top:2px solid #666; margin-top:6px; padding-top:6px; width:80%; }
+
+	.eco-note { color:#090; }
+
+	.sales-team-note { font-size:1.25em; text-align:right !important; border:none !important; color:#008000; }
+
+	.pack-footer { text-align:center; margin:25px 0px 0px 0px; }
+
+	@media print {
+		.loading { background-color:transparent; }
+		thead, tfoot { break-inside:avoid; }
+	}
+</style>
+
+<style>
+	#pack-list-top { display:flex; justify-content:space-between; margin-bottom:5px; }
+	#pack-list-scan-section { display:flex; border-top:2px solid #000; border-bottom:2px solid #000; padding:10px; }
+	#pack-list-alerts { display:flex; flex-direction:column; margin:0 auto; }
+	.sign-offs { border-bottom:2px solid #000; width:200px; margin:20px 10px 10px 10px; font-weight:bold; font-size:18px; align-self:flex-end; }
+	#product-section { display:flex; flex-direction:column; }
+	.product-line { width:100%; display:flex; justify-content:space-between; margin-bottom:5px; }
+	.product-line-organize { display:flex; border:2px solid #000; width:88%; align-items:center; }
+	.qty { width:10%; text-align:center; align-items:center; font-size:30px; border:5px solid #000; height:37px; }
+	.product-location { width:60%; display:flex; }
+	.product-description { width:40%; font-size:12px; text-align:center; padding:10px 0; }
+	.main-serial { font-size:15px; font-weight:bold; display:flex; text-align:center; flex-direction:column; width:50%; border-right:2px solid #000; padding:10px 0; }
+	.main-location { display:flex; flex-direction:column; text-align:center; width:50%; border-right:2px solid #000; padding:10px 0; }
+	.multi-serial { text-align:center; }
+	.ipn { text-align:center; padding-bottom:5px; font-size:18px; }
+	.bin-location { text-align:center; font-size:18px; font-weight:bold; padding-bottom:5px; height:22px; }
+	#delivery-information { display:flex; width:50%; border:1px solid #000; }
+	.pick-address { border-left:1px solid #000; margin:0; display:flex; height:100%; flex-direction:column; padding-left:10px; }
+	#packing-section { display:flex; padding-bottom:10px; }
+	#time-stamp { width:50%; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+</style>
+{{/first_run?}}
+
+{{#orders}}
+<section id="pick-list" class="loading">
+	<div class="thead">
+		<div id="pack-list-top">
+			<div>
+				{{shipping_method}}
+			</div>
+			{{#sales_team}}
+			<span class="sales-team-note">{{{.}}}</span>
+			{{/sales_team}}
+		</div>
+		<div id="pack-list-scan-section">
+			<div>
+				<img src="/admin/barcode_gen.php?value={{order_number}}">
+			</div>
+			<div id="pack-list-alerts">
+				{{#unreleased?}}
+				<div>
+					<span class="blind">NOT RELEASED FROM ACCOUNTING</span>
+				</div>
+				{{/unreleased?}}
+				{{#blind?}}
+				<div>
+					<span class="blind">BLIND SHIPMENT</span>
+				</div>
+				{{/blind?}}
+				{{#eco?}}
+				<div>
+					<span class="eco">USE RECLAIMED PACKAGING MATERIALS</span>
+				</div>
+				{{/eco?}}
+				{{#has_shipping_notice?}}
+				<div>
+					<span class="notice">HAS PICKING ALERTS</span>
+				</div>
+				{{/has_shipping_notice?}}
+			</div>
+		</div>
+	</div>
+	<div class="sign-offs">
+		<span>Picked By:</span>
+	</div>
+	{{#products}}
+	<div id="product-section">
+		<div class="product-line">
+			<div class="qty">{{quantity}}</div>
+			<div class="product-line-organize">
+				<div class="main-serial">
+					<div class="ipn">{{ipn}}</div>
+					{{#serials}}
+					<div class="{{#allocated}}allocated-serial{{/allocated}} {{#reserved}}reserved-serial{{/reserved}} {{#required}}required-serial{{/required}} multi-serial">
+						{{serial}}
+					</div>
+					{{/serials}}
+				</div>
+				<div class="main-location">
+					<div class="bin-location">{{bin_numbers}}</div>
+					{{#serials}}
+					<div class="{{#allocated}}allocated-serial{{/allocated}} {{#reserved}}reserved-serial{{/reserved}} {{#required}}required-serial{{/required}} multi-serial">
+						{{bin_number}}
+					</div>
+					{{/serials}}
+				</div>
+				<div class="product-description">
+					<div>{{model_num}} - {{product_name}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/products}}
+
+	{{#other_picks}}
+	<div id="product-section">
+		<div class="product-line">
+			<div class="qty">{{quantity}}</div>
+			<div class="product-line-organize">
+				<div class="main-serial">
+					<div class="ipn">{{ipn}}</div>
+					{{#serials}}
+					<div class="{{#needed}}needed-serial{{/needed}}{{^needed}}extra-serial{{/needed}} multi-serial">
+						{{serial}}
+					</div>
+					{{/serials}}
+				</div>
+				<div class="main-location">
+					<div class="bin-location">{{bin_numbers}}</div>
+					{{#serials}}
+					<div class="multi-serial">{{bin_number}}</div>
+					{{/serials}}
+				</div>
+				<div class="product-description">
+					<div>{{ipn}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/other_picks}}
+	<div class="sign-offs">
+		<span>QA'd By:</span>
+	</div>
+	<div id="packing-section">
+		<div id="delivery-information">
+			<div class="sign-offs">
+				<span>Packed By:</span>
+			</div>
+			<div>
+				<p class="pick-address">
+					{{#delivery.company_name}}<strong>{{.}}</strong><br>{{/delivery.company_name}}
+					<strong class="address-name">{{delivery.name}}</strong><br>
+					{{delivery.address1}}<br>
+					{{#delivery.address2}}{{.}}<br>{{/delivery.address2}}
+					{{delivery.city}}, {{delivery.state}}, {{delivery.postcode}}<br>
+					{{delivery.country}}<br>
+				</p>
+			</div>
+		</div>
+		<div id="time-stamp">
+			<div>Picking Timestamp</div><br>
+			<span class="picking-timestamp"></span>
+			<div id="customer-comments"><strong>Customer Comments:</strong> {{comments}}</div>
+		</div>
+	</div>
+	<table class="pick-list" cellspacing="0" cellpadding="0" border="0">
+		<col style="width:10px;">
+		<col style="width:100px;">
+		<col style="width:136px;">
+		<col>
+		<tbody class="tfoot">
+			<tr>
+				<td colspan="4"><strong>Admin Comments:</strong></td>
+			</tr>
+			<tr>
+				<td><strong>Date</strong></td>
+				<td><strong>User</strong></td>
+				<td colspan="2"><strong>Comment</strong></td>
+			</tr>
+			{{#admin_notes}}
+			<tr class="{{#shipping_notice?}}notice{{/shipping_notice?}}">
+				<td>{{date}}</td>
+				<td>{{user}}</td>
+				<td colspan="2">{{{note}}}</td>
+			</tr>
+			{{/admin_notes}}
+			{{#blind?}}
+			<tr>
+				<th colspan="4" class="blind">BLIND SHIPMENT</th>
+			</tr>
+			<tr>
+				<th colspan="4">
+					NO CANDY<br>
+					NO CATALOGS<br>
+					CHECK "FROM ADDRESS" ON LABEL<br>
+					PLAIN BOX
+				</th>
+			</tr>
+			{{/blind?}}
+		</tbody>
+	</table>
+</section>
+
+{{^blind?}}
+	{{! double down on not showing the packing list for blind orders }}
+<section id="pack-list" class="{{#blind?}}blind{{/blind?}} loading">
+	<div class="pack-header">
+		<img id="pack-slip-logo" src="{{cdn}}/email_logo.gif">
+		<div class="pack-rtn-address">
+			<span class="packing-date"></span>
+			<p>{{{return_address}}}</p>
+		</div>
+		<img id="pack-slip-bar" src="{{cdn}}/packing_slip.gif">
+	</div>
+	<div class="pack-body">
+		<div class="pack-note">
+			Thanks again for being our latest and greatest customer.<br>We love being your Network Accessory Superstore!
+		</div>
+		<div class="addresses">
+			<div class="pack-address">
+				<div class="address-body">
+					<strong>SOLD TO:</strong>
+					{{#amazon_order_number}}
+						{{#delivery}}
+							{{> partial-enhanced-address-format.mustache.html}}
+						{{/delivery}}
+					{{/amazon_order_number}}
+					{{^amazon_order_number}}
+						{{#customer}}
+							{{> partial-enhanced-address-format.mustache.html}}
+							{{extra-telephone}}<br>
+							{{extra-email_address}}
+						{{/customer}}
+					{{/amazon_order_number}}
+				</div>
+			</div>
+			<div class="pack-address">
+				<div class="address-body">
+					<strong>SHIP TO:</strong>
+					{{#delivery}}
+						{{> partial-enhanced-address-format.mustache.html}}
+					{{/delivery}}
+				</div>
+			</div>
+		</div>
+		<div class="order-header">
+			<span class="order-header-detail"><strong>Order #:</strong> {{order_number}}</span>
+			{{#amazon_order_number}}
+			<span class="order-header-detail"><strong>Amazon Order #:</strong> {{.}}</span>
+			{{/amazon_order_number}}
+			{{^amazon_order_number}}
+				{{#net_po_number}}
+			<span class="order-header-detail"><strong>PO #:</strong> {{.}}</span>
+				{{/net_po_number}}
+			<span class="order-header-detail"><strong>Ordered By:</strong> {{customers_name}} {{#ref_po_number}}<strong>Reference #:</strong> {{.}}{{/ref_po_number}}</span>
+			{{/amazon_order_number}}
+			<span class="order-header-detail"><strong>Date of Order:</strong> {{order_date}}</span>
+			{{#payment_method}}
+			<span class="order-header-detail"><strong>Payment Method:</strong> {{.}}</span>
+			{{/payment_method}}
+		</div>
+		<div class="order-lines">
+			<table cellspacing="0" cellpadding="0" border="0" class="line-table">
+				<tr>
+					<th class="qty-slip">Qty</th>
+					<th class="product">Product</th>
+					<th class="model">Model/Part #</th>
+				</tr>
+				{{#products}}
+					{{#pack_list_line?}}
+				<tr>
+					<td>{{quantity}}</td>
+					<td>{{product_name}}</td>
+					<td>{{model_number}}</td>
+				</tr>
+					{{/pack_list_line?}}
+				{{/products}}
+			</table>
+		</div>
+	</div>
+
+	{{#eco?}}
+	<p class="eco-note">
+		<img src="/images/static/img/ck-think-green-1-small2.png" style="margin-right:8px;" align="center">
+		Thank you for choosing to use reclaimed packaging materials!
+	</p>
+	{{/eco?}}
+
+	<div class="pack-footer">
+		<p>If you wish to return or replace any items in your order, please reference the <a href="/pi/returns">Returns Form</a>.</p>
+		<p>Looking forward to your next purchase at CablesAndKits{{^amazon?}}.com{{/amazon?}}</p>
+	</div>
+</section>
+{{/blind?}}
+
+<script>
+	var parent_reload = parent_reload || undefined;
+	if (parent_reload != undefined)
+		clearTimeout(parent_reload);
+	parent_reload = setTimeout(function() {
+		window.opener.location.reload(true);
+	}, 1000);
+</script>
+
+{{/orders}}
+
+{{#first_run?}}
+<script>
+	jQuery(document).ready(function() {
+		jQuery('.picking-timestamp').text(moment().format('MM/DD/YYYY hh:mma'));
+		jQuery('.packing-date').text(moment().format('MMM DD, YYYY'));
+		jQuery('.loading').removeClass('loading');
+	});
+</script>
+{{/first_run?}}

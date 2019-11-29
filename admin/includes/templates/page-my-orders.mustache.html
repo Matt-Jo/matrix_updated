@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-6jHF7Z3XI3fF4XZixAuSu0gGKrXwoX/w3uFPxC56OtjChio7wtTGJWRW53Nhx6Ev" crossorigin="anonymous">
+<style>
+	/*#page-body { width:100%; }*/
+</style>
+<td id="page-body">
+	<div class="container-fluid">
+		<div class="card shadow">
+			<div class="card-header">
+				<h5>My Orders</h5>
+			</div>
+			<div class="table-responsive">
+				<table class="table table-hover table-borderless table-striped text-nowrap">
+				<thead>
+				<tr>
+					<th>Order</th>
+					<th>Status</th>
+					<th>Company</th>
+					<th>Customer</th>
+					<th>Payment Method</th>
+					<th>Dropship</th>
+					<th>Total</th>
+					<th>Estimated Margin</th>
+					<th>Shipping Method</th>
+					<th>Weight</th>
+					<th>Total Orders</th>
+					<th>Date Purchased</th>
+				</tr>
+				</thead>
+				<tbody>
+				{{#orders}}
+					<tr>
+						<td style="white-space:nowrap;">
+							<a href="orders_new.php?oID={{ orders_id }}&action=edit" target="_blank">
+								<button type="button" class="btn-primary btn-sm">
+									<i class="fal fa-external-link-square"></i>
+									{{ orders_id }}
+								</button>
+							</a>
+						</td>
+						<td>{{orders_status_name}}</td>
+						<td>{{customers_company}}</td>
+						<td>{{customers_name}}</td>
+						<td>{{payment_method}}</td>
+						<td>{{dropship}}</td>
+						<td>{{total}}</td>
+						<td>{{estimated_margin_dollars}} {{#estimated_margin_percentage}}({{.}}){{/estimated_margin_percentage}}</td>
+						<td>{{shipping_method}}</td>
+						<td>{{weight}}</td>
+						<td>{{customer_total_orders}}</td>
+						<td>{{date_purchased}}</td>
+					</tr>
+				{{/orders}}
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</div>
+</td>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+
+</script>

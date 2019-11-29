@@ -1,0 +1,96 @@
+{{^grid?}}
+<div class="product-result product-result-visible list" id="add-product-{{product.id}}-holder">
+	<div class="product-results-organize">
+		<div class="product-results-image product-img"><a href="{{product.url}}" class="lnk-to-prod" data-key="{{product.id}}"><img src="{{cdn}}/{{product.img}}" class="product-image-flex" alt="{{product.name_attr}}"></a>
+		</div>
+		<div class="product-desc">
+			<a class="prodtitle lnk-to-prod" data-key="{{product.id}}" href="{{product.url}}">{{product.name}}</a><br>
+			<div class="product-details-avail">
+				<div class="product-specifics">
+					<span class="product-detail-information-block">
+						<span class="product-detail-title">Model #:</span>
+						<span class="product-detail-value"><strong>{{product.model_num}}</strong></span>
+					</span>
+					{{#product.condition}}
+					<span class="product-detail-information-block">
+						<span class="product-detail-title">Condition:</span>
+						<span class="product-detail-value"><strong>{{.}}</strong></span>
+					</span>
+					{{/product.condition}}
+				</div>
+				<div class="product-shipping-info">
+					<span class="product-detail-information-block">
+						<span class="product-detail-title"></span>
+						<span class="show-avail product-detail-value" data-pid="{{product.id}}">
+							<strong class="avail-type {{#product.available?}}available{{/product.available?}}">
+								{{product.info_availability}}
+							</strong>
+						</span>
+					</span>
+					{{#product.info_ships?}}
+					<span class="product-detail-information-block">
+						<span class="product-detail-title">Ships:</span>
+						<span class="product-detail-value">
+							<strong class="{{#product.available?}}available{{/product.available?}}">{{{.}}}</strong>
+						</span>
+					</span>
+					{{/product.info_ships?}}
+				</div>
+
+			</div>
+			{{#product.availdetails}}
+			<div class="xtra-avail avail-details-{{product.id}}">
+				{{{.}}}
+			</div>
+			{{/product.availdetails}}
+		</div>
+	</div>
+	<div class="cart-prices-button">
+		<div class="prod-prices">
+			{{#product.special?}}
+			<strong class="original-price">{{product.reg_price}}</strong>
+			{{/product.special?}}
+			<strong class="product-price {{#product.special?}}on-special{{/product.special?}}">{{product.price}}</strong>
+		</div>
+		<form method="post" action="/cart-flyout" class="add-to-cart-form" id="add-product-{{product.id}}">
+			<input type="hidden" name="action" value="add-product">
+			<input type="hidden" name="products_id" value="{{product.id}}">
+			<input type="hidden" id="discontinued-{{product.id}}" value="{{product.discontinued?}}" data-currentcart="{{product.cart_quantity}}" data-maxqty="{{product.display_available}}">
+			<div class="cart-control">
+				<input type="text" maxlength="4" name="quantity" value="1" class="add-qty">
+				<div class="cart-prices-button">
+					<button type="submit" alt="Buy Now" title="Buy Now" class="add-to-cart" data-key="{{product.id}}">BUY NOW</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{{/grid?}}
+{{#grid?}}
+<!--div class="product-result grid" id="add-product-{{products_id}}-holder">
+	<div class="product-img"><a href="{{lnk}}" class="lnk-to-prod" data-key="{{products_id}}"><img src="{{cdn}}/{{img}}" alt="{{name_attr}}" style="width:150px; height:100px;"></a></div>
+
+	<div class="product-desc">
+		<a class="prodtitle lnk-to-prod" data-key="{{products_id}}" href="{{lnk}}">{{name}}</a>
+		<strong>{{model}}</strong> -
+		<strong class="avail-type {{availtype}}">{{availtxt}}</strong><br>
+		<span style="margin:0px 5px 0px 15px;">Ships</strong> - <strong class="{{shipstype}}">{{shipstxt}}</strong>
+	</div>
+
+	<form action="/{{page}}.php?action=add_product" method="post" class="product-add" id="add-product-{{products_id}}">
+		<input type="hidden" name="products_id" value="{{products_id}}">
+		<input type="text" maxlength="4" name="quantity" value="1" class="add-qty">
+
+		<div class="prod-prices">
+			<strong class="product-price {{#original_price?}}on-special{{/original_price?}}">{{price}}</strong>
+			{{#original_price?}}
+			<strong class="original-price">{{.}}</strong>
+			{{/original_price?}}
+		</div>
+
+		<input type="image" src="{{cdn}}/static/img/buy-now-grid.png" border="0" alt="Buy Now" title="Buy Now" class="add-to-cart" data-key="{{products_id}}">
+
+		<div class="add-notice" id="add-product-{{products_id}}-notice"></div>
+	</form>
+</div-->
+{{/grid?}}

@@ -1,0 +1,890 @@
+<style>
+	#page-body { font-size:14px; }
+
+	#page-body, #order-details { width:100%; height:100%; }
+	.shipping-container, .payment-method-container { overflow:auto; }
+	.shipping-container { display:block; width:100%; }
+	#shipping-address-container { display:inline-block; margin-left:100px; height:300px; position:relative; top:-10px; } 
+	#shipping-address-container label, #shipping-address-container input { display:block; }
+	.address-container label, .address-container input { display:block; }
+	#shipping-address-container label, .one-page-checkout-container label { font-size:10px; }
+	.label-input-group { display:inline-block; }
+	.shipping-option { width:33%; display:inline-block; }
+
+	#shipping-account-container label, #shipping-account-container input { display:inline; }
+	#shipping-account-container label { font-size:12px; }
+	.order-notes-container textarea { width:400px; height:100px; }
+	
+	.note-container { display:inline-block; width:49%; }
+	.note-container textarea { display:block; }
+	
+	#general-options-section .label-input-group { margin:20px; display:block; }
+
+	#credit-card-selector { width:500px; }
+	#credit-card-selector th, #credit-card-selector td { white-space:nowrap; padding:4px; }
+	#credit-card-selector th { background-color:#69969c; border:0px; color:#fff; }
+	#credit-card-selector td { border-bottom:1px solid #000; }
+	.paypal-directions { display:none; font-style:italic; margin-left:5px; }
+	.paypal-status.waiting { background-color:#fcc; }
+	.paypal-status.waiting .paypal-directions { display:inline; }
+	.paypal-status.complete { background-color:#cfc; }
+	.net-po { display:inline-block; padding-left:30px; }
+	
+	#product-list-table { text-align:left; width:800px; }
+
+	#add-address-button, #submit-order-button { background-color:#fff; border: 1px solid #000; height:40px; width:220px; }
+	#add-address-button:hover, #submit-order-button:hover { border:2px solid #000; font-weight:bold; }
+	#add-address-button { height:30px; width:150px; margin-top:10px; }
+	.payment-method-container label { margin-right:40px; }
+	#addCardButton, #no-cards-message { font-size:12px; }
+
+	#blind-shipping-address-container { display:block; max-height:300px; display:none; } 
+	#shipping-quote-table { width:800px; }
+	#shipping-quote-table thead th { text-align:left; }
+
+	#address-list-container { display:inline-block; position:relative; top:0; height:300px; overflow-y:auto; width:45%; }
+	#one-page-checkout-container { width:100%; display:block; }
+
+	#dealer-only { border:2px solid #000; padding:10px; margin-bottom:10px; }
+	#shipping-method-container { width:100%; display:block; }
+
+	.shipping-type-label { font-size:14px; }
+
+	#fedex-shipping-list { display:none; }
+	#general-options-section { margin-top:50px; }
+	#order-totals { width:100%; display:block; font-size:12px; }
+
+	.shipping-type-table-section-header { background-color:grey; }
+	
+	.redirect-option-text { font-size:12px; }
+	#redirect-options { margin-bottom:10px; }
+	.address-selection-container { margin:5px; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<div id="order-details">
+		<form method="POST" action="/admin/customer-quote.php?customer_quote_id={{customer_quote_id}}">
+			<input type="hidden" name="action" value="create-order">
+			<div id="one-page-checkout-container">
+				<h4>1. Shipping Address</h4>
+				<h6>Delivery Address</h6>
+				{{#has_shipping_addresses}}
+					<div id="address-list-container">
+						{{#shipping_addresses}}
+							<div class="address-selection-container">
+								<input type="radio" name="address_selection" id="shipping-{{address_book_id}}" class="address-selection" value="{{address_book_id}}" data-company="{{company_name}}" data-first-name="{{first_name}}" data-last-name="{{last_name}}" data-address1="{{address1}}" data-address2="{{address2}}" data-postcode="{{postcode}}" data-city="{{city}}" data-state="{{state}}" data-full_state="{{full-state}}" data-telephone="{{telephone}}" data-country="{{country}}" {{#default_address}}checked{{/default_address}}>
+								<label for="shipping-{{address_book_id}}">{{company_name}} {{first_name}} {{last_name}} {{address1}}, {{address2}} {{postcode}}, {{city}}, {{state}}, {{country}} {{telephone}}</label>
+							</div>
+						{{/shipping_addresses}}
+					</div>
+					<div id="shipping-address-container" class="address-container">
+						<div class="label-input-group">
+							<label for="fist-name">First Name</label>
+							<input type="text" id="first-name" name="first_name" value="{{#default_address}}{{first_name}}{{/default_address}}" placeholder="First Name">
+						</div>
+						<div class="label-input-group">
+							<label for="last-name">Last Name</label>
+							<input type="text" id="last-name" name="last_name" value="{{#default_address}}{{last_name}}{{/default_address}}" placeholder="Last Name">
+						</div>
+						<label for="company">Company</label>
+						<input type="text" id="company-name" name="company_name" value="{{#default_address}}{{company}}{{/default_address}}" placeholder="Company">
+						<div class="label-input-group">
+							<label for="address1">Address 1</label>
+							<input type="address" id="address1" name="address1" value="{{#default_address}}{{address1}}{{/default_address}}" placeholder="Address 1">
+						</div>
+						<div class="label-input-group">
+							<label for="address2">Address 2</label>
+							<input type="text" id="address2" name="address2" value="{{#default_address}}{{address2}}{{/default_address}}" placeholder="Address 2">
+						</div>
+						<label for="city">City</label>
+						<input type="text" id="city" name="city" placeholder="City">
+						<label for="postcode">Post Code</label>
+						<input type="text" id="postcode" name="postcode" value="{{#default_address}}{{city}}{{/default_address}}" placeholder="Postcode">
+						
+						<label for="state">State</label>
+						<select name="state" id="state">
+							<option value="{{#default_address}}{{state}}{{/default_address}}">{{#default_address}}{{full_state}}{{/default_address}}</option>
+							{{#states}}
+							<option value="{{zone_code}}">{{zone_name}}</option>
+							{{/states}}
+						</select>
+						<label for="country">Country</label>
+						<select name="country" id="country">
+							<option>{{#default_address}}{{country}}{{/default_address}}</option>
+							<option></option>
+							{{#countries}}
+							<option>{{countries_name}}</option>
+							{{/countries}}
+						</select>
+						<label for="telephone">Phone</label>
+						<input type="telephone" id="telephone" name="telephone" {{#default_address}}value="{{telephone}}"{{/default_address}} placeholder="Phone">
+						<button type="button" id="add-address-button">Add Address</button>
+					</div>
+				{{/has_shipping_addresses}}
+				<div id="blind-shipment-section">
+					<h6>Ship From (<label for="blind-shipment-selection">Blind Shipment</label><input type="checkbox" id="blind-shipment-selection" name="blind_shipment" value="true">)</h6>
+					<!--this block is for customer ship from address, but skipping it for now-->
+					<!--div id="blind-shipping-address-container" class="address-container">
+						<div class="label-input-group">
+							<label for="fist-name">First Name</label>
+							<input type="text" id="first-name" name="ship_from_first_name" {{#default_address}}value="{{first_name}}"{{/default_address}} placeholder="First Name">
+						</div>
+						<div class="label-input-group">
+							<label for="last-name">Last Name</label>
+							<input type="text" id="last-name" name="ship_from_last_name" {{#default_address}}value="{{last_name}}"{{/default_address}} placeholder="Last Name">
+						</div>
+						<label for="company">Company</label>
+						<input type="text" id="company" name="ship_from_company" {{#default_address}}value="{{company}}"{{/default_address}} placeholder="Company">
+						<div class="label-input-group">
+							<label for="address1">Address 1</label>
+							<input type="address" id="address1" name="ship_from_address1" {{#default_address}}value="{{address1}}"{{/default_address}} placeholder="Address 1">
+						</div>
+						<div class="label-input-group">
+							<label for="address2">Address 2</label>
+							<input type="text" id="address2" name="ship_from_address2" {{#default_address}}value="{{address2}}"{{/default_address}} placeholder="Address 2">
+						</div>
+						<label for="city">City</label>
+						<input type="text" id="city" name="ship_from_city" placeholder="City">
+						<label for="postcode">Post Code</label>
+						<input type="text" id="postcode" name="ship_from_postcode" {{#default_address}}value="{{city}}"{{/default_address}} placeholder="Postcode">
+						<label for="state">State</label>
+						<select name="ship_from_state" id="state">
+							<option value="{{#default_address}}{{state}}{{/default_address}}">{{#default_address}}{{full_state}}{{/default_address}}</option>
+							{{#states}}
+							<option>{{zone_name}}</option>
+							{{/states}}
+						</select>
+						<label for="country">Country</label>
+						<select name="ship_from_country" id="country">
+							<option>{{#default_address}}{{country}}{{/default_address}}</option>
+							{{#countries}}
+							<option>{{countries_name}}</option>
+							{{/countries}}
+						</select>
+						<label for="telephone">Phone</label>
+						<input type="phone" id="telephone" name="ship_from_telephone" {{#default_address}}value="{{telephone}}"{{/default_address}} placeholder="Phone">
+					</div-->
+				</div>
+			</div>
+			<hr>
+			<div class="shipping-option" id="shipping-method-container">
+				<h4>2. Shipping Method</h4>
+				{{#international_shipping}}
+				<p>Attention! This recipient will be responsible for brokerage fees, duties, and taxes imposed by the governing authroities of the destination country. These charges are billed directly to the recipient and may be collected before, during or after delivery of the products. CablesAndKits has no say or control over the fees charged (with few exceptions). If you have any questions please contact us prior to placing your order.</p>
+				{{/international_shipping}}
+				{{#is_dealer}}
+				<div id="dealer-only">
+					<p><i style="color:red;">These are dealer only options</i></p>
+					<!--div>
+						<label for="default-shipping" style="font-size:14px;">Pay for shipping on this order:</label>
+						<input type="radio" id="default-shipping" name="shipping_account_choice">
+					</div-->
+					{{#has_own_shipping_account}}
+						<div>
+							<input type="radio" id="bill-shipping-on-order" class="customer-shipping-account" name="customer_shipping_account" value="" checked>
+							<label for="bill-shipping-on-order" class="shipping-type-label">CK Shipping</label>							
+						</div>
+						<div>
+							<p>Bill this shipment to shipping account on file:</p>
+							<input type="radio" id="fedex-shipping" class="customer-shipping-account" name="customer_shipping_account" value="on-file-fedex-account">
+							<label for="fedex-shipping" class="shipping-type-label">FedEx Account: {{fedex_account}}</label>
+							<input type="hidden" name="on_file_fedex_account" value="{{fedex_account}}">
+						</div>
+						<div>
+							<input type="radio" id="ups-shipping" class="customer-shipping-account" name="customer_shipping_account" value="on-file-ups-account">
+							<label for="ups-shipping" class="shipping-type-label">UPS: {{ups_account}}</label>
+							<input type="hidden" name="on_file_ups_account" value="{{ups_account}}">
+						</div>
+						<p>Bill this shipment to this alternate shipping account:</p>
+						<div>
+							<input type="radio" name="customer_shipping_account" id="custom-ups-shipping" class="customer-shipping-account" value="custom-ups-account">
+							<label for="custom-ups-shipping" class="shipping-type-label">UPS Account:</label>
+							<input type="text" id="customers_ups" name="customer_ups_shipping_account">
+						</div>
+						<div>
+							<input type="radio" name="customer_shipping_account" id="custom-fedex-shipping" class="customer-shipping-account" value="custom-fedex-account">
+							<label for="custom-fedex-shipping" class="shipping-type-label">FedEx Account:</label>
+							<input type="text" id="customers_fedex" name="customer_fedex_shipping_account">
+						</div>
+					{{/has_own_shipping_account}}
+				</div>
+				{{/is_dealer}}
+				<div id="shipping-quote-container">
+					<p>estimated # of packages: {{number_of_packages}} @ {{package_weight}}lbs</p>
+					<table id="shipping-quote-table">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Method</th>
+								<th>List</th>
+								<th>Negotiated</th>
+							</tr>
+						</thead>
+						<tbody id="fedex-shipping-list">
+							<tr>
+								<th colspan="4" class="shipping-type-table-section-header">FedEx</th>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-fedex-ground" name="shipping_method" class="shipping-method-selection" value="9" data-list-price="0.00"></td>
+								<td><label for="shipping-fedex-ground">FedEx Ground</label></td>
+								<td>--</td>
+								<td>--</td>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-fedex-express-saver" name="shipping_method" class="shipping-method-selection" value="5" data-list-price="0.00"></td>
+								<td><label for="shipping-fedex-express-saver">FedEx Express Saver</label></td>
+								<td>--</td>
+								<td>--</td>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-fedex-second-day-air" name="shipping_method" class="shipping-method-selection" value="fedex-second-day-air" data-list-price="0.00"></td>
+								<td><label for="shipping-fedex-second-day-air">FedEx 2nd Day Air</label></td>
+								<td>--</td>
+								<td>--</td>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-fedex-standard-overnight" name="shipping_method" class="shipping-method-selection" value="fedex-standard-overnight" data-list-price="0.00"></td>
+								<td><label for="shipping-fedex-standard-overnight">FedEx Standard Overnight</label></td>
+								<td>--</td>
+								<td>--</td>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-fedex-priority-overnight" name="shipping_method" class="shipping-method-selection" value="fedex-priority-overnight" data-list-price="0.00"></td>
+								<td><label for="shipping-fedex-priority-overnight">FedEx Priority Overnight</label></td>
+								<td>--</td>
+								<td>--</td>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-fedex-saturday-delivery-second-day-air" name="shipping_method" class="shipping-method-selection" value="fedex-saturday-delivery-second-day-air" data-list-price="0.00"></td>
+								<td><label for="shipping-fedex-saturday-delivery-second-day-air">FedEx Saturday Delivery (2nd Day Air)</label></td>
+								<td>--</td>
+								<td>--</td>
+							</tr>
+						</tbody>
+						<tbody id="ups-shipping-list">
+							<tr>
+								<th colspan="4" class="shipping-type-table-section-header">UPS</th>
+							</tr>
+							{{#ups_shipping_methods}}
+							<tr>
+								<td><input type="radio" id="shipping-{{code}}" name="shipping_method" class="shipping-method-selection" value="{{ck_shipping_method_id}}" data-list-price="{{list}}"></td>
+								<td><label for="shipping-{{code}}">{{service}}</label></td>
+								<td>$<span id="{{code}}-list">{{list}}</span></td>
+								<td>$<span id="{{code}}-negotiated">{{negotiated}}</span></td>
+							</tr>
+							{{/ups_shipping_methods}}
+						</tbody>
+						<tbody id="other-shipping-list">
+							<tr>
+								<th colspan="4" class="shipping-type-table-section-header">Other Shipping Options</th>
+							</tr>
+							<tr>
+								<td><input type="radio" id="shipping-cp" name="shipping_method" value="customer pickup" data-list-price="0.00"></td>
+								<td><label for="shipping-cp">Customer Pickup</label></td>
+								<td>$0.00</td>
+								<td>$0.00</td>
+							</tr>
+							{{#free_shipping}}
+							<tr id="free-shipping-row">
+								<td><input type="radio" id="free-shipping" name="shipping_method" class="shipping-method-selection" value="48" data-list-price="0.00"></td>
+								<td><label for="free-shipping">{{title}}</label></td>
+								<td>${{cost}}</td>
+								<td>--</td>
+							</tr>
+							{{/free_shipping}}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<hr>
+			<div id="payment-method-section" class="payment-method-container">
+				<div class="payment-options">
+					<h4>3. Payment Method</h4>
+					<div id="showCardError" style="border:1px solid red; background-color:yellow; color:black; padding:5px;margin:5px;"></div>
+					<input type="radio" name="payment_type" class="PymtMethodSelection" id="paymentCC" value="1" checked>
+					<input type="hidden" name="cardIndex" id="cardIndex" value="">
+					<label for="paymentCC">Credit Card</label>
+					<!--input type="radio" name="payment_type" class="PymtMethodSelection" id="paymentPaypal" value="paypal">
+					<input type="hidden" name="paypalNonce" value="" id="paypalNonce">
+					<label for="paymentPaypal">Paypal</label-->
+					<input type="radio" name="payment_type" class="PymtMethodSelection" id="paymentCheck" value="3">
+					<label for="paymentCheck">Check/Money Order</label>
+					<input type="radio" name="payment_type" class="PymtMethodSelection" id="paymentAccCredit" value="8">
+					<label for="paymentAccCredit">Account Credit</label>
+					{{#payment_terms}}
+					<input type="radio" name="payment_type" class="PymtMethodSelection" id="net-payment" value="{{payment_method_id}}">
+					<label for="net-payment">{{label}}</label>
+					<label for="net-payment-po" style="margin:0;">PO #: </label>
+					<input type="text" name="{{po_key}}_po" id="net-payment-po">
+					{{/payment_terms}}
+					<br><br>
+					<table id="credit-card-selector" class="table-md">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Card Type</th>
+								<th>Last 4</th>
+								<th>Card Expiration</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#customer_cards}}
+							<tr>
+								<td title="{{cardType}}"><input type="radio" class="cardRadioInput" name="cardInput" value=""></td>
+								<td><img src="{{imageUrl}}"> {{cardType}}</td>
+								<td>****{{lastFour}}</td>
+								<td>{{expirationDate}}</td>
+							</tr>
+							{{/customer_cards}}
+						</tbody>
+					</table>
+					{{^customer_cards}}
+						<i id="no-cards-message">No Cards available</i>
+					{{/customer_cards}}
+					<!--button type="button" id="addCardButton">Create New Card</button-->
+					<!--label for="coupon-code">Enter Coupon Code</label>
+					<input type="text" id="coupon-code" name="coupon_code"-->
+				</div>
+			</div>
+			<hr>
+			<div id="general-options-section" class="general-options">
+				<h4>4. General Options</h4>
+				<!--div class="label-input-group">
+					<input type="checkbox" id="split-decision" name="split_order">
+					<label for="split-decision">Ship Available Items Immediately</label>
+				</div-->
+				<div class="label-input-group">
+					<label for="purchase-order-number">Print this PO/Reference Number on the label</label>
+					<input type="text" id="purchase-order-number" name="purchase_order_number">
+				</div>
+				<div class="label-input-group">
+					<input type="checkbox" name="use_reclaimed_packaging" id="use-reclaimed-packaging">
+					<img src="../../images/static/img/ck-think-green-1-small2.png" style="margin-right:8px">
+					<label for="use-reclaimed-packaging">Save the Earth! Use a reclaimed box and/or packaing materials to ship my order</label>
+				</div>
+			</div>
+			<hr>
+			<div id="product-review-section">
+				<h4>5. Product Review</h4>
+				<table id="product-list-table">
+					<thead>
+						<tr>
+							<th>Model #</th>
+							<th>Quantity</th>
+							<th>Price</th>
+						</tr>
+					</thead>
+					<tbody>
+					{{#products}}
+						<tr>
+							<td>{{model_num}}</td>
+							<td>{{quantity}}</td>
+							<td>{{total_price}}</td>
+						</tr>
+					{{/products}}
+					</tbody>
+				</table>
+			</div>
+			<hr>
+			<div id="price-review-section">
+				<h4>6. Price Review</h4>
+				<div id="order-totals">
+					<input type="hidden" value="{{raw_quote_total}}" id="orderAmount">
+					<p><b>Total Product Weight:</b> <span id="total-product-weight">{{total_product_weight}}</span>lbs</p>
+					<p><b>Product Total:</b> {{quote_total}}</p>
+					<p><b>Shipping Total:</b> $<span id="shipping-total">--</span></p>
+					<p><b>Order Total:</b> $<span id="order-total">{{raw_quote_total}}</span></p>
+					<input type="hidden" name="order_total" id="order-total-input" value="{{raw_quote_total}}">
+					<input type="hidden" name="shipping_total_cost" id="shipping-total-input" value="0.00">
+				</div>
+			</div>
+			<hr>
+			<div class="order-notes-container">
+				<h4>7. Order Notes</h4>
+				<div class="note-container">
+					<label for="customer-comments">Customer Comments</label>
+					<textarea name="customer_comments" id="customer-comments"></textarea>
+				</div>
+				<div class="note-container">
+					<label for="admin-notes">Admin Notes</label>
+					<textarea name="admin_notes" id="admin-notes"></textarea>
+				</div>
+			</div>
+			<hr>
+			<div id="finalize-order-section">
+				<h4>8. Finalize Order</h4>
+				<div id="redirect-options">
+					<label><b>Redirect:</b></label>
+					<label for="order-details-selection" class="redirect-option-text">Order details</label>
+					<input type="radio" id="order-details-selection" name="redirect_page" value="order-details-page" checked>
+					<label for="quote-page-selection" class="redirect-option-text">Quote Page</label>
+					<input type="radio" id="quote-page-selection" name="redirect_page" value="quote-page">
+				</div>
+				<button type="submit" id="submit-order-button">Submit Order</button>
+			</div>
+		</form>
+	</div>
+</td>
+<!--form name="delete_payment_profile" action="/checkout_payment.php" method="post">
+	<input type="hidden" name="delete_payment_profile" value="1">
+	<input type="hidden" name="ctoken">
+	<input type="hidden" id="braintreeCustId" value="{{braintree_customer_id}}">
+</form-->
+
+<form id="merchant-form" action="" method="post">
+	<div id="paypal-container"></div>
+	<input type="hidden" value="{{braintree_token}}" id="brainTreeToken">
+</form>
+
+<!--style>
+	#create-credit-card { position:absolute; margin:0px auto; padding:0px; top:200px; right:0px; /*bottom:0;*/ left:0px; /*height:500px;*/ width:280px; border:1px solid #142f54; font-family:sans-serif; border-radius:3px; background-color:#fff; display:none; }
+	#create-credit-card h3.dialog-title { background-color:#758AA8; color:white; margin:0px; padding:3px 5px; }
+	#create-credit-card p { margin:10px 8px; }
+	#create-credit-card #err { background-color:yellow; }
+	#create-credit-card #add-creditcard-form { display:block; margin:10px; padding:0px; }
+	#create-credit-card .req { color:#f66; }
+
+	#hiddenSubmit { visibility:hidden; }
+
+	.cardDialog h3 { background-color:#23ce2a; }
+
+	#card-number { border:1px solid #333; -webkit-transition:border-color 160ms; transition:border-color 160ms; width:150px; height:15px; }
+	#expiration-date { border:1px solid #333; -webkit-transition:border-color 160ms; transition:border-color 160ms; width:150px; height:15px; }
+	#cvv { border:1px solid #333; -webkit-transition:border-color 160ms; transition:border-color 160ms; width:150px; height:15px; }
+	#cardholder-name { border:1px solid #333; -webkit-transition:border-color 160ms; transition:border-color 160ms; width:150px; height:15px; }
+	#card-number.braintree-hosted-fields-focused { outline:none; border-color:#9ecaed; box-shadow:0 0 10px #9ecaed; }
+	#card-number.braintree-hosted-fields-invalid { border-color:tomato; }
+	#card-number.braintree-hosted-fields-valid { border-color:limegreen; }
+	#expiration-date.braintree-hosted-fields-focused { outline:none; border-color:#9ecaed; box-shadow:0 0 10px #9ecaed; }
+	#expiration-date.braintree-hosted-fields-invalid { border-color:tomato; }
+	#expiration-date.braintree-hosted-fields-valid { border-color:limegreen; }
+	#cvv.braintree-hosted-fields-focused { outline:none; border-color:#9ecaed; box-shadow:0 0 10px #9ecaed; }
+	#cvv.braintree-hosted-fields-invalid { border-color:tomato; }
+	#cvv.braintree-hosted-fields-valid { border-color:limegreen; }
+	#cardholder-name.braintree-hosted-fields-focused { outline:none; border-color:#9ecaed; box-shadow:0 0 10px #9ecaed; }
+	#cardholder-name.braintree-hosted-fields-invalid { border-color:tomato; }
+	#cardholder-name.braintree-hosted-fields-valid { border-color:limegreen; }
+
+	.cardDiv { padding:10px; margin:5px; }
+
+	.addCard { background-color:#458a79; color:white; border-radius:5%; }
+	.dlgButton button { color:blue; }
+
+	#btnList { list-style-type:none !important; margin:0; padding:0; }
+	#btnList > li { display:inline !important; }
+
+	.no-js-pmtoption-hide { display:none; }
+</style-->
+
+<!--div id="create-credit-card">
+	<h3 class="dialog-title">Add Credit Card</h3>
+
+	<p>Fields marked with <span class="req">(*)</span> are required</p>
+
+	<p id="err"></p>
+
+	<form action="" id="add-creditcard-form" autocomplete="off">
+		<input type="hidden" name="customer-id" value="{{braintree_customer_id}}">
+
+		<label for="customer-firstname" class="req">*First Name</label><br>
+		<input id="firstName" type="text" name="customer-firstname"><br><br>
+
+		<label for="customer-lastname" class="req">*Last Name</label><br>
+		<input id="lastName" type="text" name="customer-lastname"><br><br>
+
+		<label for="customer-email">Email</label><br>
+		<input id="Email" type="text" name="customer-email" value="{{customer_email}}" style="width:250px;"><br><br>
+
+		<label for="card-number" class="req">*Card Number</label>
+		<div id="card-number"></div><br>
+
+		<label for="cvv" class="req">*CVV</label>
+		<div id="cvv"></div><br>
+
+		<label for="expiration-date" class="req">*Expiration Date</label>
+		<div id="expiration-date"></div>
+		<br>
+
+		<input type="checkbox" id="privateCard" value="N">&nbsp;Hide card from other users authorized on this account.<br>
+		<hr>
+		<div>
+			<ul id="btnList">
+				<li><button id="add-card-submit" class="addCard" value="Pay">Add Card</button></li>
+				<li><button class="addCard close-card">Close Dialog</button></li>
+			</ul>
+		</div>
+
+		<input id="payment_method_nonce" hidden>
+	</form>
+</div-->
+
+<script src="https://js.braintreegateway.com/web/3.6.3/js/client.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.6.3/js/hosted-fields.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.6.3/js/paypal.min.js"></script>
+
+<!--form method="post" id="add-svc-card" action="/add_card_to_customer.php">
+	<input type="hidden" id="custFname" name="custFname" value="">
+	<input type="hidden" id="custLname" name="custLname" value="">
+	<input type="hidden" id="custEmail" name="custEmail" value="{{customer_email}}">
+	<input type="hidden" id="cardToken" name="cardToken" value="">
+	<input type="hidden" id="cardIsPrivate" name="cardIsPrivate" value="">
+	<input type="hidden" id="newCard" name="newCard" value="">
+	<input type="hidden" id="custBtId" name="custBtId" value="">
+	<input type="hidden" id="selectCard" name="selectCard" value="1">
+	<button id="hiddenSubmit">
+</form-->
+
+<script>
+	jQuery('#add-address-button').on('click', function () {
+		jQuery.ajax({
+			method: "GET",
+			url: "/admin/customer-quote.php?customer_quote_id={{customer_quote_id}}",
+			dataType: 'json',
+			data: {
+				ajax: 1,
+				action: 'add-address-to-customer',
+				first_name: jQuery('#first-name').val(),
+				last_name: jQuery('#last-name').val(),
+				company_name: jQuery('#company-name').val(),
+				address1: jQuery('#address1').val(),
+				address2: jQuery('#address2').val(),
+				city: jQuery('#city').val(),
+				postcode: jQuery('#postcode').val(),
+				state: jQuery('#state').val(),
+				zone_id: jQuery('#state').attr('data-zone_code'),
+				country: jQuery('#country').val(),
+				telephone: jQuery('#telephone').val(),
+				customers_id: {{customer_id}}
+			},
+			success: function(data) {
+				var message = 'Address Added to Address book';
+				if (data.add_address == false) message = 'Error adding address to address book, contact your exterminator';
+				alert (message);
+			}
+		});
+
+	});
+	
+	jQuery('.customer-shipping-account').on('click', function () {
+		if (jQuery('#fedex-shipping').prop('checked') == true || jQuery('#custom-fedex-shipping').prop('checked') == true) {
+			jQuery('#fedex-shipping-list').show()
+			jQuery('#ups-shipping-list').hide()
+		}
+		else if (jQuery('#ups-shipping').prop('checked') == true || jQuery('#custom-ups-shipping').prop('checked') == true) {
+			jQuery('#ups-shipping-list').show();
+			jQuery('#fedex-shipping-list').hide();
+		}
+	});
+
+	jQuery('.PymtMethodSelection').on('click', function () {
+		if (jQuery('#net-payment').is(':checked')) jQuery('#net-payment-po').attr('required', true);
+		else jQuery('#net-payment-po').attr('required', false);
+	});
+	
+	//this is for customer ship from address - skipping it for now
+	/*jQuery('#blind-shipment-selection').on('click', function () {
+		jQuery('#blind-shipping-address-container').toggle();
+	});*/
+
+	jQuery('.shipping-method-selection').on('click', function () {
+		jQuery('#shipping-total').html(jQuery(this).attr('data-list-price'));
+		jQuery('#shipping-total-input').val(jQuery(this).attr('data-list-price'));
+		jQuery('#order-total').html(parseFloat(jQuery(this).attr('data-list-price')) + parseFloat(jQuery('#orderAmount').val()));
+		jQuery('#order-total-input').val(parseFloat(jQuery(this).attr('data-list-price')) + parseFloat(jQuery('#orderAmount').val()));
+	});
+
+	jQuery('.address-selection').live('click', function () {
+		
+		if (jQuery(this).attr('data-country') !== 'United States') jQuery('#free-shipping-row').hide();
+		else jQuery('#free-shipping-row').show();
+
+		if (jQuery('#ups-shipping-list').is(':visible')) {
+			jQuery('#first-name').val(jQuery(this).attr('data-first-name'));
+			jQuery('#last-name').val(jQuery(this).attr('data-last-name'));
+			jQuery('#company').val(jQuery(this).attr('data-company'));
+			jQuery('#address1').val(jQuery(this).attr('data-address1'));
+			jQuery('#address2').val(jQuery(this).attr('data-address2'));
+			jQuery('#city').val(jQuery(this).attr('data-city'));
+			jQuery('#state').val(jQuery(this).attr('data-state'));
+			jQuery('#postcode').val(jQuery(this).attr('data-postcode'));
+			jQuery('#country').val(jQuery(this).attr('data-country'));
+			jQuery('#telephone').val(jQuery(this).attr('data-telephone'));
+			
+			jQuery('#shipping-address-container input').each(function () {
+				if (jQuery(this).val()) jQuery('label[for='+jQuery(this).attr('id')+']').css('color', '#000');
+				else jQuery('label[for='+jQuery(this).attr('id')+']').css('color', '#fff');
+			});
+
+			jQuery.ajax({
+				method: "GET",
+				url: "/admin/customer-quote.php?customer_quote_id={{customer_quote_id}}",
+				dataType: 'json',
+				data: {
+					ajax: 1,
+					action: 'get-shipping-methods',
+					postcode: jQuery(this).attr('data-postcode'),
+					state: jQuery(this).attr('data-state'),
+					country: jQuery(this).attr('data-country'),
+					total_product_weight: jQuery('#total-product-weight').html()
+				},
+				success: function(data) {
+					jQuery('#ups-shipping-list').remove();
+					var new_shipping_table = '<tbody id="ups-shipping-list">';
+					new_shipping_table += '<tr><th colspan="4" class="shipping-type-table-section-header">UPS</th></tr>';
+					for (var i=0; i<data.shipping_quotes.length; i++) {
+						new_shipping_table += '<tr><td><input type="radio" id="shipping-'+data.shipping_quotes[i].code+'" name="shipping_method" class="shipping-method-selection" value="'+data.shipping_quotes[i].ck_shipping_method_id+'" data-list-price="{{list}}"></td><td>'+data.shipping_quotes[i].service+'</td><td>$'+data.shipping_quotes[i].list+'</td><td>$'+data.shipping_quotes[i].list+'</td></tr>';
+					}
+					new_shipping_table += '</tbody>';
+					jQuery('#other-shipping-list').before(new_shipping_table);
+				}
+			});
+		}
+	});
+
+	jQuery('#shipping-address-container input').each(function () {
+		if (jQuery(this).val()) jQuery('label[for='+jQuery(this).attr('id')+']').css('color', '#000');
+		else jQuery('label[for='+jQuery(this).attr('id')+']').css('color', '#fff');
+	});
+
+	jQuery('#shipping-address-container input').bind('change keyup click', function () {
+		if (jQuery(this).val()) jQuery('label[for='+jQuery(this).attr('id')+']').css('color', '#000');
+		else jQuery('label[for='+jQuery(this).attr('id')+']').css('color', '#fff');
+	});
+
+	jQuery('#showCardError').hide();
+
+	//get token from hidden input for braintree setup
+	var token = jQuery('#brainTreeToken').val();
+	var braintreeCustId = jQuery('#braintreeCustId').val();
+
+	var $amount = jQuery('#orderAmount').val();
+
+	var msg = jQuery('#cardErrMsg').val();
+
+	if (msg != undefined && msg.length > 1) jQuery('#showCardError').html(msg).show();
+
+	jQuery('.close-card').click(function(e) { e.preventDefault(); jQuery('#create-credit-card').hide(); return false; });
+
+	jQuery('#checkout_payment').submit(function(e) {
+		if (jQuery('.PymtMethodSelection:checked').length == 0) {
+			// no payment was selected ....:-(
+			alert('Please select a payment method then continue.');
+			e.preventDefault();
+			return false;
+		}
+
+		if (jQuery('.PymtMethodSelection:checked').val() === 'credit_card') {
+			if (jQuery('.cardRadioInput:checked').length == 0) {
+				alert('Please choose a credit card then continue');
+				e.preventDefault();
+				return false;
+			}
+			else return true;
+		}
+
+		if (jQuery('.PymtMethodSelection:checked').val() === 'paypal') {
+			var paypalNonce = jQuery('#paypalNonce').val();
+
+			if (paypalNonce == undefined || paypalNonce.length <= 0) {
+				alert('Please complete paypal transaction then continue or select an alternative payment method.');
+				e.preventDefault();
+				return false;
+			}
+		}
+
+		if (jQuery('.PymtMethodSelection:checked').val() === 'net10' || jQuery('.PymtMethodSelection:checked').val() === 'net15' || jQuery('.PymtMethodSelection:checked').val() === 'net30' || jQuery('.PymtMethodSelection:checked').val() === 'net45') {
+			if (jQuery('.net_po_num').val() == '') {
+				alert('Please enter your Purchase Order Number');
+				e.preventDefault();
+				return false;
+			}
+		}
+
+		return true;
+	});
+
+	/*jQuery('#addCardButton').click(function() { jQuery('#create-credit-card').show(); })
+
+	jQuery('#firstName').change(function(data) { jQuery('#custFname').val(data.currentTarget.value); });
+	jQuery('#lastName').change(function(data) { jQuery('#custLname').val(data.currentTarget.value); });
+	jQuery('#Email').change(function(data) { jQuery('#custEmail').val(data.currentTarget.value); });*/
+
+	//show modal
+	/*jQuery('#show').click(function () { jQuery('#create-credit-card').show(); });*/
+	
+	//hide modal
+	/*jQuery('#exit').click(function () { jQuery('#create-credit-card').hide(); });
+	var showDiv = function() { jQuery('#create-credit-card').show(); }*/
+
+	//braintree setup. Pass token we got from the hidden input
+	braintree.client.create({ authorization: token }, function(err, clientInstance) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+
+		braintree.hostedFields.create({
+			client: clientInstance,
+			fields: {
+				number: {
+					selector: '#card-number'
+				},
+				cvv: {
+					selector: '#cvv',
+					type: 'password'
+				},
+				expirationDate: {
+					selector: '#expiration-date',
+					placeholder: 'MM/YY'
+				}
+			}
+		},
+		function(err, hostedFieldsInstance) {
+			console.log('can you hear me?');
+			if (err) {
+				//debugger;
+				jQuery('#err').text('Error - Please enter all card details').fadeOut(3000);
+			}
+			else {
+				//console.log(data);
+				//debugger;
+				jQuery('#add-card-submit').click(function(e) {
+					e.preventDefault();
+					hostedFieldsInstance.tokenize(function(err, payload) {
+						if (err) {
+							switch (err.code) {
+								case 'HOSTED_FIELDS_FIELDS_EMPTY':
+									jQuery('#err').text('All fields are empty! Please fill out the form.').fadeOut(3000);
+									break;
+								case 'HOSTED_FIELDS_FIELDS_INVALID':
+									jQuery('#err').text('Some fields are invalid: '+err.details.invalidFieldKeys).fadeOut(3000);
+									break;
+								case 'HOSTED_FIELDS_FAILED_TOKENIZATION':
+									jQuery('#err').text('Tokenization failed server side. Is the card valid?').fadeOut(3000);
+									break;
+								case 'HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR':
+									jQuery('#err').text('Network error occurred when tokenizing.').fadeOut(3000);
+									break;
+								default:
+									jQuery('#err').text('Something bad happened! '+err).fadeOut(3000);
+							}
+						}
+						else {
+							jQuery('#cardToken').val(payload.nonce);
+
+							if (braintreeCustId == undefined) {
+								jQuery('#newCard').val('true');
+							}
+							else {
+								jQuery('#newCard').val('false');
+								jQuery('#custBtId').val(braintreeCustId);
+							}
+
+							jQuery('#add-svc-card').submit();
+
+							jQuery('#create-credit-card').hide();
+						}
+					});
+				});
+
+				return;
+			}
+		});
+		
+		braintree.paypal.create({
+		  client: clientInstance
+		},
+		function (err, paypalInstance) {
+			console.log('anything');
+			console.log(err, paypalInstance);
+			if (err) {
+				console.log(err);
+				if (err.code === 'PAYPAL_BROWSER_NOT_SUPPORTED') jQuery('#err').text('This browser is not supported.').fadeOut(3000);
+				else jQuery('#err').text('Error!', createErr).fadeOut(3000);
+			}
+			else {
+				jQuery('#paymentPaypal, #continueBtn').click(function(e) {
+					var pp_continue = false;
+
+					if (jQuery(this).attr('id') == 'continueBtn') {
+						if (!jQuery('#paymentPaypal').is(':checked')) return;
+						pp_continue = true;
+					}
+					else {
+						if (!jQuery(this).is(':checked')) return;
+					}
+
+					if (jQuery('#paypalNonce').val() != undefined && jQuery('#paypalNonce').val().length > 0) {
+						jQuery('.paypal-status').removeClass('waiting').addClass('complete');
+						return;
+					}
+
+					if (jQuery(this).attr('id') == 'continueBtn') {
+						e.preventDefault();
+					}
+
+					jQuery('.paypal-status').removeClass('complete').addClass('waiting');
+
+					paypalInstance.tokenize({
+						flow: 'checkout',
+						amount: parseFloat($amount),
+						currency: 'USD',
+						displayName: 'CablesAndKits.com',
+						locale: 'en_US',
+						enableShippingAddress: false,
+					},
+					function(err, payload) {
+						if (err) {
+							// Handle tokenization errors or premature flow closure
+							switch (err.code) {
+								case 'PAYPAL_POPUP_CLOSED':
+									jQuery('#err').text('Customer closed PayPal popup.').fadeOut(3000);
+									break;
+								case 'PAYPAL_ACCOUNT_TOKENIZATION_FAILED':
+									jQuery('#err').text('PayPal tokenization failed. See details: '+err.details).fadeOut(3000);
+									break;
+								case 'PAYPAL_FLOW_FAILED':
+									jQuery('#err').text('Unable to initialize PayPal flow. Are your options correct? '+err.details).fadeOut(3000);
+									break;
+								default:
+									jQuery('#err').text('Error! '+err).fadeOut(3000);
+									break;
+							}
+						}
+						else {
+							if (payload.nonce.length > 0) {
+								jQuery('#paypalNonce').val(payload.nonce);
+								jQuery('.paypal-status').removeClass('waiting').addClass('complete');
+								if (pp_continue) jQuery('#checkout_payment').submit();
+							}
+						}
+					});
+				});
+			}
+		});
+	});
+
+	jQuery('.PymtMethodSelection').click(function() {
+		if (jQuery(this).val() !== 'credit_card') {
+			jQuery('.cardRadioInput').prop('checked', false);
+		}
+
+		if (jQuery(this).val() !== 'paypal') {
+			jQuery('.paypal-status').removeClass('waiting').removeClass('complete');
+		}
+
+		if (jQuery(this).val() === 'check_mo') {
+			if (!confirm('You selected Check/Money Order as your payment Method. Are you sure you wish to pay using this method?')) {
+				jQuery(this).prop('checked', false);
+			}
+		}
+	});
+
+	jQuery('.cardRadioInput').click(function() {
+		jQuery('.PymtMethodSelection').prop('checked', false);
+		jQuery('#paymentCC').prop('checked', true);
+	});
+</script>

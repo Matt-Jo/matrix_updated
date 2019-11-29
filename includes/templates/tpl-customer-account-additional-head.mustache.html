@@ -1,0 +1,202 @@
+<style>
+	.my-account-main { height:100%; background-color:#ffffff; padding:20px; border-bottom:1.5px solid #cecece; margin-bottom:20px; }
+	.order-container { width:90%; height:500px; margin:0 auto; }
+	#customer-account { display:flex; background-color:#fff; max-width:1300px; margin:0 auto; }
+	#customer-account-nav { display:flex; flex-direction:column; padding:5px 10px 5px 10px; border:1px solid #bcbec0; border-radius:3px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	/*#customer-account-nav .account-sections { border-right:2.5px solid #D9D9D9; }*/
+	/*#customer-account-nav .account-sections .active { border-right:2.5px solid #000; }*/
+	#customer-account-nav-ck { display:flex; flex-direction:column; margin-top:10px; padding:5px 10px 5px 10px; border:1px solid #bcbec0; border-radius:3px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	#customer-account-info-section { display:flex; flex-direction:column; padding-bottom:7px; }
+	#customer-order-info-section { display:flex; flex-direction:column; padding:7px 0; border-top:2px solid #3b8baa; }
+	#reseller-info-section { display:flex; flex-direction:column; padding:7px 0; border-top:2px solid #3b8baa; }
+	.account-sections { display:flex; color:#555555; align-items:center; padding:8px 0; text-decoration:none; }
+	.account-sections i { font-size:22px; padding:0 10px 0 0; width:25px; }
+	.info-section-title { font-weight:bold; margin:0; }
+	.info-section-details { font-size:10px; margin:0; }
+	.account-sections:hover { color:#e21836; text-decoration:none; }
+	#customer-account-display { display:flex; flex-direction:column; width:80%; margin:0 10px 0 10px; }
+	#customer-account-top-level-info span { padding-left:15px; }
+	#customer-account-spacing { width:20%; }
+	#customer-account-top-level-info { display:flex; flex-direction:column; width:100%; border:1px solid #bcbec0; border-radius:3px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	.account-name-specific { display:flex; align-items:center; color:#555555; }
+	.account-name-specific h2 { margin:0; padding:10px 0 10px 10px; font-size:24px; }
+	.account-specific-info { border-top:1px solid #bcbec0; background-color:#e1e1e1; padding:10px 0 10px 10px; }
+	#customers-name { color:#3b8baa; }
+
+	.order-bold { font-weight:bold; }
+	.hidden-order-details { display:none; }
+	.expand-order-details { cursor:pointer; font-size:18px; }
+
+	.customer-account-table { width:100%; text-align:center; border:1px solid #bcbec0; border-radius:3px; border-collapse:separate; border-spacing:0; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); margin:5px 0 0 0; }
+	.customer-account-table thead tr th:first-child { border-radius:3px 0 0 0; }
+	.customer-account-table .order-img-model { text-align:left; padding-left:120px; }
+	.customer-account-table td { color:#444; padding:8px; border-bottom:1px solid #bcbec0; }
+	.customer-account-table th { color:#444; padding:8px; border-bottom:1px solid #bcbec0; }
+	.customer-account-table tfoot tr td { border:none; }
+	.customer-account-table thead tr th { color:#e21836; }
+	.customer-account-table thead tr th { padding:10px; font-size:15px; }
+	.customer-account-table tbody tr:nth-child(odd) { background-color: #e1e1e1; color: #444; }
+	.customer-account-table tbody tr:nth-child(even) { background-color: #fff; color: #444; }
+
+	.customer-recent-account-table { width:100%; text-align:center; border:1px solid #bcbec0; border-radius:3px; border-collapse:separate; border-spacing:0; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); margin:5px 0 0 0; }
+	.customer-recent-account-table thead tr th:first-child { border-radius:3px 0 0 0; }
+	.customer-recent-account-table .order-img-model { text-align:left; padding-left:120px; }
+	.customer-recent-account-table td { color:#444; padding:8px; border-bottom:1px solid #bcbec0; }
+	.customer-recent-account-table th { color:#444; padding:8px; border-bottom:1px solid #bcbec0; }
+	.customer-recent-account-table tfoot tr td { border:none; }
+	.customer-recent-account-table thead tr th { color:#e21836; }
+	.customer-recent-account-table thead tr th { padding:10px; font-size:15px; }
+	.main-order-rows:nth-child(4n+1) { background-color: #e1e1e1; color: #444; }
+
+	.order-details-table { width:100%; }
+	.order-details-table thead { border-bottom:1px solid #666; }
+	.order-details-table td { border:0; }
+	#recent-order-message { color:#999999; text-align:left; font-size:13px; padding:15px 0 5px 2px; }
+	.order-line:hover { border:1px solid #3b8baa; }
+
+	@media only screen and (max-width: 800px) {
+		#customer-account { flex-wrap:wrap-reverse; }
+		#customer-account-spacing { width:100%; margin-top:10px; margin-left:0; }
+		#customer-account-display { width:100%; margin:0 0px 0 0px; }
+		#customer-account-nav { flex-direction:row; flex-wrap:wrap; justify-content:space-between; }
+		#customer-order-info-section { border-top:none; }
+		#reseller-info-section { border-top:none; }
+		.most-recent-orders-table .order-img-model { padding-left:10px; }
+	}
+</style>
+<div class="my-account-main">
+	<div id="customer-account">
+		<div id="customer-account-spacing">
+			<div id="customer-account-nav">
+				<div id="customer-account-info-section">
+					<a class="account-sections {{info_page}}" href="/my-account/info">
+						<i class="far fa-user-circle"></i>
+						<div>
+							<div class="info-section-title">Account & Security</div>
+							<div class="info-section-details">edit personal & password info</div>
+						</div>
+					</a>
+					<!--a class="account-sections" href="/my-account/info">
+						<i class="fas fa-unlock-alt"></i>
+						<div>
+							<div class="info-section-title">Password</div>
+							<div class="info-section-details">edit password</div>
+						</div>
+					</a-->
+					<a class="account-sections {{address_page}}" href="/my-account/addresses">
+						<i class="far fa-address-book"></i>
+						<div>
+							<div class="info-section-title">Address Book</div>
+							<div class="info-section-details">edit/add addresses</div>
+						</div>
+					</a>
+					<a class="account-sections {{payment_page}}" href="/my-account/payment">
+						<i class="far fa-credit-card"></i>
+						<div>
+							<div class="info-section-title">Payment Methods</div>
+							<div class="info-section-details">edit/add payments</div>
+						</div>
+					</a>
+					<!--<a class="account-sections" href="">-->
+					<!--<i class="fas fa-users"></i>-->
+					<!--<div>-->
+					<!--<div class="info-section-title">Manage Users</div>-->
+					<!--<div class="info-section-details">edit/add Users</div>-->
+					<!--</div>-->
+					<!--</a>-->
+				</div>
+				<div id="customer-order-info-section">
+					<a class="account-sections {{orders_page}}" href="/my-account/orders">
+						<i class="far fa-cube"></i>
+						<div>
+							<div class="info-section-title">My Orders</div>
+							<div class="info-section-details">View all past orders</div>
+						</div>
+					</a>
+					<!--<a class="account-sections" href="">-->
+					<!--<i class="far fa-clipboard-list"></i>-->
+					<!--<div>-->
+					<!--<div class="info-section-title">My Work Lists</div>-->
+					<!--<div class="info-section-details">edit/checkout lists</div>-->
+					<!--</div>-->
+					<!--</a>-->
+					<!--<a class="account-sections" href="">-->
+					<!--<i class="far fa-credit-card"></i>-->
+					<!--<div>-->
+					<!--<div class="info-section-title">My Quotes</div>-->
+					<!--<div class="info-section-details">request/checkout quotes</div>-->
+					<!--</div>-->
+					<!--</a>-->
+					<!--<a class="account-sections" href="">-->
+					<!--<i class="far fa-credit-card"></i>-->
+					<!--<div>-->
+					<!--<div class="info-section-title">My Invoices</div>-->
+					<!--<div class="info-section-details">view/print past invoices</div>-->
+					<!--</div>-->
+					<!--</a>-->
+					<a class="account-sections" href="/returns-form-i-44.html">
+						<i class="far fa-exchange-alt"></i>
+						<div>
+							<div class="info-section-title">Initiate Return</div>
+							<div class="info-section-details">return unused/defective products</div>
+						</div>
+					</a>
+				</div>
+				{{#vendor_portal_access}}
+				<div id="reseller-info-section">
+					<a class="account-sections" href="/vendorportal">
+						<i class="far fa-inventory"></i>
+						<div>
+							<div class="info-section-title">Vendor Portal</div>
+							<div class="info-section-details">go to reseller area</div>
+						</div>
+					</a>
+					<!--<a class="account-sections" href="">-->
+					<!--<i class="far fa-hands-usd"></i>-->
+					<!--<div>-->
+					<!--<div class="info-section-title">Buy Back Center</div>-->
+					<!--<div class="info-section-details">go to reseller area</div>-->
+					<!--</div>-->
+					<!--</a>-->
+				</div>
+				{{/vendor_portal_access}}
+			</div>
+			<div id="customer-account-nav-ck">
+				<div id="customer-account-info-section">
+					<div class="account-sections">
+						<i class="fas fa-phone"></i>
+						<div>
+							<div class="info-section-title">
+								<a href="tel:{{sales_contact_clickable_phone}}">{{sales_contact_phone}}</a>
+							</div>
+							<div class="info-section-title">
+								<a href="tel:{{sales_contact_local_clickable_phone}}">{{sales_contact_local_phone}}</a>
+							</div>
+							<div class="info-section-details">Service: Mon-fri 8am to 6pm ET</div>
+							<div class="info-section-details">Shipping: Mon-fri 8am to 8pm ET</div>
+						</div>
+					</div>
+				</div>
+				<div id="customer-order-info-section">
+					<a class="account-sections" href="mailto:{{sales_contact_email}}">
+						<i class="far fa-envelope"></i>
+						<div>
+							<div class="info-section-title">Your Dedicated Account Team</div>
+							{{#team_members}}
+							<div class="info-section-details">{{.}}</div>
+							{{/team_members}}
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div id="customer-account-display">
+			<div id="customer-account-top-level-info">
+				<div class="account-name-specific">
+					<h2>{{page_title}}:<span id="customers-name">{{customer_name}}</span></h2>
+				</div>
+				<div class="account-specific-info">
+					<div class="total-orders">Total Orders <a href="/my-account/orders">{{total_orders}}</a></div>
+					{{#outstanding_invoices}}<div class="total-open-invoices">Open Invoices {{.}}</div>{{/outstanding_invoices}}
+				</div>
+			</div>

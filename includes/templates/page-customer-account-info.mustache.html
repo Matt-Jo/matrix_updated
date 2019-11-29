@@ -1,0 +1,82 @@
+<style>
+	#account-info-container { display:flex; justify-content:space-around; }
+	#account-edit { border:1px solid #bcbec0; width:50%; margin:10px 5px 0 0; border-radius:3px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	#security-edit { border:1px solid #bcbec0; width:50%; margin:10px 0 0 5px; border-radius:3px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	.account-title { color:#3b8baa; font-size:22px; font-weight:bold; margin:10px 0; }
+	.account-title i { padding:0 10px; }
+	#account-inputs { padding:0 0 20px 20px; display:flex; flex-direction:column; width:80%; }
+	#security-inputs { padding:0 0 20px 20px; display:flex; flex-direction:column; width:80%; }
+	#account-persona { border-top:4px solid #3b8baa; margin-top:20px; padding-top:20px; font-size:15px; color:#666; }
+
+	.account-edit-button { background-color:#e21836; font-size:14px; border-radius:3px; padding:10px 20px; color:#fff; width:50%; margin-top:35px; border:none; outline:none; }
+	.asterix { color:#e21836; font-weight:bold; padding-left:10px; }
+	.account-form-title { font-size:14px; color:#666; padding:0 0 5px 0; }
+	.old-pasword-separation { margin-bottom:35px; font-size:14px; padding:4px; }
+	.inputs-style { font-size:14px; margin-bottom:10px; padding:4px; border:1px solid #bcbec0; border-radius:3px; background-color:#fff; height:25px; }
+	#persona-questions { list-style-type:none; padding-left:10px; }
+	#persona-questions label { padding-left:7px; }
+	@media only screen and (max-width: 500px) {
+		#account-info-container { flex-wrap:wrap; }
+		#account-security-container { flex-direction:column; }
+		#account-edit { width:100%; margin:10px 0 0 0; }
+		#security-edit { width:100%; margin:10px 0 0 0 }
+	}
+</style>
+
+<div id="account-info-container">
+	<div id="account-edit">
+		{{#info_message}}
+		<div class="error-stack">{{{.}}}</div>
+		{{/info_message}}
+		<h2 class="account-title"><i class="far fa-user-circle"></i>Account Information</h2>
+		<form id="account-inputs" method="POST" action="/my-account/info">
+			<input type="hidden" name="action" value="update-account-information">
+			<label class="account-form-title">First Name<span class="asterix">*</span></label>
+			<input class="inputs-style" type="text" name="first_name" value="{{first_name}}" required>
+			<label class="account-form-title">Last Name<span class="asterix">*</span></label>
+			<input class="inputs-style" type="text" name="last_name" value="{{last_name}}" required>
+			<label class="account-form-title">Email Address<span class="asterix">*</span></label>
+			<input class="inputs-style" type="text" name="email" value="{{email}}" required>
+			<label class="account-form-title">Phone Number<span class="asterix">*</span></label>
+			<input class="inputs-style" type="text" name="phone_number" value="{{phone_number}}" requried>
+			<div id="account-persona">
+				How do you use our products?
+				<ul id="persona-questions">
+					<li>
+						<input type="radio" name="customer_segment" id="in" value="IN" {{#individual}}checked{{/individual}} required>
+						<label for="in">for personal use</label>
+					</li>
+					<li>
+						<input type="radio" name="customer_segment" id="eu" value="EU" {{#end_user}}checked{{/end_user}} required>
+						<label for="eu">for installation in my businees/where I work</label>
+					</li>
+					<li>
+						<input type="radio" name="customer_segment" id="rs" value="RS" {{#reseller}}checked{{/reseller}} required>
+						<label for="rs">for installation/management of a client or resale to a customer</label>
+					</li>
+					<li>
+						<input type="radio" name="customer_segment" id="st" value="ST" {{#student}}checked{{/student}} required>
+						<label for="st">for furthering my IT education</label>
+					</li>
+				</ul>
+			</div>
+			<button type="submit" class="account-edit-button">Update Account</button>
+		</form>
+	</div>
+	<div id="security-edit">
+		{{#password_message}}
+		<div class="error-stack">{{{.}}}</div>
+		{{/password_message}}
+		<h2 class="account-title"><i class="fas fa-unlock-alt"></i>Security Information</h2>
+		<form id="security-inputs" method="POST" action="/my-account/info">
+			<input type="hidden" name="action" value="update-account-password">
+			<div class="account-form-title">Current Password<span class="asterix">*</span></div>
+			<input class="old-pasword-separation inputs-style" type="password" name="password_current" required>
+			<div class="account-form-title">New Password<span class="asterix">*</span></div>
+			<input class="inputs-style" type="password" name="password_new" required>
+			<div class="account-form-title">Confirm New Password<span class="asterix">*</span></div>
+			<input class="inputs-style" type="password" name="password_confirmation" required>
+			<button type="submit" class="account-edit-button">Update Password</button>
+		</form>
+	</div>
+</div>

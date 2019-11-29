@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-LRlmVvLKVApDVGuspQFnRQJjkv0P7/YFrw84YYQtmYG4nK8c+M+NlmYDCv0rKWpG" crossorigin="anonymous">
+<style>
+	#page-body { width:100%; }
+	.table-actions i { cursor:pointer; font-size:12px; padding:5px; color:#000; }
+	#no-reviews { text-align:center; font-size:24px; }
+</style>
+<td id="page-body">
+	<h3>Ipn Creation Review</h3>
+	<table class="ui table">
+		<thead>
+			<tr>
+				<th>Stock Id</th>
+				<th>IPN</th>
+				<th>Creation Date</th>
+				<th>Creator</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+		{{#creation_reviews}}
+			<tr id="{{stock_id}}">
+				<td>{{stock_id}}</td>
+				<td>{{ipn}}</td>
+				<td>{{creation_date}}</td>
+				<td>{{creator}}</td>
+				<td class="table-actions">
+					<i class="fas fa-check review-creation" data-title="Mark Reviewed" data-stock-id="{{stock_id}}"></i>
+					<a href="/admin/ipn_editor.php?stock_id={{stock_id}}" target="_blank">
+						<i class="fas fa-external-link go-to-ipn-editor" data-title="IPN Editor"></i>
+					</a>
+				</td>
+			</tr>
+		{{/creation_reviews}}
+		{{^creation_reviews}}
+			<tr>
+				<td colspan="5" id="no-reviews"><i class="far fa-smile"></i></td>
+			</tr>
+		{{/creation_reviews}}
+		</tbody>
+	</table>
+	<!-- confirm review modal -->
+	<div id="confirm-review-modal" class="ui mini modal">
+		<div class="header">Confirm Review</div>
+		<div class="actions">
+			<button class="ui positive approve button">Confirm</button>
+			<button class="ui negative cancel button">Cancel</button>
+		</div>
+	</div>
+</td>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script>
+
+	jQuery('.review-creation').popup({on: 'hover'});
+	jQuery('.go-to-ipn-editor').popup({on: 'hover'});
+
+	jQuery('.review-creation').on('click', function () {
+		let stock_id = jQuery(this).data('stock-id');
+		jQuery('#confirm-review-modal').modal({
+			closable: false,
+			onDeny: function () {
+				jQuery('#confirm-review-modal').modal('hide');
+				return false;
+			},
+			onApprove: function () {
+				jQuery.ajax({
+					url: '/admin/ipn-creation-review-dashboard',
+					method: 'POST',
+					dataType: 'json',
+					data: { ajax:1, action:'mark_creation_reviewed', stock_id:stock_id },
+					success: function (data) {
+						if (data) jQuery('#'+stock_id).remove();
+					}
+				});
+			}
+		}).modal('show');
+	});
+</script>

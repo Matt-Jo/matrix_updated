@@ -1,0 +1,63 @@
+<div class="address-block">
+	{{#format1}}
+		{{#company_name}}
+	<div class="company-name">{{.}}</div>
+		{{/company_name}}
+	<div class="address-target">
+		<span class="address-name">{{name}}</span><br>
+		{{address1}}<br>
+		{{#address2}}{{.}}<br>{{/address2}}
+		{{city}}, {{postcode}}<br>
+		{{#state}}{{.}}, {{/state}}{{country}}
+	</div>
+	{{/format1}}
+	{{#format2}}
+		{{#company_name}}
+	<div class="company-name">{{.}}</div>
+		{{/company_name}}
+	<div class="address-target">
+		<span class="address-name">{{name}}</span><br>
+		{{address1}}<br>
+		{{#address2}}{{.}}<br>{{/address2}}
+		{{city}}, {{state}}    <span class="postcode">{{postcode}}</span><br>
+		{{country}}<br>
+		{{telephone}}
+	</div>
+	{{/format2}}
+	{{#format3}}
+		{{#company_name}}
+	<div class="company-name">{{.}}</div>
+		{{/company_name}}
+	<div class="address-target">
+		<span class="address-name">{{name}}</span><br>
+		{{address1}}<br>
+		{{#address2}}{{.}}<br>{{/address2}}
+		{{city}}<br>
+		{{postcode}} - {{#state}}{{.}}, {{/state}}{{country}}
+	</div>
+	{{/format3}}
+	{{#format4}}
+		{{#company_name}}
+	<div class="company-name">{{.}}</div>
+		{{/company_name}}
+	<div class="address-target">
+		<span class="address-name">{{name}}</span><br>
+		{{address1}}<br>
+		{{#address2}}{{.}}<br>{{/address2}}
+		{{city}} ({{postcode}})<br>
+		{{country}}
+	</div>
+	{{/format4}}
+	{{#format5}}
+		{{#company_name}}
+	<div class="company-name">{{.}}</div>
+		{{/company_name}}
+	<div class="address-target">
+		<span class="address-name">{{name}}</span><br>
+		{{address1}}<br>
+		{{#address2}}{{.}}<br>{{/address2}}
+		{{postcode}} {{city}}<br>
+		{{country}}
+	</div>
+	{{/format5}}
+</div>

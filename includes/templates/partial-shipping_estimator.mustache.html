@@ -1,0 +1,275 @@
+<style>
+	#estimator-totals { margin:20px 0px; }
+
+	#estimator-results { width:100%; font-family:Arial, sans-serif; }
+	#estimator-results th, #estimator-results td { padding:2px 4px; }
+	#estimator-results thead th { border-top:1px solid #000; font-size:13px; }
+	#estimator-results td { font-size:11px; }
+
+	#estimator-results td.rate-group-header { padding:0px; }
+	.rate-group-header div { border-top:1px solid #000; padding-top:16px; margin-top:10px; }
+	#estimator-results td.rate-quote-name { padding-left:15px; font-weight:bold; white-space:nowrap; }
+	.freight-residential { padding-left:35px; background-color:#dedede; color:#252; font-weight:bold; }
+	.freight-additional-services { padding-left:35px; background-color:#eea; }
+	.freight-additional-services span { position:relative; left:20px; }
+	#estimator-results td.freight-service-option { padding-left:35px; }
+	a.freight-info { color:#00f; }
+	.freight-info-box { display:none; position:absolute; background-color:#ccc; border:1px solid #c00; padding:4px 7px; margin-top:-5px; width:300px; }
+	.freight-service-warning { padding-left:35px; background-color:#ffdede; color:#900; }
+
+	.shipcost { text-align:right; min-width:55px; padding-left:6px; }
+	.admin-shipping-cost-column { background-color:#fcc; }
+	.admin-control-box div { margin:5px; }
+</style>
+
+<!-- Shipping Estimator -->
+<div class="ck_rounded_box">
+	<div class="ck_blue_tab_left"></div>
+	<div class="ck_blue_tab_middle">Shipping Estimator:</div>
+	<div class="ck_blue_tab_right"></div>
+	<div style="clear: both;"></div>
+
+	<div class="main rounded-corners shopping-cart">
+        <div class="grid grid-pad">
+			<div class="col-1-1">
+				<div class="content">
+					<div style="padding:0px 10px 18px 10px;font-size:12px;">
+						<form name="estimator" id="estimator" action="/shopping_cart.php" method="get">
+							<input type="hidden" name="show_options" value="1">
+							{{#admin?}}
+								{{^admin?-cost-only}}
+								<div class="admin-controls">
+									<h3>Admin Controls</h3>
+									<div class="admin-control-box">
+										<!--<label for="flip_addresses">Flip Addresses</label>
+										<input type="checkbox" id="flip_addresses" name="flip_addresses">-->
+										<div>
+											<label for="from_zip">From Zip:</label>
+											<input type="text" id="from_zip" name="from_zip">
+											<label for="to_zip">To Zip:</label>
+											<input type="text" id="to_zip" name="to_zip">
+											<label for="override_weight">Weight:</label>
+											<input type="input" id="override_weight" name="override_weight">
+										</div>
+										<div>
+											<label for="box_width">Box Width:</label>
+											<input type="text" id="box_width" name="box_width">
+											<label for="box_height">Box Height:</label>
+											<input type="text" id="box_height" name="box_height">
+											<label for="box_length">Box Length:</label>
+											<input type="text" id="box_length" name="box_length">
+										</div>
+										{{#shipment_information}}
+											<div class="shipment-information">
+											<h4>Quote Summary</h4>
+											<ul>
+												<li><b>From:</b> {{from_postcode}}</li>
+												<li><b>To:</b> {{to_postcode}}</li>
+												<li><b>Box Width:</b> {{box_width}} inches</li>
+												<li><b>Box Height:</b> {{box_height}} inches</li>
+												<li><b>Box Length:</b> {{box_length}} inches</li>
+											</ul>
+											</div>
+										{{/shipment_information}}
+									</div>
+								</div>
+								<script>
+									jQuery('.admin-controls h3').on('click', function() {
+										jQuery(this).next('.admin-control-box').toggle();
+									});
+								</script>
+								{{/admin?-cost-only}}
+							{{/admin?}}
+							{{#address_list?}}
+								{{^show_estimates?}}
+							<div style="padding-top:18px;">Please select the prefered shipping address to calculate your shipping rates:</div>
+								{{/show_estimates?}}
+							<div>
+								<br>
+								Address:&nbsp;
+								<select name="address_id" id="address_id">
+									<option>Delivery Address</option>
+									{{#addresses}}
+									<option value="{{address_book_id}}" {{#selected?}}selected{{/selected?}}>{{> partial-address-format.mustache.html}}</option>
+									{{/addresses}}
+								</select>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="image" src="{{static_files}}/img/calculate-button.png" alt="Calculate" style="vertical-align:middle;">
+							</div>
+								{{#show_estimates?}}
+								{{#formatted_address}}
+							<div style="overflow:auto;">
+								<div style="float:left; margin-right:5px;">Ship to:</div>
+								<div style="float:left;">{{> partial-address-format.mustache.html}}</div>
+							</div>
+								{{/formatted_address}}
+								{{/show_estimates?}}
+							{{/address_list?}}
+							{{^address_list?}}
+								{{^show_estimates?}}
+							<div style="padding-top:18px;">Please select your country and enter your zip code to calculate your shipping rates:</div>
+								{{/show_estimates?}}
+							<div>
+								<div class="col-4-12">
+									Country:&nbsp;
+									<select name="country_id" style="width:200px;">
+										<option>Please Select</option>
+										{{#countries}}
+										<option value="{{countries_id}}" {{#selected?}}selected{{/selected?}}>{{countries_name}}</option>
+										{{/countries}}
+									</select>
+								</div>
+								<div class="col-4-12">
+									Zip Code:
+									<input type="text" name="zip_code" value="{{estimator_postcode}}" size="10">
+								</div>
+								<div class="col-4-12">
+									<input type="image" src="{{static_files}}/img/calculate-button.png" alt="Calculate" style="vertical-align:middle;">
+								</div>
+							</div>
+								{{#formatted_address}}
+							<div style="overflow:auto;">
+								<div style="float:left;">Ship to:</div>
+								<div style="float:left;">{{> partial-address-format.mustache.html}}</div>
+							</div>
+								{{/formatted_address}}
+							{{/address_list?}}
+						</form>
+						<div id="estimator-totals">
+							<strong>Item(s):</strong>&nbsp;{{total_count}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<strong>Weight:</strong>&nbsp;{{total_weight}} lbs
+						</div>
+						{{#intl?}}
+						<div style="/*font-weight:bold;*/ background-color:#ff0; margin-bottom:10px; /*width:650px;*/ padding:4px; font-size:14px;">
+						Attention! The recipient will be responsible for Brokerage Fees, Duties, and Taxes imposed by the governing authorities of the destination country. These charges are billed directly to the recipient and may be collected before, during or after delivery of the products. CablesAndKits has no say or control over the fees charged (with few exceptions). If you have any questions please contact us prior to placing your order.
+						</div>
+						{{/intl?}}
+						{{#show_estimates?}}
+						<table border="0" cellpadding="2" cellspacing="0" id="estimator-results" class="table-md">
+							<thead>
+								<tr>
+									<th colspan="2">Shipping Methods:</th>
+									<th class="shipcost">Rates:</th>
+									{{#admin?}}
+									<th class="shipcost admin-shipping-cost-column">CK Cost:</th>
+									{{/admin?}}
+								</tr>
+							</thead>
+							
+							<tbody>
+								{{#rate_groups}}
+								<tr>
+									<td colspan="3" class="rate-group-header"><div>{{#group_img?}}{{{.}}}{{/group_img?}}{{^group_img?}}&nbsp;{{/group_img?}}</div></td>
+									{{#admin?}}
+									<td class="admin-shipping-cost-column"></td>
+									{{/admin?}}
+								</tr>
+									{{#rate_quotes}}
+								<tr>
+									<td class="rate-quote-name">{{name}}</td>
+									{{#error?}}
+									<td colspan="2" title="Error">{{{.}}}</td>
+									{{/error?}}
+									{{^error?}}
+									<td>{{estimated_delivery}}</td>
+									<td class="shipcost" title="Price">{{price}}</td>
+									{{/error?}}
+									{{#admin?}}
+									<td class="shipcost admin-shipping-cost-column">{{negotiated_rate}}</td>
+									{{/admin?}}
+								</tr>
+									{{/rate_quotes}}
+									{{#freight_quote}}
+										{{#possible_residential?}}
+								<tr>
+									<td colspan="3" class="freight-residential">{{.}}</td>
+								</tr>
+										{{/possible_residential?}}
+								<tr>
+									<td colspan="2" class="rate-quote-name">{{name}}</td>
+									<td class="shipcost">{{price}}</td>
+								</tr>
+								<tr>
+									<td colspan="3" class="freight-additional-services">
+										<strong>Additional delivery services that may be required:</strong><br>
+										<span>(You will select these during the checkout process)</span>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" class="freight-service-option">
+										Do you have a loading dock or forklift? <a href="#" class="freight-info" id="freight-forklift">(Why?)</a>
+										<div id="freight-forklift-info" class="freight-info-box">
+											If you do not have a loading dock or forklift, the freight carrier will charge an additional fee to use a liftgate to get your item off of the truck.
+										</div>
+									</td>
+									<td class="shipcost">
+										IF NO [{{#quote_residential?}}Included&nbsp;for Residential&nbsp;Addresses{{/quote_residential?}}{{^quote_residential?}}$70{{/quote_residential?}}]
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" class="freight-service-option">
+										Do you require inside delivery? <a href="#" class="freight-info" id="freight-inside">(What does this mean?)</a>
+										<div id="freight-inside-info" class="freight-info-box">
+											The freight carrier will bring your package to your door. If you need them to carry it inside your building, they charge an additional fee.
+										</div>
+									</td>
+									<td class="shipcost">IF YES [$100]</td>
+								</tr>
+								<tr>
+									<td colspan="2" class="freight-service-option">
+										Is your address a Limited Access location? <a href="#" class="freight-info" id="freight-limited">(What does this mean?)</a>
+										<div id="freight-limited-info" class="freight-info-box">
+											Per our freight carriers, the term LIMITED ACCESS LOCATION includes, but is not limited to, the following:
+											<ul>
+												<li>Individual (mini) storage units</li>
+												<li>Churches</li>
+												<li>Schools</li>
+												<li>Commercial establishments not open to walk-in public during normal business hours (appointment needed or Guard Shack entrance)</li>
+												<li>Construction sites</li>
+												<li>Fairs or carnivals</li>
+												<li>Prisons</li>
+												<li>Military Base/Installations</li>
+												<li>Rural route or out of town highway access locations</li>
+												<li>Businesses located in residential areas in Canada</li>
+											</ul>
+										</div>
+									</td>
+									<td class="shipcost">IF YES [$100]</td>
+								</tr>
+								<tr>
+									<td colspan="3" class="freight-service-warning"><strong>If you do not select all services necessary to deliver to your address during the checkout process, you are responsible for all charges incurred to re-deliver with the needed services.</strong></td>
+								</tr>
+									{{/freight_quote}}
+								{{/rate_groups}}
+							</tbody>
+						</table>
+						<br>
+						<div style="text-align:center;font-weight:bold;color:#f00;font-size:14px;">This is only an estimate, click Checkout above to proceed with your order.</div>
+						{{/show_estimates?}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	jQuery('#address_id').change(function() {
+		jQuery('#estimator').submit();
+	});
+
+	jQuery('#estimator').submit(function(e) {
+	});
+
+	jQuery('.freight-info').click(function(event) {
+		event.preventDefault();
+		jQuery('#'+jQuery(this).attr('id')+'-info').toggle();
+		return false;
+	});
+	jQuery('.freight-info-box').click(function() {
+		jQuery(this).toggle();
+	});
+	jQuery('body').click(function() {
+		jQuery('.freight-info-box').hide();
+	});
+</script>

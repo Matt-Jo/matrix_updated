@@ -1,0 +1,65 @@
+<style>
+	h3 { margin:3px 0px 6px 0px; color:#727272; }
+
+	.family-actions { text-align:right; margin:0px 0px 3px 0px; padding:0px 1px 0px 0px; }
+
+	.no-results { text-align:center; font-weight:bold; padding:8px; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<h3>Family Containers</h3>
+	<div class="family-actions">
+		<a href="/admin/merchandising-family-container-detail.php?context=create" class="button-link">Create New Family Container</a>
+	</div>
+	<table cellpadding="0" cellspacing="0" border="0" id="merchandising-family-container-list" class="ck-table-manager">
+		<thead>
+			<tr>
+				<th>Family Container ID</th>
+				<th>Name</th>
+				<th>Family</th>
+				<th>Active</th>
+				<th>Created</th>
+				<th class="no-sort">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#family_containers}}
+			<tr data-family-id="{{family_container_id}}">
+				<td>{{family_container_id}}</td>
+				<td>{{name}} {{#url}}<a href="{{.}}" target="_blank"><strong>[&#8599;]</strong></a>{{/url}}</td>
+				<td>{{family_name}}</td>
+				<td>{{active}}</td>
+				<td>{{date_created}}</td>
+				<td>
+					<a href="/admin/merchandising-family-container-detail.php?context=edit&family_container_id={{family_container_id}}" class="button-link">Edit</a>
+				</td>
+			</tr>
+			{{/family_containers}}
+			{{^family_containers}}
+			<tr>
+				<td colspan="6" class="no-results">No Family Containers Found</td>
+			</tr>
+			{{/family_containers}}
+		</tbody>
+	</table>
+</td>
+<script>
+	jQuery('#merchandising-family-container-list').table_manager({
+		color_rows: true,
+		sortable: true,
+		sort_methods: {
+			0: 'integer',
+			//1: 'text',
+			//2: 'text',
+			3: function(val1, val2) {
+				if (val1 == 'Y' && val2 == 'N') return -1;
+				if (val1 == 'N' && val2 == 'Y') return 1;
+				return 0;
+			},
+			4: 'date',
+		},
+	});
+</script>

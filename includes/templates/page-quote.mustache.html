@@ -1,0 +1,245 @@
+{{^email}}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{static_files}}/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+{{/email}}
+
+<style>
+	#quote { font-size:12px; font-family:Arial; width:8in; }
+
+	#quote table { width:100%; }
+
+	#quote th, #quote td { padding:2px 4px; }
+
+	#quote th { background-color:#ccc; border-color:#000; border-style:solid; border-width:0px; }
+	#quote tr:first-child th { border-top-width:1px; }
+	#quote tr:last-child th { border-bottom-width:1px; }
+	#quote th:first-child { border-left-width:1px; }
+	#quote th:last-child { border-right-width:1px; }
+
+	.qt { text-align:left; }
+	.qf { text-align:right; }
+
+	.quote-header { margin-bottom:20px; }
+	.quote-lines { margin-bottom:40px; }
+	.quote-footer {}
+
+	.quote-lines td { padding:3px 0px; border-style:solid; border-color:#000; border-width:0px 1px 1px 0px; }
+	.quote-lines td:first-child { border-left-width:1px; }
+
+	.qty { width:55px; }
+	.model { width:180px; }
+	.lead { width:55px; }
+	.item-desc { width:310px; }
+	.prices { text-align:right; width:80px; }
+
+	.quote-lines td.spacercell { border-width:0px 1px 0px 0px; }
+
+	.warranty td:not(.spacercell) { background-color:#ff0; }
+	.shipping td:not(.spacercell) { background-color:#eeece1; }
+	.total {}
+
+	.quote-footer h2 { background-color:#e51937; color:#fff; font-size:26px; padding:8px 0px 8px 8px; margin-bottom:0px; }
+	.quote-footer ul { background-color:#eeece1; margin-top:0px; padding:10px 20px 20px 40px; }
+	.quote-footer li { margin:10px 0px 0px 0px; list-style-type:none; overflow:auto; }
+	/*.quote-footer li:before { content:'\003E'; color:#3b8baa; }
+	.quote-footer li .list-text { display:inline; }*/
+
+	.quote-footer .bullet { color:#3b8baa; float:left; margin-right:8px; }
+	.quote-footer .list-text { float:left; width:692px; }
+
+	.thanks { text-align:center; font-style:italic; }
+
+	.check { border:1px solid #00c; background-color:#eef; color:#999; font-style:italic; }
+	.check.yes-data { color:#000; font-style:normal; }
+	.check.required.no-data { background-color:#fcc; }
+
+	.email-link { padding:4px; }
+	.email { margin-bottom:15px; }
+	.send-email .check { border:0px; background-color:transparent; color:#000; font-style:normal; }
+	.send-email .check.hideprint.no-data { visibility:hidden; }
+	.send-email .check.required.no-data { border:2px solid #c00; color:#c00; font-weight:bold; }
+
+	@media print {
+		.email-link { display:none; }
+		.email { display:none; }
+		.check { border:0px; background-color:transparent; color:#000; font-style:normal; }
+		.check.hideprint.no-data { visibility:hidden; }
+		.check.required.no-data { border:2px solid #c00; color:#c00; font-weight:bold; }
+	}
+</style>
+
+{{^email}}
+<form action="/quote.php" method="get" class="email">
+	<input type="hidden" name="customer_quote_id" value="{{customer_quote_id}}">
+	<input type="hidden" name="email" value="1">
+
+	<input type="text" name="send_email_to" value="{{customer_email}}" style="width:350px; padding:2px 8px;">
+
+	<input type="hidden" id="contact_name_field" name="contact_name" value="{{contact_name}}">
+	<input type="hidden" id="preparer_field" name="preparer" value="{{preparer}}">
+	<input type="hidden" id="company_name_field" name="company_name" value="{{company_name}}">
+	<input type="hidden" id="customer_email_field" name="customer_email" value="{{customer_email}}">
+	<input type="hidden" id="shipping_cost_field" name="shipping_cost" value="{{shipping_cost}}">
+	{{#products}}
+	<input type="hidden" id="lead_time_{{quote_product_id}}_field" name="lead_time[{{quote_product_id}}]" value="{{set_lead_time}}">
+	{{/products}}
+	<input type="hidden" id="additional_notes_field" name="additional_notes" value="{{{additional_notes}}}">
+
+	<input type="submit" value="Send Email">
+</form>
+{{/email}}
+
+<div id="quote" class="{{#email}}send-email{{/email}}">
+	<div class="quote-header">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="qt">Quote Prepared For:</th>
+					<th class="qt">Quote #:</th>
+					<th class="qt">Quote Date:</th>
+					<th class="qt">Exp. Date:</th>
+					<th class="qf">Quote Prepared By:</th>
+					<th class="qf">Address:</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="qt"><span id="contact_name" class="check required {{#contact_name}}yes-data{{/contact_name}}{{^contact_name}}no-data default{{/contact_name}}" contenteditable="true" data-default="Contact Name">{{#contact_name}}{{.}}{{/contact_name}}{{^contact_name}}Contact Name{{/contact_name}}</span></td>
+					<td class="qt">{{customer_quote_id}}</td>
+					<td class="qt">{{created_date}}</td>
+					<td class="qt">{{expiration_date}}</td>
+					<td class="qf"><span id="preparer" class="check required yes-data default default-ok" contenteditable="true" data-default="CK Sales Team">{{prepared_by_name}}</span></td>
+					<td class="qf">4555 Atwater Ct, Suite A</td>
+				</tr>
+				<tr>
+					<td class="qt"><span id="company_name" class="check hideprint {{#company_name}}yes-data{{/company_name}}{{^company_name}}no-data default{{/company_name}}" contenteditable="true" data-default="Company Name">{{#company_name}}{{.}}{{/company_name}}{{^company_name}}Company Name{{/company_name}}</span></td>
+					<td colspan="3"></td>
+					<td class="qf">D: {{prepared_by_phone}}</td>
+					<td class="qf">Buford, GA, 30518</td>
+				</tr>
+				<tr>
+					<td class="qt"><span id="customer_email" class="check required yes-data" contenteditable="true" data-default="Customer Email">{{customer_email}}</span></td>
+					<td colspan="3"></td>
+					<td></td>
+					<td class="qf">{{sales_phone}}</td>
+				</tr>
+				<tr>
+					<td colspan="4"></td>
+					<td class="qf"><a href="mailto:{{prepared_by_email}}">{{prepared_by_email}}</a></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="quote-lines">
+		<div class="email-link">
+			<a href="https://www.cablesandkits.com/custom_quote.php?key={{url_hash}}">View Quote in your Shopping Cart</a>
+		</div>
+		<table border="0" cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="qty">Qty</th>
+					<th class="model">Part Number</th>
+					<th class="item-desc">Description</th>
+					<th class="lead">Lead Time</th>
+					<th class="prices">Quoted Price</th>
+					<th class="prices">Total Price</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#products}}
+				<tr>
+					<td>{{quantity}}</td>
+					<td>{{model_number}}</td>
+					<td>{{description}}</td>
+					<td><span id="lead_time_{{quote_product_id}}" class="check required yes-data default default-ok" contenteditable="true" data-default="{{lead_time}}">{{set_lead_time}}</span></td>
+					<td class="prices">{{quote_price}}</td>
+					<td class="prices">{{line_total}}</td>
+				</tr>
+				{{/products}}
+			</tbody>
+			<tfoot>
+				<tr class="warranty">
+					<td colspan="4" class="spacercell"></td>
+					<td class="prices">Lifetime Warranty</td>
+					<td class="prices">FREE</td>
+				</tr>
+				<tr class="shipping">
+					<td colspan="4" class="spacercell"></td>
+					<td class="prices">Shipping</td>
+					<td class="prices">$<span id="shipping_cost" class="check required yes-data default default-ok shipping-total" contenteditable="true" data-default="0.00">{{#shipping_cost}}{{.}}{{/shipping_cost}}{{^shipping_cost}}0.00{{/shipping_cost}}</span></td>
+				</tr>
+				<tr class="total">
+					<td colspan="4" class="spacercell"></td>
+					<td class="prices">Quoted Total</td>
+					<td class="prices"><span id="total" data-subtotal="{{subtotal}}">{{display_total}}</span></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<div id="additional_notes" class="quote-note check no-data" style="min-height:10px;" contenteditable="true">
+		{{{additional_notes}}}
+	</div>
+	
+	<div class="quote-footer">
+		<h2>Quote Notes</h2>
+		<ul>
+			<li><span class="bullet">&gt;</span><span class="list-text">CablesAndKits sells pre-owned Cisco equipment as either used or factory sealed - previously owned but never used.</span></li>
+			<li><span class="bullet">&gt;</span><span class="list-text">All of our products come with a 100% Satisfaction Guarantee and Lifetime Warranty, with a Lifetime Advance Replacement.  For more details, please go to <a href="https://www.cablesandkits.com/Warranty">www.cablesandkits.com/Warranty</a>.</span></li>
+			<li><span class="bullet">&gt;</span><span class="list-text">Sales tax is not included in this quote but may be applicable.</span></li>
+			<li><span class="bullet">&gt;</span><span class="list-text">Freight charges (if required to ship by truck) will be calculated at time of order placement.</span></li>
+			<li><span class="bullet">&gt;</span><span class="list-text">CablesAndKits is in no way affiliated with Cisco Systems, Inc.</span></li>
+			<li><span class="bullet">&gt;</span><span class="list-text">Partial shipments are available, please contact us for more details.</span></li>
+		</ul>
+		<div class="thanks">Thank you for the opportunity to earn your business!</div>
+	</div>
+</div>
+
+{{^email}}
+<script>
+	Number.prototype.formatMoney = function(c, d, t){
+		var n = this,
+			c = isNaN(c = Math.abs(c)) ? 2 : c, 
+			d = d == undefined ? "." : d, 
+			t = t == undefined ? "," : t, 
+			s = n < 0 ? "-" : "", 
+			i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+			j = (j = i.length) > 3 ? j % 3 : 0;
+		return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+	};
+
+	$('.check.default').on('click keyup', function(e) {
+		if (e.type == 'keyup' && e.which != 9) return;
+		document.execCommand('selectAll', false, null);
+	});
+
+	$(document.body).on('keyup', '.check', function() {
+		if ($(this).html() == '') $(this).html($(this).data('default'));
+
+		if ($(this).html() == $(this).data('default')) $(this).addClass('default');
+		else $(this).removeClass('default');
+
+		if ($(this).hasClass('default') && !$(this).hasClass('default-ok')) {
+			$(this).addClass('no-data');
+			$(this).removeClass('yes-data');
+
+			$('#'+($(this).prop('id'))+'_field').val('');
+		}
+		else {
+			$(this).removeClass('no-data');
+			$(this).addClass('yes-data');
+
+			$('#'+($(this).prop('id'))+'_field').val($(this).html());
+		}
+
+		if ($(this).hasClass('shipping-total')) {
+			var shipping = parseFloat($(this).html());
+			var subtotal = parseFloat($('#total').data('subtotal'));
+
+			var total = shipping + subtotal;
+
+			$('#total').html('$'+total.formatMoney(2));
+		}
+	});
+</script>
+{{/email}}

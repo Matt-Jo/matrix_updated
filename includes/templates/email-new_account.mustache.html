@@ -1,0 +1,40 @@
+
+
+<p>
+{{#send_customer_password}}
+Per your request, one of our team members created an account for you. You will receive a second email with instructions for setting your initial password.</p>
+<p>
+{{/send_customer_password}}
+
+{{^send_customer_password}}
+We noticed that you recently created an account with us.
+{{/send_customer_password}}
+That's awesome! We're your account team and exist solely to help you quickly and effectively accomplish your objective(s).
+</p>
+
+<p>Feel free to keep using the webstore (www.cablesandkits.com). However, if you need help, don't worry about figuring out which team member to contact. Just select your preferred contact method from among those noted in the signature block below.</p>
+
+<p>We can help you:</p>
+
+<ul>
+	<li>Build a quote</li>
+	<li>Find ways to stretch your budget further</li>
+	<li>Explore product alternatives for a specific need</li>
+	<li>Place an order (especially more complicated ones)</li>
+	<li>Answer questions about an existing order</li>
+	<li>Process a warranty replacement or return</li>
+	<li>And anything else you think of...</li>
+</ul>
+
+<p>
+	{{#signature}}
+		{{{.}}}
+	{{/signature}}
+	{{^signature}}
+	Your CablesAndKits Sales Team<br>
+	<a href="mailto:{{contact_email}}">{{contact_email}}</a>
+	{{/signature}}
+</p>
+
+<br>
+<p>(This email address was used to create an account at <a href="{{fqdn}}">www.cablesandkits.com</a>. If you have any questions, simply reply to this email or send a note to <a href="mailto:{{contact_email}}">{{contact_email}}</a>)</p>

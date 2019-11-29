@@ -1,0 +1,186 @@
+<style>
+	.fc th, .fc td { border-style:solid; border-color:#000; border-width:0px 1px 1px 0px; padding:4px 6px; }
+	.fc tr:first-child th, .fc tr:first-child td { border-top-width:1px; }
+	.fc th:first-child, .fc td:first-child { border-left-width:1px; }
+	.grouper { position:relative; overflow:hidden; margin:10px; border:1px solid #000; }
+	.ipnlink { display:block; width:300px; text-align:center; float:left; border-right:1px solid #000; padding:2px 0px; }
+	.ipnlink:hover { color:#c00; }
+	.ipnlink span { color:#000; }
+	span[title] { border-bottom:1px dashed #000; }
+	span[title]::after { content:" [?]"; cursor:pointer; }
+
+	.input-block { margin-bottom:10px; }
+	.input-field { margin-right:20px; display:inline-block; }
+	.input-field.attn { font-weight:bold; }
+	.input-field sub { font-weight:normal; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+	<div class="page-errors">
+		{{#errors}}<div>Error: {{{.}}}</div>{{/errors}}
+	</div>
+	{{/has_errors?}}
+	{{#has_messages?}}
+	<div class="page-messages">
+		{{#messages}}<div>{{{.}}}</div>{{/messages}}
+	</div>
+	{{/has_messages?}}
+
+	<div id="please_wait" class="please_wait">
+		<div class="please_wait_inner"><img src="/admin/images/ajax-loader.gif"></div>
+	</div>
+	<div id="tabs">
+		<ul id="top-products-tabs" class="noPrint">
+			<li id="builder" class="tab">Build Reports</li>
+			{{#reports}}
+			<li id="report-{{top_products_report_id}}" class="tab">{{label}}</li>
+			{{/reports}}
+		</ul>
+		<div id="top-products-tabs-body" style="padding: 10px;">
+			<div id="builder-content" class="ck-tab-content" data-loaded="2">
+				<form id="top-products-builder" action="/admin/top_50_products.php" method="get" data-type="html">
+					<input type="hidden" name="action" value="run-adhoc-report">
+					<div class="input-block">
+						Rank By:
+						{{#builder.sort_by}}
+						[ <input type="radio" name="sort_by" value="{{key}}" {{#checked}}checked{{/checked}}> {{label}} ]
+						{{/builder.sort_by}}
+					</div>
+
+					<div class="input-block">
+						<div class="input-field attn">
+							Top
+							<sub>[<input type="checkbox" id="show-all-products" name="all_products" {{#builder.all_products}}checked{{/builder.all_products}}> all]</sub>
+							<input type="text" id="report-limit" name="limit" value="{{builder.limit}}" style="width:35px;text-align:center;" {{#builder.all_products}}disabled{{/builder.all_products}}>
+							Products
+						</div>
+
+						<div class="input-field">
+							[<input type="checkbox" name="understocked" {{#builder.understocked}}checked{{/builder.understocked}}> Only Understocked Products]
+						</div>
+
+						<div class="input-field">
+							<select name="serialized">
+								{{#builder.serialized}}
+								<option value="{{key}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+								{{/builder.serialized}}
+							</select>
+						</div>
+
+						<div class="input-field">
+							Category:
+							<select name="pscc[]" multiple data-placeholder="Choose one or more..." class="jquery-chosen">
+								{{#builder.categories}}
+								<option value="{{key}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+								{{/builder.categories}}
+							</select>
+						</div>
+					</div>
+
+					<div class="input-block">
+						<div class="input-field attn">
+							<strong>Sales Range</strong> <input type="text" name="sales_range" value="{{builder.sales_range}}" style="width:35px;text-align:center;"> Days
+							<sub>[<input type="checkbox" name="unsold_products" {{#builder.unsold_products}}checked{{/builder.unsold_products}}> include unsold products]</sub>
+						</div>
+
+						<div class="input-field">
+							<button type="submit">Run Report</button>
+						</div>
+					</div>
+				</form>
+
+				<div class="ad-hoc-data">
+					{{#tpr}}
+					{{> partial-top-products-data.mustache.html }}
+					{{/tpr}}
+				</div>
+			</div>
+			{{#reports}}
+			<div id="report-{{top_products_report_id}}-content" class="ck-tab-content" data-report-id="{{top_products_report_id}}" data-loaded="0"></div>
+			{{/reports}}
+		</div>
+	</div>
+</td>
+<script>
+	/*jQuery(function() {
+		jQuery('#please_wait').bind('ajaxSend', function() {
+			jQuery(this).show();
+		}).bind('ajaxComplete', function() {
+			jQuery(this).hide();
+		});
+		jQuery('#tabs').tabs();
+	});
+	
+	jQuery(document).ready(function($) {
+		jQuery("#buildertable").tablesorter({
+			headers: {
+				12: { sorter:'digit'}
+			}
+		});
+	});*/
+	jQuery('#show-all-products').click(function() {
+		if (jQuery(this).is(':checked')) jQuery('#report-limit').attr('disabled', true);
+		else jQuery('#report-limit').attr('disabled', false);
+	});
+
+	function load_tab() {
+		var $self = jQuery(this);
+
+		if ($self.attr('data-loaded') > 0) return;
+
+		var params = window.location.search.replace(/^\?/, '');
+
+		$self.addClass('loading').html('<p style="text-align:center;">LOADING...</p>');
+
+		$self.attr('data-loaded', 1);
+
+		jQuery.ajax({
+			url: '/admin/top_50_products.php',
+			type: 'get',
+			dataType: 'html',
+			data: 'action=run-saved-report&ajax=1&top_products_report_id='+$self.attr('data-report-id'),
+			success: function(data) {
+				$self.removeClass('loading');
+				$self.html(data);
+				$self.attr('data-loaded', 2);
+			},
+			error: function() {
+				$self.removeClass('loading');
+				$self.html('<p style="text-align:center;">ERROR</p>');
+				$self.attr('data-loaded', 0);
+			}
+		});
+	}
+
+	function reload_tab() {
+		var tab_id = jQuery(this).attr('id');
+		if (jQuery('#'+tab_id+'-content').attr('data-loaded') == 2) {
+			if (confirm('Do you want to reload the content of this tab from the server?')) {
+				jQuery('#'+tab_id+'-content').attr('data-loaded', 0);
+				jQuery('#'+tab_id+'-content').trigger('tabs:open');
+			}
+		}
+	}
+
+	jQuery('#page-body .ck-tab-content').on('tabs:open', load_tab);
+
+	jQuery('#ipn-editor-tabs .tab').on('dblclick', reload_tab);
+
+	var top_products_tabs = new ck.tabs({
+		tabs_id: 'top-products-tabs',
+		tab_bodies_id: 'top-products-tabs-body',
+		default_tab_index: 0,
+		content_suffix: '-content'
+	});
+
+	ck.ajaxify.form(jQuery('#top-products-builder'),
+		function(data) { // success
+			if (!data) return;
+
+			jQuery('.ad-hoc-data').html(data);
+		},
+		null, // error
+		function(jqXHR, settings) { //beforeSend
+		}
+	);
+</script>

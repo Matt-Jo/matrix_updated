@@ -1,0 +1,604 @@
+<style>
+	#page-body { width:100%; }
+	h4.section-heading { margin:0px; cursor:pointer; }
+
+	.lookup { border:1px solid #000; margin-bottom:20px; }
+	.values { margin:5px; display:none; }
+	.values.expand { display:block; }
+
+	.values input[disabled] { background-color:#fff; border:1px solid #aaa; padding:2px 1px 2px 1px; }
+
+	.val-details td { position:relative; }
+
+	.val-details.locked { background-color:#eee; }
+	.val-details.changed { background-color:#efe; }
+
+	.clickable { position:absolute; top:0px; right:0px; bottom:0px; left:0px; display:none; }
+	.locked .clickable { display:block; }
+
+	.no-entries { font-weight:bold; font-size:14px; text-align:center; }
+
+	.form-control { text-align:right; border-width:0px !important; }
+	.add-new-details { display:none; }
+	.add-new-details td { border-top-width:1px !important; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3 class="page-heading">Lookup Manager</h3>
+
+	{{#ipn_verticals}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{ipn_vertical_id}}</td>
+							<td><input type="text" name="updates[{{ipn_vertical_id}}][vertical]" value="{{vertical}}" disabled></td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="2" class="no-entries">No IPN Verticals</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[vertical]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/ipn_verticals}}
+
+	{{#ipn_categories}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Vertical</th>
+							<th>Pricing Review</th>
+							<th title="ignored">Sort Order</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{ipn_category_id}}</td>
+							<td><input type="text" name="updates[{{ipn_category_id}}][category]" value="{{category}}" disabled></td>
+							<td>
+								<select name="updates[{{ipn_cagetory_id}}][ipn_vertical_id]" disabled>
+									<option value="">Select...</option>
+									{{#verts}}
+									<option value="{{ipn_vertical_id}}" {{#selected}}selected{{/selected}}>{{vertical}}</option>
+									{{/verts}}
+								</select>
+								<div class="clickable"></div>
+							</td>
+							<td><input type="text" name="updates[{{ipn_category_id}}][pricing_review]" value="{{pricing_review}}" disabled></td>
+							<td><input type="text" name="updates[{{ipn_category_id}}][sort_order]" value="{{sort_order}}" disabled></td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="5" class="no-entries">No IPN Categories</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[category]"></td>
+							<td>
+								<select name="new[ipn_vertical_id]">
+									<option value="">Select...</option>
+									{{#ipn_verticals.list}}
+									<option value="{{ipn_vertical_id}}">{{vertical}}</option>
+									{{/ipn_verticals.list}}
+								</select>
+							</td>
+							<td><input type="text" name="new[pricing_review]"></td>
+							<td><input type="text" name="new[sort_order]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/ipn_categories}}
+
+	{{#hold_reasons}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Reason</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{hold_reason_id}}</td>
+							<td><input type="text" name="updates[{{hold_reason_id}}][reason]" value="{{reason}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{hold_reason_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="2" class="no-entries">No Hold Reasons</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[reason]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/hold_reasons}}
+
+	{{#hold_intentions}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Intention</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{hold_intention_id}}</td>
+							<td><input type="text" name="updates[{{hold_intention_id}}][intention]" value="{{intention}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{hold_intention_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="3" class="no-entries">No Hold Intentions</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="3" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[intention]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/hold_intentions}}
+
+	{{#warehouse_processes}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Process</th>
+							<th>Code</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{warehouse_process_id}}</td>
+							<td><input type="text" name="updates[{{warehouse_process_id}}][warehouse_process]" value="{{warehouse_process}}" disabled></td>
+							<td><input type="text" name="updates[{{warehouse_process_id}}][process_code]" value="{{process_code}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{warehouse_process_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="4" class="no-entries">No Warehouse Processes</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[warehouse_process]"></td>
+							<td><input type="text" name="new[process_code]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/warehouse_processes}}
+
+	{{#disposition_transaction_types}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Process</th>
+							<th>Code</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{disposition_transaction_type_id}}</td>
+							<td><input type="text" name="updates[{{disposition_transaction_type_id}}][transaction_type]" value="{{transaction_type}}" disabled></td>
+							<td><input type="text" name="updates[{{disposition_transaction_type_id}}][type_code]" value="{{type_code}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{disposition_transaction_type_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="4" class="no-entries">No Disposition Transaction Types</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[transaction_type]"></td>
+							<td><input type="text" name="new[type_code]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/disposition_transaction_types}}
+
+	{{#disposition_action_types}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Process</th>
+							<th>Code</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{disposition_action_type_id}}</td>
+							<td><input type="text" name="updates[{{disposition_action_type_id}}][action_type]" value="{{action_type}}" disabled></td>
+							<td><input type="text" name="updates[{{disposition_action_type_id}}][action_code]" value="{{action_code}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{disposition_action_type_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="4" class="no-entries">No Disposition Action Types</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[action_type]"></td>
+							<td><input type="text" name="new[action_code]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/disposition_action_types}}
+	
+	{{#payment_methods}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Label</th>
+							<th>Code</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{payment_method_id}}</td>
+							<td><input type="text" name="updates[{{payment_method_id}}][method_label]" value="{{method_label}}" disabled></td>
+							<td><input type="text" name="updates[{{payment_method_id}}][method_code]" value="{{method_code}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{payment_method_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="4" class="no-entries">No Payment Methods</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[method_label]"></td>
+							<td><input type="text" name="new[method_code]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/payment_methods}}
+
+	{{#sales_incentive_tiers}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Incentive Base $</th>
+							<th>Incentive %</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{sales_incentive_tier_id}}</td>
+							<td><input type="text" name="updates[{{sales_incentive_tier_id}}][incentive_base]" value="{{incentive_base}}" disabled></td>
+							<td><input type="text" name="updates[{{sales_incentive_tier_id}}][incentive_percentage]" value="{{incentive_percentage}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{sales_incentive_tier_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="4" class="no-entries">No Incentive Tiers</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[incentive_base]"></td>
+							<td><input type="text" name="new[incentive_percentage]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/sales_incentive_tiers}}
+
+	{{#distribution_centers}}
+	<div class="lookup">
+		<h4 id="{{id}}" class="section-heading">{{name}}</h4>
+		<div class="values values-{{id}} {{#expanded}}expand{{/expanded}}">
+			<form action="/admin/lookup-manager" method="post">
+				<input type="hidden" name="action" value="update-{{id}}">
+				<input type="hidden" name="lookup" value="{{id}}">
+				<table class="ck-table-manager">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>DC</th>
+							<th>Code</th>
+							<th>Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#list}}
+						<tr class="val-details locked">
+							<td>{{distribution_center_id}}</td>
+							<td><input type="text" name="updates[{{distribution_center_id}}][dc]" value="{{dc}}" disabled></td>
+							<td><input type="text" name="updates[{{distribution_center_id}}][code]" value="{{code}}" disabled></td>
+							<td>
+								<input type="checkbox" name="updates[{{distribution_center_id}}][active]" {{#active}}checked{{/active}} disabled>
+								<div class="clickable"></div>
+							</td>
+						</tr>
+						{{/list}}
+						{{^list}}
+						<tr>
+							<td colspan="4" class="no-entries">No Distribution Centers</td>
+						</tr>
+						{{/list}}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4" class="form-control">
+								<button type="button" class="add-new">Add New</button>
+								<button disabled type="submit" class="submit-changes">Submit</button>
+							</td>
+						</tr>
+						<tr class="val-details add-new-details">
+							<td><input type="hidden" class="submit-new" name="submit-new" value="0"></td>
+							<td><input type="text" name="new[dc]"></td>
+							<td><input type="text" name="new[code]"></td>
+							<td><input type="checkbox" name="new[active]"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</div>
+	</div>
+	{{/distribution_centers}}
+</td>
+<script>
+	jQuery('.section-heading').on('click', function() {
+		jQuery('.values-'+jQuery(this).attr('id')).toggleClass('expand');
+	});
+
+	jQuery('.val-details.locked').on('click', function(e) {
+		jQuery(this).removeClass('locked');
+		jQuery(this).find('input, select, textarea').attr('disabled', false);
+		if (jQuery(e.target).is('input[type=text]')) jQuery(e.target).select();
+		else jQuery(e.target).closest('td').find('input, select, textarea').focus();
+	});
+
+	jQuery('.values input[type=text]').on('keyup', function() {
+		jQuery(this).closest('.val-details').addClass('changed');
+		jQuery(this).closest('.values').find('.submit-changes').attr('disabled', false);
+	});
+
+	jQuery('.values input[type=checkbox]').on('click', function() {
+		jQuery(this).closest('.val-details').addClass('changed');
+		jQuery(this).closest('.values').find('.submit-changes').attr('disabled', false);
+	});
+
+	jQuery('.values select').on('change', function() {
+		jQuery(this).closest('.val-details').addClass('changed');
+		jQuery(this).closest('.values').find('.submit-changes').attr('disabled', false);
+	});
+
+	jQuery('.add-new').on('click', function() {
+		let $details = jQuery(this).closest('.values').find('.add-new-details');
+		$details.toggle();
+		$details.find('.submit-new').val($details.is(':visible')?1:0);
+	});
+</script>

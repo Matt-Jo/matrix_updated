@@ -1,0 +1,451 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG" crossorigin="anonymous">
+<style>
+	#page-body { width:100%; }
+	#page-title { font-size:2em; }
+	.table > thead > tr > th { font-size:.75rem; }
+</style>
+<td id="page-body">
+	<div class="row my-3">
+		<div class="col-12 mb-3 col-md-4">
+			<input type="text" id="search-index" class="form-control" placeholder="Search...">
+		</div>
+		<div class="col-12 col-md-8">
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-promo-modal">
+				Create Promo
+			</button>
+		</div>
+	</div>
+	<div id="promos-block" class="table-responsive">
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>TITLE</th>
+					<th>PRODUCTS MODEL</th>
+					<th>CREATOR</th>
+					<th>CREATED AT</th>
+					<th>UPDATED AT</th>
+					<th>ACTIONS</th>
+				</tr>
+			</thead>
+			<tbody>
+			{{#promos}}
+				<tr id="promo-row-{{promo_id}}" class="promo-row" data-title="{{promo_title}}" data-model="{{products_model}}">
+					<td>{{promo_id}}</td>
+					<td>{{promo_title}}</td>
+					<td>{{products_model}}</td>
+					<td>{{creator_email}}</td>
+					<td>{{created_at}}</td>
+					<td>{{updated_at}}</td>
+					<td>
+						<button id="toggle-active-state-{{promo_id}}" class="btn btn-sm toggle-active-state" data-promo-id="{{promo_id}}">
+							<i class="far fa-lg {{#active}}fa-toggle-on{{/active}}{{^active}}fa-toggle-off{{/active}}"></i>
+						</button>
+						<button type="button" class="btn btn-primary btn-sm open-rules-modal" data-promo-id="{{promo_id}}">Rules</button>
+						<button type="button" class="btn btn-danger btn-sm delete-promo" data-promo-id="{{promo_id}}">
+							<i class="far fa-trash fa-lg"></i>
+						</button>
+					</td>
+				</tr>
+			{{/promos}}
+			</tbody>
+		</table>
+	</div>
+	<!-- Create Promo Modal -->
+	<div class="modal fade" id="create-promo-modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="create-promo-modal-title">Create Promo</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form action="/admin/promos" method="post">
+					<input type="hidden" name="action" value="create_promo">
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label for="promo-title-input">Title</label>
+							<input type="text" class="form-control" id="promo-title-input" name="promo_title" placeholder="Title" required>
+						</div>
+						<div class="form-group">
+							<label for="product-selection-input">Product</label>
+							<input type="text" class="form-control" id="product-selection-input" name="product_name" placeholder="Product" required>
+							<input type="hidden" class="form-control" id="product-selection-id-input" name="product_id" placeholder="Product" required>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Create</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Rule Modal -->
+	<div class="modal" id="rules-modal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-title">Promo Rules</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<!-- These aren't currently functional -->
+					<!--h5>Custom Rules</h5>
+					<form id="rule-form">
+						<div class="form-group">
+							<label class="conditional-text">IF</label>
+							<input class="form-control" id="quantity" placeholder="Quantity">
+						</div>
+						<div class="form-group">
+							<select class="custom-select" id="measure">
+								<option value="orders">Orders</option>
+								<option value="dollars">Dollars</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="conditional-text">IN</label>
+							<select class="custom-select" id="timeframe">
+								{{#timeframes}}
+								<option value="{{.}}">{{.}}</option>
+								{{/timeframes}}
+							</select>
+						</div>
+						<div class="form-group">
+							<button id="submit-rule-form" class="btn btn-primary" type="button">Create</button>
+						</div>
+					</form-->
+					<h5>Dev Rules</h5>
+					<form id="dev-rule-form" class="form-inline mb-3">
+						<div class="form-group">
+							<select class="custom-select" id="dev-rules">
+								<option selected>--</option>
+								{{#dev_rules}}
+									<option value="{{method}}">{{name}}</option>
+								{{/dev_rules}}
+							</select>
+						</div>
+						<div class="form-group ml-2">
+							<button id="submit-dev-rule-form" class="btn btn-primary" type="button">Add</button>
+						</div>
+					</form>
+					<div class="table-responsive">
+						<table id="promo-rules-table" class="table table-borderless table-striped">
+							<thead>
+								<th>RULE ID</th>
+								<th>TITLE</th>
+								<th>COUNTER</th>
+								<th>ACTIONS</th>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="modal-footer">
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div aria-live="polite" aria-atomic="true" style="postion:relative; min-height:200px;">
+		<div id="toast-container" style="position:fixed; top:10px; right:10px; width:300px; height:150px; overflow-y:auto;"></div>
+	</div>
+
+</td>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+
+	jQuery('#product-selection-input').autocomplete({
+		minChars: 3,
+		delay: 600,
+		source: function (request, callback) {
+
+			jQuery.get('/admin/serials_ajax.php',
+				{
+					action: 'model_autocomplete',
+					term: request.term,
+				},
+				function (data) {
+					if (data == null) return false;
+					callback(jQuery.map(data, function (item) {
+						return { value:item.label, id:item.id };
+					}));
+				}, "json");
+		},
+		select: function (e, ui) {
+			if (ui != null) {
+				e.preventDefault();
+				jQuery('#product-selection-input').val(ui.item.value);
+				jQuery('#product-selection-id-input').val(ui.item.id);
+			}
+		},
+		focus: function (e, ui) {
+			e.preventDefault();
+		}
+	})
+	.keyup(function(e) {
+		var key = e.keyCode || e.which;
+		if (key != 13) return;
+
+		jQuery.ajax({
+			url: '/admin/serials_ajax.php',
+			dataType: 'json',
+			data: {
+				term: jQuery('#product-selection-input').val(),
+				action: 'model_autocomplete',
+				limit: '1',
+			},
+			success: function (data) {
+				if (data != null) {
+					jQuery('#product-selection-input').val((data[0]));
+				}
+			}
+		});
+	});
+
+	let promo_id;
+
+	function deploy_toast(body_text) {
+
+		const toast =
+		`<div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false">
+			<div class="toast-header bg-dark text-light border-0">
+				<strong class="mr-auto"><i class="far fa-bell fa-lg"></i> Success!</strong>
+				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+					<span aria-hidden="true" class="text-light">&times;</span>
+				</button>
+			</div>
+			<div class="toast-body bg-dark text-light">
+				${body_text}
+			</div>
+		</div>`;
+
+		jQuery('#toast-container').prepend(toast);
+		jQuery('.toast').toast('show');
+
+		jQuery('.toast').on('hidden.bs.toast', function () {
+			jQuery(this).remove();
+		});
+	}
+
+	function load_rules() {
+		jQuery.ajax({
+			url: '/admin/promos',
+			method: 'POST',
+			dataType: 'json',
+			data: { ajax:1, promo_id:promo_id, action:'get_rules' },
+			success: function (data) {
+				if (data) {
+					let rules;
+					data.forEach(function (rule) {
+						rules += '<tr id="'+rule.promo_rule_id+'"><td>' + rule.promo_rule_id+'</td>';
+						if (rule.dev_rule) {
+							rules += '<td>'+rule.dev_rule+'</td>';
+						}
+						else {
+							rules += '<td>if <b>'+rule.quantity+'</b> <b>'+rule.measure+'</b> in <b>'+rule.timeframe+'</b></td>';
+						}
+						rules += '<td>' + rule.rule_met + '</td>';
+						rules += '<td class="d-flex justify-content-end">';
+						if (!rule.dev_rule) {
+							rules += '<button type="button" class="btn btn-primary btn-sm edit-rule" data-rule-id="' + rule.promo_rule_id + '"><i class="fal fa-edit"></i></button>';
+						}
+						rules += '<button type="button" class="btn btn-danger btn-sm ml-2 archive-rule" data-rule-id="' + rule.promo_rule_id + '"><i class="far fa-trash"></i></button></td></tr>';
+					});
+
+					jQuery('#promo-rules-table tbody tr').remove();
+					jQuery('#promo-rules-table tbody').append(rules);
+
+					jQuery('.edit-rule').off('click');
+					jQuery('.edit-rule').on('click', function () {
+						let rule_id = jQuery(this).attr('data-rule-id');
+						jQuery.ajax({
+							url: '/admin/promos',
+							method: 'POST',
+							dataType: 'json',
+							data: { ajax:1, promo_id:promo_id, rule_id:rule_id, action:'get_rule_data' },
+							success: function (data) {
+								jQuery('#submit-rule-form').html('Edit Rule');
+								jQuery('#submit-rule-form').attr('data-form-action', 'edit_rule');
+								jQuery('#quantity').val(data.quantity);
+								jQuery('#measure').val(data.measure);
+								jQuery('#timeframe').val(data.timeframe);
+
+								jQuery('#submit-rule-form').off('click');
+								jQuery('#submit-rule-form').on('click', function () {
+									let quantity = jQuery('#quantity').val();
+									let measure = jQuery('#measure').val();
+									let timeframe = jQuery('#timeframe').val();
+									jQuery.ajax({
+										url: '/admin/promos',
+										method: 'POST',
+										dataType: 'json',
+										data: {
+											ajax:1,
+											promo_id:promo_id,
+											rule_id:rule_id,
+											action:'edit_rule',
+											quantity:quantity,
+											measure:measure,
+											timeframe:timeframe
+										},
+										success: function (data) {
+											jQuery('#rules-modal').modal('hide');
+											jQuery('#submit-rule-form').html('Create Rule');
+											jQuery('#quantity').val('');
+											jQuery('#measure').val('');
+											jQuery('#timeframe').val('');
+											deploy_toast('Rule edited!');
+										}
+									});
+								});
+							}
+						});
+					});
+
+					jQuery('.archive-rule').off('click');
+					jQuery('.archive-rule').on('click', function () {
+						let rule_id = jQuery(this).attr('data-rule-id');
+						jQuery.ajax({
+							url: '/admin/promos',
+							method: 'POST',
+							dataType: 'json',
+							data: { ajax:1, action:'archive_rule', rule_id:rule_id, promo_id:promo_id },
+							beforeSend: function () {
+								if (!confirm('Are you sure you want to archive this rule?')) return false;
+							},
+							success: function (data) {
+								if (data) jQuery('#'+rule_id).remove();
+								deploy_toast('Rule deleted!')
+							}
+						});
+					});
+				}
+			}
+		});
+	}
+
+	jQuery('.open-rules-modal').on('click', function () {
+
+		jQuery('#quantity').val('');
+		jQuery('#measure').val('');
+		jQuery('#timeframe').val('');
+		jQuery('#dev-rules').val('');
+
+		jQuery('#rules-modal').modal('show');
+
+		jQuery('#promo-rules-table tbody tr').remove();
+		promo_id = jQuery(this).attr('data-promo-id');
+		load_rules();
+
+		jQuery('#submit-rule-form').off('click');
+		jQuery('#submit-rule-form').on('click', function () {
+			if (jQuery('#quantity').val().length < 1) {
+				alert('The form is not complete');
+				return FALSE;
+			}
+			jQuery.ajax({
+				url: '/admin/promos',
+				method: 'POST',
+				dataType: 'json',
+				data: {
+					ajax: 1,
+					promo_id:promo_id,
+					action:'create_rule',
+					quantity:jQuery('#quantity').val(),
+					measure:jQuery('#measure').val(),
+					timeframe:jQuery('#timeframe').val()
+				},
+				success: function (data) {
+					jQuery('#rules-modal').modal('hide');
+					deploy_toast('Rule created!');
+				}
+			});
+		});
+
+		jQuery('#submit-dev-rule-form').off('click');
+		jQuery('#submit-dev-rule-form').on('click', function () {
+			if (jQuery('#dev-rules').val() == '--') {
+				alert('Select a valid option');
+				return;
+			}
+			jQuery.ajax({
+				url: '/admin/promos',
+				method: 'POST',
+				dataType: 'json',
+				data: {
+					ajax: 1,
+					promo_id:promo_id,
+					action:'add_dev_rule',
+					dev_rule:jQuery('#dev-rules').val()
+				},
+				success: function (data) {
+					jQuery('#rules-modal').modal('hide');
+					deploy_toast('Dev Rule Added!');
+				}
+			});
+		});
+	});
+
+	jQuery('.delete-promo').on('click', function () {
+		let promo_id = jQuery(this).attr('data-promo-id');
+		jQuery.ajax({
+			url: '/admin/promos',
+			method: 'post',
+			dataType: 'json',
+			data: { ajax:1, promo_id: promo_id, action:'delete_promo' },
+			success:function (data) {
+				if (data.success) {
+					jQuery('#promo-row-'+promo_id).remove();
+					deploy_toast('Promo deleted!');
+				}
+			}
+		});
+	});
+
+	jQuery('#search-index').on('keyup', function () {
+		let term = jQuery(this).val().toLowerCase();
+		jQuery('.promo-row').each(function () {
+			let title = jQuery(this).attr('data-title').toLowerCase();
+			let model = jQuery(this).attr('data-model').toLowerCase();
+
+			if (!title.match(term) && !model.match(term)) jQuery(this).hide();
+			else jQuery(this).show();
+		});
+	});
+
+	jQuery('.toggle-active-state').on('click', function () {
+		const toggle_on = 'fa-toggle-on';
+		const toggle_off = 'fa-toggle-off';
+		const promo_id = jQuery(this).attr('data-promo-id');
+
+		jQuery.ajax({
+			url: '/admin/promos',
+			method: 'post',
+			dataType: 'json',
+			data: { ajax:1, action:'toggle_promo_active_state', promo_id:promo_id },
+			success: function (data) {
+				jQuery('#toggle-active-state-'+promo_id).find('i').toggleClass(toggle_on + ' ' + toggle_off);
+
+				let toast_message = 'Promo turned off!';
+				if (data.active == 1) toast_message = 'Promo turned on!';
+				deploy_toast(toast_message);
+			}
+		});
+
+
+
+
+	});
+
+</script>

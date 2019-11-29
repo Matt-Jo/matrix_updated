@@ -1,0 +1,7 @@
+.subsection {
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 3px;
+    border-bottom: 1px solid black;
+    width: auto;
+}

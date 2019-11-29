@@ -1,0 +1,162 @@
+<style>
+	#page-body { font-size:14px; }
+
+	.suggestion-group { border:1px solid #000; padding:4px 8px; }
+	.suggestion-group-header { border-bottom:1px solid #000; }
+	.handle { text-align:right; }
+	.suggestion-header { border-top:1px solid #000; }
+	.suggestion table th, .suggestion table td { border:1px solid #555; padding:2px 7px; }
+	.suggestion table td { background-color:#fff; }
+	.suggestion table th.ipn { width:250px; text-align:left; }
+	.suggestion table th.qty { width:100px; text-align:left; }
+	.suggestion table tr:hover td { background-color:#ffc; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<ul id="suggested_buy_tabs">
+		<li id="stage-1">Upload File</li>
+		<li id="stage-2">Upload Mapping</li>
+		<li id="stage-3">Open Suggestions</li>
+		<li id="stage-4">Created Records</li>
+		<li id="admin">Admin</li>
+	</ul>
+	<div id="suggested_buy_tabs-body">
+		<div id="stage-1-content">
+			<form enctype="multipart/form-data" id="counts-form" action="/admin/upload-suggested-buys" method="post">
+				<input type="hidden" name="action" value="upload-stage-1">
+
+				<label for="suggestion_upload"><strong>Upload:</strong></label>
+				<input type="file" id="suggestion_upload" name="suggestion_upload" accept=".xlsx, .csv"><br>
+
+				<label for="worksheet_index"><strong>Worksheet Name:</strong></label>
+				<input type="text" id="worksheet_index" name="worksheet_index"><br>
+
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+		<div id="stage-2-content">
+			<div id="suggested_buy_upload">
+				<script src="/images/static/js/ck-j-spreadsheet-upload.max.js?v=0.19"></script>
+				{{#upload.err}}
+				<div>There was a problem with receiving your buy upload file: {{{.}}}</div>
+				{{/upload.err}}
+				{{^upload.err}}
+				<form action="/admin/upload-suggested-buys" method="post">
+					<input type="hidden" name="action" value="upload-stage-2">
+					<input type="submit" value="Upload">
+					<table id="suggested_buys" border="0" cellpadding="0" cellspacing="0">
+						<tbody>
+							{{#upload.data}}
+							<tr>
+								{{#.}}
+								<td>{{{.}}}</td>
+								{{/.}}
+							</tr>
+							{{/upload.data}}
+						</tbody>
+					</table>
+				</form>
+				{{/upload.err}}
+			</div>
+		</div>
+		<div id="stage-3-content">
+			{{#open_suggestions}}
+			<div class="suggestion-group">
+				<h3 class="suggestion-group-header">Suggestion Group {{suggested_buy_date}}</h4>
+				<div class="handle">
+					<form action="/admin/upload-suggested-buys" method="post">
+						<input type="hidden" name="action" value="void">
+						<input type="hidden" name="purchase_order_suggested_buy_id" value="{{purchase_order_suggested_buy_id}}">
+						<button type="submit">Void</button>
+					</form>
+				</div>
+				{{#suggestions}}
+				<div class="suggestion">
+					<h4 class="suggestion-header">Vendor {{vendor}}</h3>
+					<div class="handle">
+						<form action="/admin/upload-suggested-buys" method="post">
+							<input type="hidden" name="action" value="execute-suggestion">
+							<input type="hidden" name="purchase_order_suggested_buy_id" value="{{purchase_order_suggested_buy_id}}">
+							<input type="hidden" name="purchase_order_suggested_buy_vendor_id" value="{{purchase_order_suggested_buy_vendor_id}}">
+							<button type="submit" name="execute-action" value="po">Create PO</button>
+							<button type="submit" name="execute-action" value="rfq">Create RFQ(s)</button>
+							<button type="submit" name="execute-action" value="ignore">Ignore</button>
+						</form>
+					</div>
+					<table>
+						<thead>
+							<tr>
+								<th class="ipn">IPN</th>
+								<th class="qty">Qty</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#ipns}}
+							<tr>
+								<td>{{ipn}}</td>
+								<td>{{qty}}</td>
+							</tr>
+							{{/ipns}}
+						</tbody>
+					</table>
+				</div>
+				{{/suggestions}}
+			</div>
+			{{/open_suggestions}}
+			{{^open_suggestions}}
+			NO OPEN SUGGESTIONS
+			{{/open_suggestions}}
+		</div>
+		<div id="stage-4-content">
+			{{#purchase_order_ids}}
+			<div class="po"><a href="/admin/po_viewer.php?poId={{.}}" target="_blank">PO # {{.}}</a></div>
+			{{/purchase_order_ids}}
+
+			{{#rfqs}}
+			<div class="rfq"><a href="/admin/rfq_detail.php?rfq_id={{rfq_id}}&action=edit" target="_blank">RFQ {{nickname}}</a></div>
+			{{/rfqs}}
+
+			<br><br><a href="/admin/upload-suggested-buys">Restart</a>
+		</div>
+		<div id="admin-content">
+			<p>
+				<a href="/feed_service.php?s=hydrianinventory&then_close=1" target="_blank" class="pop-link">Send Hydrian Inventory Feed</a><br>
+				<a href="/feed_service.php?s=hydriansales&then_close=1" target="_blank" class="pop-link">Send Hydrian Sales/Demand Feed</a><br>
+				<a href="/feed_service.php?s=hydrianreceipts&then_close=1" target="_blank" class="pop-link">Send Hydrian PO/Receipts Feed</a><br>
+				<a href="/feed_service.php?s=hydrianconversions&then_close=1" target="_blank" class="pop-link">Send Hydrian Conversion/Usage Feed</a><br>
+				<a href="/feed_service.php?s=hydrianvendors&then_close=1" target="_blank" class="pop-link">Send Hydrian Vendor Feed</a><br>
+				<br>
+				<a href="/admin/scheduled/download_hydrian_feed.php" target="_blank" class="pop-link">Fetch Hydrian Buy Recommendation</a>
+			</p>
+		</div>
+	</div>
+</td>
+<script>
+	jQuery('.pop-link').click(function(e) {
+		e.preventDefault();
+		window.open(jQuery(this).attr('href'), 'feed', 'status=1,width=100,height=100');
+	});
+	new ck.tabs({
+		tabs_id: 'suggested_buy_tabs',
+		tab_bodies_id: 'suggested_buy_tabs-body',
+		default_tab_index: {{stage-tab-idx}},
+		content_suffix: '-content'
+	});
+
+	{{#upload}}
+	jQuery('#suggested_buys').spreadsheet_upload({
+		headers: [
+			{ value:'vendors_id', label:'Vendor ID', required:true },
+			{ value:'stock_id', label:'Stock ID', required:false },
+			{ value:'ipn', label:'IPN', required:false },
+			{ value:'qty', label:'Qty', required:true }
+		],
+		validators: {
+		}
+	});
+	{{/upload}}
+</script>

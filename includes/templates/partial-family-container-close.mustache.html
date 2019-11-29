@@ -1,0 +1,212 @@
+				<div id="add-current-to-cart">
+					<form method="post" action="/cart-flyout" class="add-to-cart-form">
+						<input type="hidden" name="action" value="add-product">
+						<input type="hidden" id="products_id" name="products_id" value="{{products_id}}">
+						<input type="hidden" value="{{discontinued}}" data-currentcart="{{cart_quantity}}" data-maxqty="{{display_available}}">
+						<div id="cart-control">
+							<span id="qty-label">Qty</span><br>
+							<input type="text" maxlength="4" name="quantity" value="1" id="product-quantity">
+							<input type="image" src="{{static_files}}/img/add-to-cart-v2.png" alt="Add To Cart" id="add-to-cart">
+						</div>
+					</form>
+				</div>
+
+				<div id="add-to-cart-result">
+				</div>
+			</div>
+
+			<div class="clearfix"></div>
+		</div>
+		<div id="product-info">
+			<ul id="product-info-nav">
+				<li><a href="#description" class="product-info-tab" data-tab-id="description">Description</a></li><!-- remove rendered spaces
+				--><li><a href="#details" class="product-info-tab" data-tab-id="details">Details</a></li><!--
+				--><li><a href="#warranty" class="product-info-tab" data-tab-id="warranty">Warranty</a></li><!--
+				--><li><a href="#reviews" class="product-info-tab" data-tab-id="reviews">Reviews</a></li><!--
+				--><li><a href="#qa" class="product-info-tab" data-tab-id="qa">Q & A</a></li>
+			</ul>
+			<div id="product-info-container">
+				<div id="description">
+					<strong class="product-info-header" data-tab-id="description">Description</strong>
+					<a href="#product-info" data-tab-id="product-info" class="product-info-back"><img src="{{static_files}}/img/blue_top_arrow.png"> Back to top</a>
+					<div class="product-info-content">
+						{{{description}}}
+					</div>
+				</div>
+				<div id="details">
+					<strong class="product-info-header" data-tab-id="details">Details</strong>
+					<a href="#product-info" data-tab-id="product-info" class="product-info-back"><img src="{{static_files}}/img/blue_top_arrow.png"> Back to top</a>
+					<div class="product-info-content">
+						{{{details}}}
+					</div>
+				</div>
+				<div id="warranty">
+					<strong class="product-info-header" data-tab-id="warranty">Warranty</strong>
+					<a href="#product-info" data-tab-id="product-info" class="product-info-back"><img src="{{static_files}}/img/blue_top_arrow.png"> Back to top</a>
+					<div class="product-info-content">
+						<strong class="warranty-subhead">Awesome is GUARANTEED.</strong>
+						<p>Risk Free Purchase, Hassle Free Returns. AWESOME is GUARANTEED </p>
+						<p>After receiving your order, take a full month to try it out. If you decide it's not right for you, or if you're not completely satisfied in every way - if it's not AWESOME, we'll take it back and refund your money. Your complete satisfaction is GUARANTEED or your money back. That's Awesome.</p>
+						<strong class="warranty-subhead">Awesome That Never Ends.</strong>
+						<p>Everything you purchase from CablesAndKits is covered by a LIFETIME Warranty including a LIFETIME Advance Replacement Guarantee. The AWESOME never ends.</p>
+						<p>We understand that in the event of a product malfunction or failure long downtimes are not an option. If you experience a malfunction or failure with a product at any point during your ownership we'll ship a replacement the same day you report the issue. We'll even expedite the shipment if requested, with an effort to provide a delivery date and time that meets your needs. That's Awesome.</p>
+						<p>Terms and Conditions apply. Click <a href="/info/terms-and-conditions" style="color: blue;">here</a> for details.</p>
+					</div>
+				</div>
+				<div id="reviews">
+					<strong class="product-info-header" data-tab-id="reviews">Reviews</strong>
+					<a href="#product-info" data-tab-id="product-info" class="product-info-back"><img src="{{static_files}}/img/blue_top_arrow.png"> Back to top</a>
+					<div class="product-info-content">
+						<div class="yotpo yotpo-main-widget" data-product-id="{{products_id}}" data-name="{{attribute_safe.name}}" data-url="{{review_url}}" data-image-url="{{cdn}}/{{images.0.image_large}}" data-description="{{attribute_safe.summary}}"></div>
+					</div>
+				</div>
+				<div id="qanda">
+					<strong class="product-info-header" data-tab-id="qanda">Questions & Answers</strong>
+					<a href="#product-info" data-tab-id="product-info" class="product-info-back"><img src="{{static_files}}/img/blue_top_arrow.png"> Back to top</a>
+					<div class="product-info-content">
+						<div class="yotpo yotpo-main-widget" data-product-id="{{products_id}}" data-name="{{attribute_safe.name}}" data-url="{{review_url}}" data-image-url="{{cdn}}/{{images.0.image_large}}" data-description="{{attribute_safe.summary}}" data-mode="questions"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#admin?}}
+<div id="admin-info-box"></div>
+{{/admin?}}
+
+<script>
+	jQuery('.product-info-header').click(function() {
+		jQuery('#'+jQuery(this).data('tab-id')).toggleClass('show');
+	});
+
+	jQuery('.yotpo.rv').click(function() {
+		jQuery('.product-info-header[data-tab-id=reviews]').click();
+		window.location.hash = '#reviews';
+	});
+
+	jQuery('.yotpo.qa').click(function() {
+		jQuery('.product-info-header[data-tab-id=qanda]').click();
+		window.location.hash = '#qanda';
+	});
+
+	ck.ajaxify.form(jQuery('#add-to-cart-form'), function(data) {
+		if (data.success) {
+			jQuery('.main-body-inner-container').animate({ backgroundColor: '#acfcac' }, {
+				duration: 500,
+				easing: 'swing',
+				complete: function() {
+					jQuery('.main-body-inner-container').animate({ backgroundColor: 'transparent' }, 500, 'swing');
+				}
+			});
+			jQuery('#cart-count').text(data.cart_qty);
+			jQuery('#add-to-cart-result').addClass('success').html('You have successfully added this item to your cart.<br><a href="/shopping_cart.php">Go To Shopping Cart</a>');
+		}
+		else {
+			jQuery('.main-body-inner-container').animate({ backgroundColor: '#fcacac' }, {
+				duration: 500,
+				easing: 'swing',
+				complete: function() {
+					jQuery('.main-body-inner-container').animate({ backgroundColor: 'transparent' }, 500, 'swing');
+				}
+			});
+
+			jQuery('#add-to-cart-result').addClass('failure').html('There was a problem adding this item to your cart.');
+		}
+	},
+	function(jqXHR, textStatus, errorThrown) {
+		if (textStatus == 'abort') {
+			jQuery('.main-body-inner-container').animate({ backgroundColor: 'transparent' }, 500, 'swing');
+			return;
+		}
+
+		jQuery('.main-body-inner-container').animate({ backgroundColor: '#fcacac' }, {
+			duration: 500,
+			easing: 'swing',
+			complete: function() {
+				jQuery('.main-body-inner-container').animate({ backgroundColor: 'transparent' }, 500, 'swing');
+			}
+		});
+
+		jQuery('#add-to-cart-result').addClass('failure').html('There was a problem adding this item to your cart.');
+
+		// make cart note a failure notice
+	},
+	function() {
+		jQuery('.main-body-inner-container').css('background-color', '#fcfcac');
+		jQuery('#add-to-cart-result').removeClass('success').removeClass('failure');
+	});
+
+	/* this block hides the star rating from a product when no reviews exist */
+	document.addEventListener('animationstart', function (event) {
+		if (event.animationName == 'nodeInserted') {
+			var ratingContent = jQuery('.yotpo a.text-m').text();
+			if (ratingContent.includes('Write')) {
+				jQuery('.yotpo.bottomLine').hide();
+			}
+		}
+	}, true);
+</script>
+
+{{#admin?}}
+<link href="/includes/javascript/simplemodal.css" rel="stylesheet" type="text/css" media="screen">
+<script src="/includes/javascript/jquery.simplemodal.1.4.3.min.js" type="text/javascript"></script>
+<script>
+	var astyles = new ck.styleset('admin-styles');
+	astyles.add_selector('#model-number-field').add_stylestring('cursor:pointer;');
+	astyles.add_selector('#model-number-field:hover').add_stylestring('color:#abd; text-decoration:underline;');
+	astyles.render();
+
+	jQuery('#model-number-field').click(function(e) {
+		e.preventDefault();
+
+		jQuery.ajax({
+			url: '/admin/isAdmin.php',
+			type: 'GET',
+			dataType: 'html',
+			data: {},
+			success: function(data) {
+				// this just returns the logged in ID
+				if (parseInt(data) != data) {
+					alert('Could not confirm your permissions to access IPN info');
+					return;
+				}
+
+				jQuery.ajax({
+					url: '/admin/ipn_getIPNInfoForProduct.php',
+					type: 'GET',
+					dataType: 'html',
+					data: { products_id: jQuery('#products_id').val() },
+					success: function(data) {
+						jQuery('#admin-info-box').html(data);
+
+						if (jQuery('#par_avl_qty').html() != undefined && jQuery('#adj_avl_qty').html() != undefined) {
+							jQuery('#available_qty_container').height(60).append('<ul style="margin-top: 5px; list-style-type: none;"><li>Parent Available Qty: <b>'+jQuery('#par_avl_qty').html()+'</b></li><li>Adjusted Available Qty: <b>'+jQuery('#adj_avl_qty').html()+'</b></li></ul>');
+						}
+
+						jQuery('#wrap').css('z-index', '0');
+						jQuery('#nav').css('z-index', '0');
+
+						jQuery('#admin-info-box').css('z-index', '50000');
+						jQuery('#admin-info-box').modal({
+							containerCss: { backgroundColor:'#fff', borderColor:'#fff', height:340, padding:0, width:330 },
+							onClose: function(dialog) {
+								jQuery('#nav').css('z-index', '30000');
+								jQuery.modal.close();
+							},
+							overlayClose:true
+						});
+					},
+					error: function() {
+						alert('Could not contact CablesAndKits.com Administration');
+					}
+				});
+			},
+			error: function() {
+				alert('Could not contact CablesAndKits.com Administration');
+			}
+		});
+	});
+</script>
+{{/admin?}}

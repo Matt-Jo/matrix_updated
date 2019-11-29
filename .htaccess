@@ -1,0 +1,111 @@
+ErrorDocument 404 /404.php
+
+RewriteEngine On 
+RewriteBase /
+
+#Access denail
+RewriteRule .*?\.htaccess$ - [F,L]
+RewriteRule docker/.* - [F,L]
+RewriteRule .*\.md$ - [F,L]
+RewriteRule includes/engine/.* - [F,L]
+RewriteRule appspec.yml - [F,L]
+RewriteRule documentation/.* - [F,L]
+
+RewriteRule ^maintenance$ front_controller.php?final_target=maintenance&%{QUERY_STRING} [L]
+
+RewriteCond %{QUERY_STRING} optimg
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ optimg.php?img=$1 [L,QSA]
+
+RewriteRule ^(.*)-p-([_0-9]*).html$ product_info.php?products_id=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-c-([_0-9]*).html$ index.php?cPath=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-m-(.*).html$ index.php?manufacturers_id=$2&%{QUERY_STRING}
+#RewriteRule ^(.*)-pi-(.*).html$ popup_image.php?pID=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-pi-(.*).html$ product_info.php?products_id=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-t-(.*).html$ articles.php?tPath=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-a-(.*).html$ article_info.php?articles_id=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-pr-(.*).html$ product_reviews.php?products_id=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-pri-(.*).html$ product_reviews_info.php?products_id=$2&%{QUERY_STRING}
+RewriteRule ^(.*)-i-(.*).html$ information.php?info_id=$2&%{QUERY_STRING}
+
+# we're doing these piecemeal for now, eventually everything will be going through the front controller
+RewriteRule ^pi/(.*)$ front_controller.php?final_target=page-includer&request=$1&%{QUERY_STRING}
+RewriteRule ^login.php$ front_controller.php?final_target=login&%{QUERY_STRING}
+RewriteRule ^password_forgotten.php$ front_controller.php?final_target=password_forgotten&%{QUERY_STRING}
+RewriteRule ^inventory-report$ front_controller.php?final_target=inventory-report&%{QUERY_STRING}
+RewriteRule ^account-setup$ front_controller.php?final_target=account-setup&%{QUERY_STRING}
+RewriteRule ^(checkout_.*.php)$ front_controller.php?final_target=$1&%{QUERY_STRING}
+RewriteRule ^cart-flyout$ front_controller.php?final_target=cart-flyout&%{QUERY_STRING}
+RewriteRule ^my-account$ front_controller.php?final_target=my-account&%{QUERY_STRING}
+RewriteRule ^my-account/orders$ front_controller.php?final_target=my-account/orders&%{QUERY_STRING}
+RewriteRule ^my-account/addresses$ front_controller.php?final_target=my-account/addresses&%{QUERY_STRING}
+RewriteRule ^my-account/info$ front_controller.php?final_target=my-account/info&%{QUERY_STRING}
+RewriteRule ^my-account/payment$ front_controller.php?final_target=my-account/payment&%{QUERY_STRING}
+
+RewriteRule ^srv/(.*)$ service_controller.php?request=$1&%{QUERY_STRING} [L]
+
+RewriteRule ^(erp/[^/]+)(/([^/]+))?$ front_controller.php?final_target=$1&$3&%{QUERY_STRING} [L]
+
+#custom pages -- we need to use some kind of identifier in the qyery string for now
+RewriteRule ^c/(.*)$ front_controller.php?final_target=$1&%{QUERY_STRING}
+RewriteRule ^knowledge/(.*)$ front_controller.php?final_target=$1&%{QUERY_STRING}
+RewriteRule ^learning-center/(.*)$ front_controller.php?final_target=$1&%{QUERY_STRING}
+RewriteRule ^info/(.*)$ front_controller.php?final_target=$1&%{QUERY_STRING}
+RewriteRule ^faq/(.*)$ front_controller.php?final_target=$1&%{QUERY_STRING}
+
+RewriteRule ^(.*)/cat[=-]([_0-9]*)/?$ index.php?cPath=$2&url=$1&%{QUERY_STRING}
+RewriteRule ^(.*)/pro[=-]([_0-9]*)/?$ product_info.php?products_id=$2&url=$1&%{QUERY_STRING}
+# new merchandising container rewrite
+RewriteRule ^mc/((.*)/)?([a-z]+-[0-9]+)/?$ front_controller.php?final_target=merchandising-container&url=$1&container_id=$3&%{QUERY_STRING} [L]
+# old merchandising container rewrite
+RewriteRule ^mc/((.*)/)?([a-z]+-[0-9]+)/?(([^/]+=[^/]+/)+)?$ front_controller.php?final_target=merchandising-container&url=$1&container_id=$3&selections=$4&%{QUERY_STRING}
+
+# for the RFQ system
+RewriteRule ^vendorportal/?(.*)$ wtb.php?id=$1&%{QUERY_STRING} [NC]
+
+# for the DOW
+RewriteRule ^dow/?$ dow.php?%{QUERY_STRING} [NC]
+
+# for the product finder
+RewriteRule ^(Ethernet/?(Cat5e|Cat6|Cat6A)?/?)$ product_finder.php?focus=$1&%{QUERY_STRING} [NC]
+RewriteRule ^(Fiber)/?$ product_finder.php?focus=$1&%{QUERY_STRING} [NC]
+
+RewriteCond %{PHP_APP_DIR}/%{REQUEST_URI} !-f
+RewriteCond %{REQUEST_URI} !^/images/
+RewriteCond %{PHP_APP_DIR}/images/%{REQUEST_URI} -f
+RewriteRule ^(.+)$ /images/$1 [L]
+
+# name-based cache-busting
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)\.([0-9]+)\.(js|css)$ $1.$3 [L,PT]
+#|png|jpg|gif
+
+# redirect .max. references
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)\.(max)\.(js|css|png|jpg|gif)$ $1.$3 [L,PT]
+
+
+#Redirect 301 /ethernet/cat5e /cat5e-c-121_1056.html
+#Redirect 301 /ethernet/cat6 /cat6-c-121_1057.html
+#Redirect 301 /ethernet/cat6a /cat6a-c-121_1058.html
+Redirect 301 /ethernet/bulkcable /bulk-ethernet-network-cable-c-121_1059.html
+#Redirect 301 /ethernet /cat5e-cat6-cat6a-ethernet-cables-c-121.html
+
+RedirectMatch 301 (?i)/fiber/(lctolc|lctosc|lctost|sctosc|sttost) /fiber
+
+Redirect 301 /values /whyck.php
+Redirect 301 /values.php /whyck.php
+Redirect 301 /whyck /whyck.php
+Redirect 301 /terms /terms-i-12.html
+Redirect 301 /warranty /warranty-i-11.html
+
+Redirect 301 /careers /careers-i-7.html
+Redirect 301 /jobs /careers-i-7.html
+Redirect /specials /outlet.php
+Redirect /outlet /outlet.php
+Redirect /cisco-voip-phones.html /cisco-voip-phones.php
+Redirect /asset-recovery-buy-back-program-i-10.html /buyback.php
+
+RewriteRule ^(act/.*)$ front_controller.php?handler_context=action&request=$1&%{QUERY_STRING} [L]

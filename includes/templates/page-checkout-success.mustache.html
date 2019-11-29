@@ -1,0 +1,141 @@
+<style>
+	.main-body-container { margin-bottom:15px; width:auto; }
+	.main-body-inner-container { margin:0px 0px 20px 0px; padding:20px; font-size:13px; line-height:1.5em; }
+
+	.main-body-header { display:inline-block; }
+
+	.sub-header { color:#777; font-size:18px; border-bottom:1px solid #ccc; margin:0px 0px 15px 0px; padding-bottom:7px; }
+
+	.main-body-inner-container a { font-weight:bold; color:#3f6b94; }
+
+	.template-basic .main-body-inner-container.error-stack { background-color:#fee; border-color:#c00; }
+
+	.thanks { text-align:center; font-size:22px; font-weight:bold; color:#386881; margin-top:30px; }
+	.invoice { text-align:center; margin:30px 0px 70px 0px; }
+	a.print-invoice { display:inline-block; background-color:#e61f25; color:#fff; font-weight:bold; text-align:center; width:130px; padding:4px; font-size:16px; border-radius:4px; }
+
+	.checkout-progress { margin:25px auto 0px auto; padding:0px; /*border-top:#bbc3d3 solid 1px;*/ position:relative; text-align:center; }
+	.checkout-progress li.bar { width:720px; margin:0px auto; height:7px; position:relative; border-style:solid; border-color:#bbc3d3; border-width:0px 1px; padding:0px; display:block; }
+	.checkout-progress li.bar hr { border-color:#bbc3d3; height:1px; position:relative; top:3px; }
+	.checkout-progress .bullet { position:absolute; top:-2px; }
+	.checkout-progress.shipping .bullet { left:-5px; }
+	.checkout-progress.payment .bullet { left:270px; }
+	.checkout-progress.confirmation .bullet { right:200px; }
+	.checkout-progress.success .bullet { right:-5px; }
+	.checkout-progress li { display:inline-block; list-style-type:none; margin:0px 80px; padding:8px 0px 0px 0px; text-align:center; font-size:12px; color:#8c8c8c; }
+	.checkout-progress.shipping li.shipping { color:#000; }
+	.checkout-progress.payment li.payment { color:#000; }
+	.checkout-progress.confirmation li.confirmation { color:#000; }
+	.checkout-progress.success li.success { color:#000; }
+
+	@media (max-width:980px) {
+		.checkout-progress { margin:10px auto; }
+		.checkout-progress li.bar { display:none; }
+		.checkout-progress li { margin:0px 40px; padding:3px 8px; }
+		.checkout-progress.shipping li.shipping { background-color:#cfc; }
+		.checkout-progress.payment li.payment { background-color:#cfc; }
+		.checkout-progress.confirmation li.confirmation { background-color:#cfc; }
+		.checkout-progress.success li.success { background-color:#cfc; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<div class="tools breadcrumbs">{{{breadcrumbs}}}</div>
+
+	{{#error}}
+	<div class="main-body-inner-container error-stack">
+		<h2 class="sub-header">Errors:</h2>
+		{{{.}}}
+	</div>
+	{{/error}}
+
+	<div class="thanks">Thanks for shopping with us!</div>
+	<div class="invoice"><a href="/invoice.php?order_id={{orders_id}}" target="_blank" class="print-invoice">PRINT ORDER</a></div>
+
+	<ul class="checkout-progress success">
+		<li class="bar"><hr><img class="bullet" src="//media.cablesandkits.com/checkout_bullet.gif"></li>
+		<li class="shipping">Delivery Information</li>
+		<li class="payment">Payment Information</li>
+		<li class="confirmation">Confirmation</li>
+		<li class="success">Finished!</li>
+	</ul>
+</div>
+<input type="hidden" id="optimizely-total" value="{{cents_total}}">
+<input type="hidden" id="orders_id" value="{{orders_id}}">
+<input type="hidden" id="order_total" value="{{total_total}}">
+<input type="hidden" id="customers_email" value="{{customer_email}}">
+<input type="hidden" id="country_code" value="{{country_code}}">
+<input type="hidden" id="est_ship_date" value="{{estimated_ship_date}}">
+
+<script>
+	jQuery('.print-invoice').click(function(e) {
+		e.preventDefault();
+		window.open(jQuery(this).attr('href'), 'popupWindow', 'toolbar=yes,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,copyhistory=no,width=1064,height=900,screenX=150,screenY=150,top=150,left=150');
+	});
+</script>
+
+<!--Google Opt-In Reviews Code-->
+<script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+<script>
+	window.renderOptIn = function() {
+		window.gapi.load('surveyoptin', function() {
+			window.gapi.surveyoptin.render({
+				"merchant_id": 4090110,
+				"order_id": jQuery('#orders_id').val(),
+				"email": jQuery('#customers_email').val(),
+				"delivery_country": jQuery('#country_code').val(),
+				"estimated_delivery_date": jQuery('#est_ship_date').val()
+			});
+		});
+	}
+</script>
+
+<!-- yotpo conversion tracking -->
+<img src="https://api.yotpo.com/conversion_tracking.gif?order_amount={{total_total}}&order_id={{orders_id}}&order_currency=USD&app_key=RS5sKge5HAa1Oe1gbgC5XkKMu2IATDFERi5Cypav" width="1" height="1">
+
+<!-- optimizely revenue tracking - https://help.optimizely.com/hc/en-us/articles/200039865-Revenue-tracking-goals -->
+<script>
+	window.optimizely = window.optimizely || [];
+	window.optimizely.push(['trackEvent', 'eventName', {'revenue':jQuery('#optimizely-total').val()}]);
+</script>
+
+<!-- START FB Coupon code -->
+<script>
+	var fb_param = {};
+	fb_param.pixel_id = '6013670322740';
+	fb_param.value = '0.00';
+	fb_param.currency = 'USD';
+	(function() {
+		var fpw = document.createElement('script');
+		fpw.async = true;
+		fpw.src = '//connect.facebook.net/en_US/fp.js';
+		var ref = document.getElementsByTagName('script')[0];
+		ref.parentNode.insertBefore(fpw, ref);
+	})();
+</script>
+<noscript><img height="1" width="1" alt="" style="display:none" src="https://www.facebook.com/offsite_event.php?id=6013670322740&value=0&currency=USD"></noscript>
+
+<!-- AddShoppers -->
+<script>
+	AddShoppersConversion = {
+		order_id: jQuery('#orders_id').val(),
+		value: jQuery('#order_total').val()
+	};
+
+	var js = document.createElement('script');
+	js.type = 'text/javascript';
+	js.async = true;
+	js.id = 'AddShoppers';
+	js.src = ('https:' == document.location.protocol ? 'https://shop.pe/widget/' : 'http://cdn.shop.pe/widget/') + 'widget_async.js#512693afa387642e6d6e0843';
+
+	document.getElementsByTagName("head")[0].appendChild(js);
+</script>
+
+{{#view_order_in_admin}}
+<script>
+	jQuery(document).ready(function() {
+		setTimeout(function() {
+			window.location = 'https://{{private_domain}}/admin/orders_new.php?action=edit&oID={{orders_id}}';
+		}, 500);
+	});
+</script>
+{{/view_order_in_admin}}

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{{head.title}}</title>
+	</head>
+	<body class="{{body.class}}">
+		{{!
+			all we want is the opening of the page structure here.  anything that requires actual processing will be completed and pushed to the page as it's ready.
+			a side effect of this strategy, meant to maximize perceived page-load speed, is that we must remember to close the tags with a finishing template
+		}}

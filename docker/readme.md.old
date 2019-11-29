@@ -1,0 +1,115 @@
+# Cloud Infrastructure
+
+## Production Deployment steps for chronous payments app
+
+1. Goto chronous-payments project folder
+1. `make deploy-production-images`
+1. Goto Matrix-oSc project folder
+1. `make deploy-payments`
+1. Review Terraform plan and aprove if OK
+
+## Requirements
+
+1. terraform version 0.12.3 and minor versions lower than 0.13
+1. AWS account credentials set at ~/.aws/credentials
+1. chronous-payments docker image
+
+## SSH access
+
+1. Use "-A" for ssh key forwarding between you -> the bastion host -> the protected EC2 instance: \
+`ssh -A ec2-user@<bastion-public-ip>`
+1. Once on the bastion, ssh into the internal EC2 cluster running docker images: \
+`ssh ec2-user@<cak-cluster-1-private-ip>`
+
+# AWS Infrastructure Overview
+
+## Production
+
+1. 1 EC2 Cluster to run Matrix-oSc and chronous-payments docker images
+1. An EC2 Cluster named "bastion" for debugging purposes with ssh access and access to private subnets
+1. 1 VPC
+1. 2 private subnets for internal communication between components (docker containers, DB, etc)
+1. 1 public subnet
+1. Docker images are deployed following a plan defined on an ECS task and an ECS service. The service specifies how many containers should be running for each task, resource quota, etc
+1. Several AWS ECR private repositories for each docker image
+1. 1 AWS ECS Autoscaling group configured to deploy 1 EC2 cluster for chronous-payments
+1. Currently only chronous-payments release is supported. Matrix-oSc containers are not production ready yet.
+
+## What's missing for staging to work
+
+1. Define a task and a service for each production Matrix-oSc image
+1. Mount a volume for every folder Matrix-oSc needs to write to persist data (not cache)
+
+--------------------------------------------------------------
+
+# Staging Environment
+
+## Commands
+
+### AWS RDS DB creation and provisioning
+
+1. `make start`
+1. `make backup-local-db`
+1. `terraform apply`
+
+### Destroy every AWS artifact with cloud-nuke
+
+**Important!** Don't use cloud-nuke on production
+
+1. Get cloud-nuke from https://github.com/gruntwork-io/cloud-nuke/releases
+1. `cloud-nuke aws`
+
+--------------------------------------------------------------
+
+# Matrix-oSc deployment (in progress)
+
+### Commands for AWS EC2 deployments
+
+1. `make deploy-setup-ecr` \
+Upload custom docker images to AWS Elastic Container Repository
+1. `make deploy-setup` \
+Setup an AWS EC2 Cluster to run your images
+1. `make deploy-setup-codedeploy` \
+Creates an automated deployment configuration
+1. `make deploy-code` \
+Trigger an automated deployment
+1. `make deploy-start` \
+Run docker containers on AWS EC2
+1. `make fix-ssh` \
+Allows SSH access from your current public ip
+1. `make deploy-clean` \
+Delete AWS EC2 artifacts
+1. `make deploy-clean-codedeploy` \
+Delete automated deployment configuration
+1. `make deploy-clean-ecr` \
+Delete docker images from AWS Elastic Container Repository
+
+# Deployment
+
+## Howto Deploy to AWS EC2
+
+### Pre Requisites
+
+1. Install aws cli from Amazon
+1. Install ecs-cli from Amazon
+1. The first time, you will need to authorize AWS CodeDeploy to access your Github account. See https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-create-cli-github.html
+1. Before deploy, you have to build all custom docker images locally with `make build`
+1. Configure your AWS EC2 stack at .myenv file
+
+### Setup AWS EC2 cluster and network configuration
+
+1. `make build`
+1. `make deploy-setup-ecr`
+1. `make deploy-setup`
+1. `make deploy-setup-codedeploy`
+
+### Trigger a deploy
+
+1. `make deploy-code`
+1. `make deploy-start`
+
+## Howto Delete AWS Infrastructure
+
+1. `make deploy-clean`
+1. `make deploy-clean-codedeploy`
+1. `make deploy-clean-ecr`

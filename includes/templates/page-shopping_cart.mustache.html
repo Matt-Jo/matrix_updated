@@ -1,0 +1,877 @@
+<style>
+	.products-display { border-collapse:collapse; font-size:12px; width:100%; margin-bottom: 20px;}
+	.shopping-cart > .grid.grid-pad {padding-right: 20px;}
+	.cart-remove { text-align:center; }
+	.cart-remove a { color:#4d7cbc; }
+	.cart-img { text-align:center; }
+	.cart-name { text-align:left; }
+	.cart-model { text-align:left; }
+	.cart-qty { text-align:center; }
+	.cart-price { text-align:right; }
+	.cart-total { text-align:right; font-weight:bold; }
+
+	#ck-body { border-style:solid; border-width:0 1px 0 1px; border-color:#cecece; }
+	.centertable { border-bottom:1px solid #cecece; }
+
+	.option .cart-name { padding-left:30px; }
+
+	.products-display th { padding:5px 7px; }
+	.products-display .cart-row td { padding:8px 7px 4px 7px; }
+	.products-display .cart-row.has-addons td { padding-bottom:0px; }
+
+	.products-display thead th { border-width:2px 0px 1px 0px; border-style:solid; border-color:#000; background-color:#f1f1f1; }
+	.products-display tbody tr:last-child td { border-width:0px 0px 1px 0px; border-style:solid; border-color:#ccc; }
+	.products-display tbody:last-child tr:last-child td { border-bottom-width:0px; }
+
+	/*.products-display tbody .cart-qty { vertical-align:top; padding-top:15px; }*/
+
+	.products-display th:first-child { border-left-style:solid; border-left-width:2px; border-left-color:#000; }
+	.products-display th:last-child { border-right-style:solid; border-right-width:2px; border-right-color:#000; }
+
+	.products-display tfoot tr:first-child td { border-top:1px solid #000; }
+
+	.included { color:#999; font-style:italic; padding-left:30px; }
+
+	.products-display tbody tr.included td { color:#999; font-style:italic; padding:2px 7px; }
+	.products-display tbody tr.optional td { padding:2px 7px; }
+	/*.products-display tbody tr.included.last td, .products-display tbody tr.optional.last td { border-bottom-width:1px; padding-bottom:10px; }*/
+	.products-display .line-total td { /*border-bottom:1px solid #ccc;*/ padding:2px 7px 10px 7px; }
+	.products-display .line-total .cart-total { border-top:1px solid #000; }
+
+	.undo td { background-color:#c3c3bb; text-align:center; padding:10px; font-weight:bold; }
+	.undo a { color:#4d7cbc; font-size:14px; }
+
+	.qty-input, .price-input { width:45px; padding-left:3px; }
+
+	.stock-status td { text-align:center; font-weight:bold; font-size:14px; padding:0px 7px 5px 7px; }
+
+	.freeship-eligible td { text-align:center; color:#d22842; font-weight:bold; font-size:16px; padding-top:10px; }
+
+	.product-total-label { font-size:14px; text-align:right; white-space:nowrap; }
+	.product-total, .quote-total { text-align:right; font-size:14px; font-weight:bold; padding-right:7px; }
+
+	.qty-input.updating { background-color:#dcdc6a; }
+
+	.update-message { font-size:11px; font-weight:bold; width:52px; padding-top:4px; height:21px; overflow-y:visible; margin:0px auto; line-height:1em; display:none; }
+	.update-message.success { color:#090; }
+	.update-message.fail { color:#d22842; }
+
+	#split-decision { color:#090; }
+
+	.cart-actions { text-align:right; padding:20px 10px 10px 20px; }
+
+	.cart-button { display:inline-block; font-weight:600; color:#f6f6f6; font-size:14px; text-transform:uppercase; padding:9px 9px 7px 9px; border-radius:3px; background:linear-gradient(#68a, #579); text-align:center; white-space:pre; line-height:1em; }
+	.cart-button:visited { color:#f6f6f6; }
+	.cart-button:link { color:#f6f6f6; }
+	.cart-button:hover { color:#f6f6f6; text-decoration:none; }
+	.cart-button.small { font-size:11px; padding:6px 6px 5px 6px; }
+
+	.products-display.quote { margin-top:20px; width:100%; background-color:#f3fff3; }
+
+	.products-display.quote th.quote-header { text-align:left; font-size:18px; background-color:#84abb7; color:#fff; border-color:#84abb7;/*border-style:solid; border-color:#ccc; border-width:1px 1px 0px 1px;*/ }
+	.products-display.quote th.quote-remove { text-align:right; font-size:12px; }
+	.products-display.quote th.quote-remove a { color:#fff; text-decoration:none; }
+	.products-display.quote tbody.show-on-mobile {padding: 0px !important; margin: 0px !important; overflow: hidden; width: 100% !important}
+	.products-display.quote tbody.show-on-mobile th.quote-header a {font-size: 12px; line-height: 20px;display: block;}
+	.products-display.quote tfoot {overflow: hidden}
+
+	.quote-message td { font-size:16px; font-weight:bold; text-align:center; padding:5px; }
+
+	.overall-total { text-align:right; font-size:14px; margin-top:20px; padding:5px 6px 10px 0px; border-top:1px solid #000; }
+	#overall-total { margin-left:20px; }
+</style>
+
+{{#admin?}}
+<style>
+	.admin-controls { padding:0px 10px 10px 10px; margin:0px 0px 10px 0px; border:1px solid #ccc; }
+	.admin-controls h3 { background-color:#cdd; margin:0px -10px 5px -10px; padding:3px 3px 3px 6px; color:#555; font-size:16px; cursor:pointer; }
+	.admin-control-box { display:none; }
+
+	#new-quote { display:inline-block; padding-right:10px; margin-right:10px; border-right:1px solid #000; }
+	/*#advance-replacement { display:inline-block; }*/
+	#add-to-quote { display:inline-block; }
+</style>
+{{/admin?}}
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.1.3/mustache.min.js"></script>
+<script src="/images/static/js/ck-styleset.js"></script>
+<script src="/images/static/js/ck-autocomplete.js"></script>
+<script src="{{static_files}}/js/vendor/moment.min.js"></script>
+
+{{!<script src="/includes/javascript/shopping_cart.js"></script>}}
+<div class="ck_rounded_box">
+
+	<div class="main rounded-corners shopping-cart">
+        <div class="grid grid-pad">
+			<div class="">
+				<div class="content">
+
+					{{#admin?}}
+					<div class="admin-controls">
+						<h3>Admin Controls</h3>
+						<div class="admin-control-box">
+							{{#products.0}}
+							<div id="new-quote">
+								Customer Email: <input type="text" name="customer_email_address" id="customer_email_address" value="{{new_quote_customer_email_address}}"><br>
+								<input type="hidden" name="customers_id" id="quote_customers_id" value="{{customers_id}}">
+								<input type="hidden" name="customers_extra_logins_id" id="quote_customers_extra_logins_id" value="{{customers_extra_logins_id}}">
+								Expiration Date: <input type="date" name="expiration_date" id="expiration_date" value="{{new_quote_expiration_date}}"> <a href="#" id="auto-expiration" class="cart-button small">+7 Days</a><br>
+								<a href="/shopping_cart.php?action=create_new_quote" class="cart-button ajax-link create-new-quote">Create New Quote</a>
+							</div>
+							<!--div id="advance-replacement">
+								<a href="/shopping_cart.php?action=create_advance_replacement" class="cart-button ajax-link create-advance-replacement">Create Advance Replacement</a>
+							</div-->
+							{{#quotes.0}}
+							<div id="add-to-quote">
+								<a href="/shopping_cart.php?action=add_new_items_to_quote" class="cart-button ajax-link add-new-items-to-quote">Add New Items To Quote</a>
+							</div>
+							{{/quotes.0}}
+							{{/products.0}}
+							{{^products.0}}
+							The cart is empty, yo, we can't create a quote outta 'nuthin!
+							{{/products.0}}
+						</div>
+					</div>
+					<script>
+						jQuery('#auto-expiration').on('click', function(e) {
+							e.preventDefault();
+
+							var expiration = new Date();
+							expiration.setDate(expiration.getDate() + 7);
+
+							jQuery('#expiration_date').val(moment().add(7, 'day').format('YYYY-MM-DD'));
+						});
+						var customer_ac = new ck.autocomplete('customer_email_address', '/admin/customer-quote.php', {
+							preprocess: function() {},
+							autocomplete_action: 'customer-lookup',
+							autocomplete_field_name: 'email',
+							select_result: function(data) {
+								jQuery('#quote_customers_id').val(data.customers_id);
+								jQuery('#quote_customers_extra_logins_id').val(data.customers_extra_logins_id);
+							},
+							{{=<% %>=}}
+							results_template: '{{#results}}<a href="#" class="entry" id="{{result_id}}">{{{result_label}}}</a>{{/results}}',
+							<%={{ }}=%>
+							auto_select_single: false
+						});
+						ck.autocomplete.styles({
+							'.autocomplete-results .entry': 'font-size:12px;',
+							'.autocomplete-results .entry:hover': 'color:#000'
+						});
+						jQuery('.create-new-quote').on('click', function(e) {
+							e.preventDefault();
+
+							var link = jQuery(this).attr('href');
+
+							var fields = jQuery('#new-quote').find('input, select, textarea').serialize();
+
+							jQuery.ajax({
+								url: link,
+								dataType: 'json',
+								data: fields+'&ajax=1&shopping_cart=1',
+								type: 'POST',
+								success: function(data) {
+									if (data.success == 1) {
+										if (data.redirect_to) window.location = data.redirect_to;
+										else window.location = '/shopping_cart.php'; //reload(true);
+									}
+									else {
+										var message = "There was a problem creating this quote to your cart";
+										if (data.message) message += "\n\nError Message:\n"+data.message;
+										alert(message);
+									}
+								},
+								error: function() {
+									window.location = link+'&'+fields;
+								}
+							});
+						});
+						/*jQuery('.create-advance-replacement').on('click', function(e) {
+							e.preventDefault();
+
+							var link = jQuery(this).attr('href');
+
+							jQuery.ajax({
+								url: link,
+								dataType: 'json',
+								data: 'ajax=1',
+								type: 'POST',
+								success: function(data) {
+									if (data.success == 1) window.location.reload(true);
+									else {
+										var message = "There was a problem creating this advance replacement";
+										if (data.message) message += "\n\nError Message:\n"+data.message;
+										alert(message);
+									}
+								},
+								error: function() {
+									window.location = link;
+								}
+							});
+						});*/
+						jQuery('.add-new-items-to-quote').on('click', function(e) {
+							e.preventDefault();
+
+							var link = jQuery(this).attr('href');
+
+							jQuery.ajax({
+								url: link,
+								dataType: 'json',
+								data: 'ajax=1',
+								type: 'POST',
+								success: function(data) {
+									if (data.success == 1) window.location = '/shopping_cart.php'; //.reload(true);
+									else {
+										var message = "There was a problem adding these items to the quote";
+										if (data.message) message += "\n\nError Message:\n"+data.message;
+										alert(message);
+									}
+								},
+								error: function() {
+									window.location = link;
+								}
+							});
+						});
+					</script>
+					{{/admin?}}
+
+					{{#products.0}}
+					<table class="products-display dynamic table-md">
+						<thead>
+							<tr>
+								<th class="cart-remove"></th>
+								<th class="cart-img"></th>
+								<th class="cart-name">Product(s)</th>
+								<th class="cart-model">Model #</th>
+								<th class="cart-qty">Qty</th>
+								<th class="cart-price">Price</th>
+								<th class="cart-total">Total</th>
+							</tr>
+						</thead>
+						<tfoot>
+							{{#eligible_for_free_shipping?}}
+							<tr class="freeship-eligible">
+								<td colspan="7" class="free_shipping_message">{{{free_shipping_message}}}</td>
+							</tr>
+							{{/eligible_for_free_shipping?}}
+							<tr>
+								<td colspan="6" class="product-total-label">Product Total:</td>
+								<td class="product-total" title="Cart Total">{{product_total}}</td>
+							</tr>
+						</tfoot>
+						{{#products}}
+						<tbody id="cart-product-id-{{cart_product_id}}">
+							<tr class="cart-row cart-product-id-{{cart_product_id}} {{#has_options?}}has-addons{{/has_options?}}">
+								<td class="cart-remove">
+									<a href="/shopping_cart.php?action=delete_cart_item&cart_product_id={{cart_product_id}}" data-id="{{cart_product_id}}" data-product-id="{{products_id}}" class="ajax-link method-post delete-row">Delete</a>
+									<input type="hidden" class="discontinued" value="{{discontinued}}" data-id="{{cart_product_id}}" data-product-id="{{products_id}}" {{#discontinued?}}data-maxqty="{{available}}"{{/discontinued?}}>
+								</td>
+								<td class="cart-img"><a href="{{url}}"><img src="{{cdn}}/{{image}}" alt="{{name_attr}}" title="{{name_attr}}"></a></td>
+								<td class="cart-name" title="Product">
+									<a href="{{url}}"><strong>{{name}}</strong></a>
+									{{#included_options}}
+									<div class="included">{{name}} - included</div>
+									{{/included_options}}
+								</td>
+								<td class="cart-model" title="Model"><a href="{{url}}">{{model_num}}</strong></a></td>
+								<td class="cart-qty" title="Quantity">
+									<input type="text" name="quantity[{{cart_product_id}}]" value="{{quantity}}" data-id="{{cart_product_id}}" data-product-id="{{products_id}}" class="ajax-input method-post qty-input">
+									<div class="update-message" id="update_message-{{cart_product_id}}"></div>
+								</td>
+								<td class="cart-price" title="Item price">{{price}}</td>
+								<td class="cart-total" title="Total item price">{{total_price}}</td>
+							</tr>
+							{{#optional_addons}}
+							<tr class="optional {{#last?}}last{{/last?}} cart-row cart-product-id-{{cart_product_id}} sub-cart-product-id-{{parent_cart_product_id}}">
+								<td class="cart-remove">
+									<a href="/shopping_cart.php?action=delete_cart_item&cart_product_id={{cart_product_id}}&addon=1" data-id="{{cart_product_id}}" data-parent-id="{{parent_cart_product_id}}" data-product-id="{{products_id}}" class="ajax-link method-post delete-row addon">Delete</a>
+									<input type="hidden" class="discontinued" value="{{discontinued}}" data-id="{{cart_product_id}}" data-parent-id="{{parent_cart_product_id}}" data-product-id="{{products_id}}" {{#discontinued?}}data-maxqty="{{available}}"{{/discontinued?}}>
+								</td>
+								<td class="cart-img"></td>
+								<td class="cart-name" title="Option"><strong>Option:</strong> {{name}}</td>
+								<td class="cart-model" title="Model">{{model_num}}</td>
+								<td class="cart-qty" title="Quantity">
+									<input type="text" name="quantity[{{cart_product_id}}]" value="{{quantity}}" data-id="{{cart_product_id}}" data-parent-id="{{parent_cart_product_id}}" data-product-id="{{products_id}}" data-parent-product-id="{{parent_products_id}}" data-option-type="{{option_type}}" data- class="ajax-input method-post qty-input addon">
+									<div class="update-message" id="update_message-{{cart_product_id}}"></div>
+								</td>
+								<td class="cart-price" title="Option price">{{price}}</td>
+								<td class="cart-total" title="Total option price">{{total_price}}</td>
+							</tr>
+							{{/optional_addons}}
+							{{#has_options?}}
+							<tr class="line-total cart-product-id-{{cart_product_id}}">
+								<td colspan="6"></td>
+								<td class="cart-total" title="Item + option price">{{whole_total_price}}</td>
+							</tr>
+							{{/has_options?}}
+							{{#show_stock_status?}}
+							<tr class="stock-status cart-product-id-{{cart_product_id}}">
+								<td colspan="7" title="Stock" style="color:#{{stock_status_color}};">{{{stock_status_message}}}</td>
+							</tr>
+								{{#stock_status_message_2?}}
+							<tr class="stock-status cart-product-id-{{cart_product_id}}">
+								<td colspan="7" title="Stock #2" style="color:#{{stock_status_color}};">{{{.}}}</td>
+							</tr>
+								{{/stock_status_message_2?}}
+							{{/show_stock_status?}}
+						</tbody>
+						{{/products}}
+					</table>
+						{{#out_of_stock_items?}}
+							{{#show_stock_status?}}
+					<div style="font-family: verdana; font-size: 11px; border-top:1px solid #ccc; padding-top: 10px;" class="gaexp_sou">
+						Some of the items on your order are not available to ship immediately. Check the box below
+						if you would like us to ship the items that we have in stock immediately. <br/><br/>
+						One of our customer service representatives will contact you to discuss your order.<br/><br/>
+						{{#immediate_assistance?}}
+						If you need immediate assistance please call us at {{contact_phone}} or <a class="link" href="https://lc.chat/now/8165031/" onclick="return chat_popup(this.href)">chat</a> with us.<br/><br/>
+						{{/immediate_assistance?}}
+						<div style="float:right;"><input id="split-decision" type="checkbox" name="split_order" {{#split_order?}}checked{{/split_order?}} style="position:relative;top:3px;"> <a href="#" id="split-decision-link" style="color:#090; font-weight:bold;">Ship Available Items Immediately</a><input type="hidden" name="dont_split_order" value="1"></div>
+					</div>
+							{{/show_stock_status?}}
+						{{/out_of_stock_items?}}
+					{{/products.0}}
+
+					{{#available_quotes.0}}
+					Available Quotes:
+					<select name="quote_id" id="add-quote-to-cart">
+						<option value="">Select One</option>
+						{{#available_quotes}}
+						<option value="{{quote_id}}">{{quote_label}}</option>
+						{{/available_quotes}}
+					</select>
+					<input type="button" class="cart-button small" id="add-quote-to-cart-button" name="add-quote-to-cart" value="Add Quote To Cart">
+					{{/available_quotes.0}}
+
+					{{#quotes.0}}
+					<table class="products-display quote table-md">
+						<thead>
+							<tr>
+								<th class="quote-header" colspan="5">
+									Customer Quote # {{quote_id}}
+									{{#admin?}}
+									<a href="/admin/customer-quote.php?customer_quote_id={{quote_id}}" target="_blank" style="margin-left:20px;">Manage &#8599;</a>
+									<a href="/quote.php?customer_quote_id={{quote_id}}" target="_blank" style="margin-left:20px;">Email to Customer &#8599;</a>
+									{{/admin?}}
+								</th>
+								<th class="quote-header quote-remove"><a href="/shopping_cart.php?action=remove_quote&quote_id={{quote_id}}" class="delete-quote">Remove Quote</a></th>
+							</tr>
+							<tr>
+								<th class="cart-img"></th>
+								<th class="cart-name" title="Product">Product(s)</th>
+								<th class="cart-model" title="Model">Model #</th>
+								<th class="cart-qty" title="Qty">Qty</th>
+								<th class="cart-price" title="Price">Price</th>
+								<th class="cart-total" title="Total">Total</th>
+							</tr>
+						</thead>
+						<tbody class="show-on-mobile">
+							<tr>
+								<th class="quote-header" colspan="6">
+									Customer Quote # {{quote_id}}
+									{{#admin?}}
+									<a href="/admin/customer-quote.php?customer_quote_id={{quote_id}}" target="_blank" style="margin-left:20px;">Manage &#8599;</a>
+									<a href="/quote.php?customer_quote_id={{quote_id}}" target="_blank" style="margin-left:20px;">Email to Customer &#8599;</a>
+									{{/admin?}}
+									<a href="/shopping_cart.php?action=remove_quote&quote_id={{quote_id}}" class="delete-quote">Remove Quote</a>
+								</th>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="5" class="product-total-label">Quote Total:</td>
+								<td class="quote-total" title="Quote Total">{{quote_total}}</td>
+							</tr>
+						</tfoot>
+						{{#hidden?}}
+						<tbody class="quote-message">
+							<tr>
+								<td colspan="6">This quote is currently being worked on by your sales team.</td>
+							</tr>
+						</tbody>
+						{{/hidden?}}
+						{{^products}}
+							{{^hidden?}}
+						<tbody class="quote-message">
+							<tr>
+								<td colspan="6">This quote currently has no products</td>
+							</tr>
+						</tbody>
+							{{/hidden?}}
+						{{/products}}
+						{{#products}}
+						<tbody>
+							<tr class="cart-row customer_quote_product_id-{{customer_quote_product_id}} {{#has_options?}}has-addons{{/has_options?}}">
+								<td class="cart-img"><a href="{{url}}"><img src="{{cdn}}/{{image}}" alt="{{name_attr}}" title="{{name_attr}}"></a></td>
+								<td class="cart-name" title="Product name">
+									<a href="{{url}}"><strong>{{name}}</strong></a>
+									{{#included_options}}
+									<div class="included">{{name}} - included</div>
+									{{/included_options}}
+								</td>
+								<td class="cart-model" title="Model"><a href="{{url}}">{{model_num}}</strong></a></td>
+								<td class="cart-qty" title="Qty">
+									{{#admin?}}
+									<input type="text" name="quote_quantity[{{customer_quote_product_id}}]" value="{{quantity}}" data-cqpid="{{customer_quote_product_id}}" data-uptype="qty" class="ajax-input method-post quote-update qty-input">
+									<div class="update-message" id="update_message-quote-qty-{{customer_quote_product_id}}"></div>
+									{{/admin?}}
+									{{^admin?}}
+									{{quantity}}
+									{{/admin?}}
+								</td>
+								<td class="cart-price" title="Price">
+									{{#admin?}}
+									<span class="hide-on-mobile">$</span><input type="text" name="quote_price[{{customer_quote_product_id}}]" value="{{raw_price}}" data-cqpid="{{customer_quote_product_id}}" data-uptype="price" class="ajax-input method-post quote-update price-input">
+									<div class="update-message" id="update_message-quote-price-{{customer_quote_product_id}}"></div>
+									{{/admin?}}
+									{{^admin?}}
+									{{price}}
+									{{/admin?}}
+								</td>
+								<td class="cart-total" title="Total Price">{{total_price}}</td>
+							</tr>
+							{{#optional_addons}}
+							<tr class="cart-row optional customer_quote_product_id-{{customer_quote_product_id}} {{#last?}}last{{/last?}} quote-row">
+								<td class="cart-img"></td>
+								<td class="cart-name" title="Name"><strong>Option:</strong> {{name}}</td>
+								<td class="cart-model" title="Model">{{model_num}}</td>
+								<td class="cart-qty" title="Qty">
+									{{#admin?}}
+									<input type="text" name="quote_quantity[{{customer_quote_product_id}}]" value="{{quantity}}" data-cqpid="{{customer_quote_product_id}}" data-uptype="qty" class="ajax-input method-post quote-update qty-input">
+									<div class="update-message" id="update_message-quote-qty-{{customer_quote_product_id}}"></div>
+									{{/admin?}}
+									{{^admin?}}
+									{{quantity}}
+									{{/admin?}}
+								</td>
+								<td class="cart-price" title="Price">
+									{{#admin?}}
+									$<input type="text" name="quote_price[{{customer_quote_product_id}}]" value="{{raw_price}}" data-cqpid="{{customer_quote_product_id}}" data-uptype="price" class="ajax-input method-post quote-update price-input">
+									<div class="update-message" id="update_message-quote-price-{{customer_quote_product_id}}"></div>
+									{{/admin?}}
+									{{^admin?}}
+									{{price}}
+									{{/admin?}}
+								</td>
+								<td class="cart-total" title="Total Price">{{total_price}}</td>
+							</tr>
+							{{/optional_addons}}
+							{{#has_options?}}
+							<tr class="line-total">
+								<td colspan="5"></td>
+								<td class="cart-total" title="Cart total">{{whole_total_price}}</td>
+							</tr>
+							{{/has_options?}}
+							{{#show_stock_status?}}
+							<tr class="stock-status">
+								<td colspan="6" title="Stock" style="color:#{{stock_status_color}};">{{{stock_status_message}}}</td>
+							</tr>
+								{{#stock_status_message_2?}}
+							<tr class="stock-status">
+								<td colspan="6" title="Stock #2" style="color:#{{stock_status_color}};">{{{.}}}</td>
+							</tr>
+								{{/stock_status_message_2?}}
+							{{/show_stock_status?}}
+						</tbody>
+						{{/products}}
+					</table>
+					{{/quotes.0}}
+
+					{{#products.0}}
+						{{#quotes.0}}
+							{{! we have both products and quotes, so we need an overall total }}
+					<div class="overall-total">
+						Overall Total: <strong id="overall-total">{{cart_total}}</strong>
+					</div>
+						{{/quotes.0}}
+					{{/products.0}}
+
+					<div class="cart-actions">
+						{{^empty?}}
+						<a href="/checkout_shipping.php"><img src="{{static_files}}/img/checkout-button.png" border="0" alt="Checkout" title="Checkout"></a>
+						{{/empty?}}
+						{{#empty?}}
+						<div style="margin-bottom:12px; text-align:center;">Your Shopping Cart is empty!</div>
+						<a href="/"><img src="{{static_files}}/img/continue-button.png" border="0" alt="Continue" title="Continue"></a>
+						{{/empty?}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Google Code for Product Added to Cart Remarketing List -->
+<script type="text/javascript">
+	/* <![CDATA[ */
+	var google_conversion_id = 1070544332;
+	var google_conversion_language = "en";
+	var google_conversion_format = "3";
+	var google_conversion_color = "666666";
+	var google_conversion_label = "zOxVCID19wEQzOu8_gM";
+	var google_conversion_value = 0;
+	/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+	<div style="display:inline;">
+		<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/1070544332/?label=zOxVCID19wEQzOu8_gM&amp;guid=ON&amp;script=0">
+	</div>
+</noscript>
+
+<script>
+	jQuery('.delete-row').on('click', function(e) {
+		e.preventDefault();
+		var cart_product_id = jQuery(this).attr('data-id');
+		var parent_cart_product_id = jQuery(this).attr('data-parent-id');
+		var products_id = jQuery(this).attr('data-product-id');
+		var addon = jQuery(this).hasClass('addon');
+
+		var link = jQuery(this).attr('href');
+
+		jQuery.ajax({
+			url: link,
+			dataType: 'json',
+			data: { ajax: 1, products_id:products_id, shopping_cart:1 },
+			type: 'POST',
+			success: function(data) {
+				jQuery('.products-display .product-total').html(data.product_total);
+				jQuery('#overall-total').html(data.cart_total);
+				jQuery('#cart-count').html(data.cart_qty);
+				if (!addon) {
+					jQuery('#cart-product-id-'+cart_product_id+' tr').hide();
+					jQuery('#cart-product-id-'+cart_product_id).append('<tr class="undo" id="undo-row-'+cart_product_id+'"><td colspan="7">'+data.product_name+' Removed - <a href="/shopping_cart.php?action=undo_delete_cart_item&undo_cart_key='+data.undo_cart_key+'" data-id="'+cart_product_id+'" class="ajax-link method-post undo-row">Undo</a></td></tr>');
+				}
+				else {
+					jQuery('.line-total.cart-product-id-'+parent_cart_product_id+' .cart-total').html(data.line_total);
+					jQuery('<tr class="undo" id="undo-row-'+cart_product_id+'"><td colspan="7">Option: '+data.product_name+' Removed - <a href="/shopping_cart.php?action=undo_delete_cart_item&undo_cart_key='+data.undo_cart_key+'&addon=1" data-id="'+cart_product_id+'" data-parent-id="'+parent_cart_product_id+'" class="ajax-link method-post undo-row addon">Undo</a></td></tr>').insertAfter('tr.cart-product-id-'+cart_product_id);
+					jQuery('tr.cart-product-id-'+cart_product_id).hide();
+				}
+			},
+			complete: function(){
+				ltkAjaxUpdate();
+			},
+			error: function() {
+				window.location = link;
+			}
+		});
+	});
+
+	jQuery('.undo-row').live('click', function(e) {
+		e.preventDefault();
+		var cart_product_id = jQuery(this).attr('data-id');
+		var parent_cart_product_id = jQuery(this).attr('data-parent-id');
+		var addon = jQuery(this).hasClass('addon');
+
+		var link = jQuery(this).attr('href');
+
+		jQuery.ajax({
+			url: link,
+			dataType: 'json',
+			data: { ajax: 1, shopping_cart: 1 },
+			type: 'POST',
+			success: function(data) {
+				jQuery('.products-display .product-total').html(data.product_total);
+				jQuery('#overall-total').html(data.cart_total);
+				jQuery('#cart-count').html(data.cart_qty);
+				if (!addon) {
+					jQuery('#cart-product-id-'+cart_product_id+' .undo').remove();
+
+					for (var key in data.cart_id_maps) {
+						jQuery('.cart-product-id-'+key+' a.delete-row[data-id='+key+']').attr('href', '/shopping_cart.php?action=delete_cart_item&cart_product_id='+data.cart_id_maps[key]);
+						jQuery('.cart-product-id-'+key+' input.qty-input[data-id='+key+']').attr('name', 'quantity['+data.cart_id_maps[key]+']');
+						jQuery('#update_message-'+key).attr('id', '#update_message-'+data.cart_id_maps[key]);
+
+						jQuery('[data-id='+key+']').attr('data-id', data.cart_id_maps[key]);
+						jQuery('[data-parent-id='+key+']').attr('data-parent-id', data.cart_id_maps[key]);
+
+						jQuery('.cart-product-id-'+key).removeClass('cart-product-id-'+key).addClass('cart-product-id-'+data.cart_id_maps[key]);
+						jQuery('.sub-cart-product-id-'+key).removeClass('sub-cart-product-id-'+key).addClass('sub-cart-product-id-'+data.cart_id_maps[key]);
+						jQuery('#cart-product-id-'+key).attr('id', 'cart-product-id-'+data.cart_id_maps[key]);
+					}
+
+					jQuery('#cart-product-id-'+data.cart_id_maps[cart_product_id]+' tr').show();
+				}
+				else {
+					jQuery('#undo-row-'+cart_product_id).remove();
+					jQuery('.line-total.cart-product-id-'+parent_cart_product_id+' .cart-total').html(data.line_total);
+					for (var key in data.cart_id_maps) {
+						jQuery('.cart-product-id-'+key+' a.delete-row[data-id='+key+']').attr('href', '/shopping_cart.php?action=delete_cart_item&cart_product_id='+data.cart_id_maps[key]+'&addon=1');
+						jQuery('.cart-product-id-'+key+' input.qty-input[data-id='+key+']').attr('name', 'quantity['+data.cart_id_maps[key]+']');
+						jQuery('#update_message-'+key).attr('id', '#update_message-'+data.cart_id_maps[key]);
+
+						jQuery('[data-id='+key+']').attr('data-id', data.cart_id_maps[key]);
+						jQuery('.cart-product-id-'+key).removeClass('cart-product-id-'+key).addClass('cart-product-id-'+data.cart_id_maps[key]);
+					}
+
+					jQuery('tr.cart-product-id-'+data.cart_id_maps[cart_product_id]).show();
+				}
+			},
+			complete: function(){
+				ltkAjaxUpdate();
+			},
+			error: function() {
+				window.location = link;
+			}
+		});
+	});
+
+	var update_qty_timer;
+	var update_qty_ajax;
+
+	jQuery('.dynamic .qty-input').on('change', function(e) {
+		$self = jQuery(this);
+		$self.toggleClass('updating', true);
+		if (update_qty_ajax) update_qty_ajax.abort();
+		if (update_qty_timer) clearTimeout(update_qty_timer);
+
+		check_discontinued();
+
+		var cart_product_id = $self.attr('data-id');
+		var parent_cart_product_id = $self.attr('data-parent-id');
+
+		jQuery('#update_message-'+cart_product_id).hide().html('').removeClass('fail').removeClass('success');
+
+		var products_id = $self.attr('data-product-id');
+		var parent_products_id = $self.attr('data-parent-product-id');
+		var addon = $self.hasClass('addon');
+		var option_type = $self.attr('data-option-type');
+
+		var quantity = parseInt($self.val());
+		if (quantity != $self.val()) {
+			if (isNaN(quantity)) quantity = 0;
+			// we'll do this part after
+			//$self.val(quantity);
+		}
+
+		var fields = [];
+		fields.push('ajax=1');
+		fields.push('shopping_cart=1');
+		fields.push('action=update_product');
+		fields.push('products_id='+products_id);
+		fields.push('quantity='+quantity);
+		if (parent_products_id != undefined) fields.push('parent_products_id='+parent_products_id);
+		if (option_type != undefined) fields.push('option_type='+option_type);
+
+		var link = '/shopping_cart.php?'+fields.join('&');
+
+		update_qty_timer = setTimeout(function() {
+			jQuery.ajax({
+				url: link,
+				dataType: 'json',
+				type: 'POST',
+				success: function(data) {
+					$self.toggleClass('updating', false);
+					if (data.success == 1) {
+						$self.val(data.quantity);
+						jQuery('.products-display .product-total').html(data.product_total);
+						jQuery('#overall-total').html(data.cart_total);
+						jQuery('#cart-count').html(data.cart_qty);
+						jQuery('.cart-row.cart-product-id-'+cart_product_id+' .cart-total').html(data.line_total);
+
+						if (addon) jQuery('.line-total.cart-product-id-'+parent_cart_product_id+' .cart-total').html(data.total_line_total);
+						else jQuery('.line-total.cart-product-id-'+cart_product_id+' .cart-total').html(data.total_line_total);
+
+						jQuery('#update_message-'+cart_product_id).html('Changed Qty').addClass('success').show(0, function() {
+							setTimeout(function() {
+								jQuery('#update_message-'+cart_product_id).fadeOut({
+									duration: 4000,
+									easing: 'swing',
+								});
+							}, 1000);
+						});
+
+
+					}
+					else {
+						jQuery('#update_message-'+cart_product_id).html('Change Qty Failed').addClass('fail').show(0, function() {
+							setTimeout(function() {
+								jQuery('#update_message-'+cart_product_id).fadeOut({
+									duration: 4000,
+									easing: 'swing',
+								});
+							}, 1000);
+						});
+					}
+				},
+				complete: function(){
+					ltkAjaxUpdate();
+				},
+				error: function() {
+					window.location = link;
+				}
+			});
+		}, 20);
+	});
+
+	function ltkAjaxUpdate(){
+		var itemCount = 0;
+
+		$('.products-display tr').each(function() {
+			var sku = '';
+			var qty = 0;
+			var price = '';
+			var desc = '';
+			var imgUrl = '';
+			var prodUrl = '';
+
+			if ($(this).is(":visible")) {
+				if ($(this).hasClass('cart-row')) {
+					if ($(this).hasClass('optional')) {
+						sku = $(this).find('td.cart-remove .delete-row').attr('data-product-id');
+						qty = $(this).find('td.cart-qty').find('input.qty-input').val();
+						price = $(this).find('td.cart-price').html();
+						desc = $(this).find('td.cart-name').html();
+						_ltk.SCA.AddItem(sku, qty, price, desc);
+					}
+					else {
+						sku = $(this).find('td.cart-remove .delete-row').attr('data-product-id');
+						qty = $(this).find('td.cart-qty').find('input.qty-input').val();
+						price = $(this).find('td.cart-price').html();
+						desc = $(this).find('td.cart-name').find('a').find('strong').html();
+						prodUrl = $(this).find('td.cart-model').find('a').attr('href');
+						imgUrl = $(this).find('td.cart-img').find('a').attr('href');
+						_ltk.SCA.AddItemWithLinks(sku, qty, price, desc, imgUrl, prodUrl);
+					}
+					_ltk.SCA.AddItem(sku, qty, price, desc, imgUrl, prodUrl);
+					itemCount++;
+				}
+			}
+		});
+		if (itemCount === 0) {
+			_ltk.SCA.ClearCart();
+		}
+		else{
+			_ltk.SCA.Submit();
+		}
+	}
+
+	jQuery('.quote-update').on('change', function(e) {
+		$self = jQuery(this);
+		$self.toggleClass('updating', true);
+
+		var customer_quote_product_id = $self.attr('data-cqpid');
+		var uptype = $self.attr('data-uptype');
+
+		jQuery('#update_message-quote-'+uptype+'-'+customer_quote_product_id).hide().html('').removeClass('fail').removeClass('success');
+
+		var fields = [$self.serialize()];
+		fields.push('action=update_quote');
+
+		var link = '/shopping_cart.php?'+fields.join('&');
+
+		jQuery.ajax({
+			url: link,
+			dataType: 'json',
+			data: { ajax: 1, shopping_cart: 1 },
+			type: 'POST',
+			success: function(data) {
+				$self.toggleClass('updating', false);
+				if (data.success == 1) {
+					//$self.val(data.quantity);
+					jQuery('.products-display .quote-total').html(data.quote_total);
+					jQuery('#overall-total').html(data.cart_total);
+					jQuery('#cart-count').html(data.cart_qty);
+					jQuery('.cart-row.customer_quote_product_id-'+customer_quote_product_id+' .cart-total').html(data.line_total);
+
+					/*if (addon) jQuery('.line-total.cart-product-id-'+parent_cart_product_id+' .cart-total').html(data.total_line_total);
+					else jQuery('.line-total.cart-product-id-'+cart_product_id+' .cart-total').html(data.total_line_total);*/
+
+					jQuery('#update_message-quote-'+uptype+'-'+customer_quote_product_id).html('Changed '+uptype).addClass('success').show(0, function() {
+						setTimeout(function() {
+							jQuery('#update_message-quote-'+uptype+'-'+customer_quote_product_id).fadeOut({
+								duration: 4000,
+								easing: 'swing',
+							});
+						}, 1000);
+					});
+				}
+				else {
+					jQuery('#update_message-quote-'+uptype+'-'+customer_quote_product_id).html('Change '+uptype+' Failed').addClass('fail').show(0, function() {
+						setTimeout(function() {
+							jQuery('#update_message-quote-'+uptype+'-'+customer_quote_product_id).fadeOut({
+								duration: 4000,
+								easing: 'swing',
+							});
+						}, 1000);
+					});
+				}
+			},
+			error: function() {
+				window.location = link;
+			}
+		});
+	});
+
+	jQuery('#add-quote-to-cart-button').on('click', function(e) {
+		e.preventDefault();
+
+		var quote_id = jQuery('#add-quote-to-cart').val();
+
+		if (quote_id == '') return;
+
+		jQuery.ajax({
+			url: '/shopping_cart.php?action=add_quote',
+			dataType: 'json',
+			data: { ajax: 1, quote_id: quote_id, shopping_cart:1 },
+			type: 'POST',
+			success: function(data) {
+				if (data.success == 1) window.location = '/shopping_cart.php'; //.reload(true);
+				else {
+					var message = "There was a problem adding this quote to your cart,\nplease contact the Sales Team ({{contact_email}})";
+					if (data.message) message += "\n\nError Message:\n"+data.message;
+					alert(message);
+				}
+			},
+			error: function() {
+				window.location = '/shopping_cart.php?action=add_quote&quote_id='+quote_id;
+			}
+		});
+	});
+
+	jQuery('#split-decision').live('click', function() {
+		jQuery.ajax({
+			url: '/shopping_cart.php',
+			dataType: 'json',
+			data: { ajax: 1, action: 'set-split-order', shopping_cart: 1, split_order: (jQuery(this).is(':checked')?1:0) },
+			type: 'POST',
+			success: function(data) {
+				// don't need to do anything
+			}
+		});
+	});
+
+	jQuery('#split-decision-link').live('click', function(e) {
+		e.preventDefault();
+		jQuery('#split-decision').click();
+	});
+
+	function check_discontinued() {
+		jQuery('.discontinued').each(function() {
+			var id = jQuery(this).attr('data-id');
+			if (jQuery(this).val() == 1 && parseInt(jQuery('.cart-product-id-'+id+' .qty-input[data-id='+id+']').val()) > parseInt(jQuery(this).attr('data-maxqty'))) {
+				jQuery('.cart-product-id-'+id+' .qty-input[data-id='+id+']').val(jQuery(this).attr('data-maxqty'));
+				alert('We only have '+jQuery(this).attr('data-maxqty')+' available for this item. The quantity has been adjusted automatically.');
+			}
+		});
+	}
+</script>
+
+<!-- Listrak -->
+<script type="text/javascript">
+	(function(d) { if (document.addEventListener) document.addEventListener('ltkAsyncListener', d);
+		else {e = document.documentElement; e.ltkAsyncProperty = 0; e.attachEvent('onpropertychange', function (e) {
+			if (e.propertyName == 'ltkAsyncProperty'){d();}});}})(function() {
+				/********** Begin Custom Code **********/
+				{{#empty?}}
+				_ltk.SCA.ClearCart();
+				{{/empty?}}
+				{{#listrak_products.0}}
+					{{#listrak_products}}
+				_ltk.SCA.AddItemWithLinks('{{sku}}', {{qty}}, '{{unit_price}}', '{{name}}', '{{image}}', '{{url}}');
+					{{/listrak_products}}
+				_ltk.SCA.Submit();
+				{{/listrak_products.0}}
+				/********** End Custom Code **********/
+			});
+</script>

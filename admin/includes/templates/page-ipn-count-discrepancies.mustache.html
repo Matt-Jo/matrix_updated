@@ -1,0 +1,61 @@
+<style>
+	#page-body { width:100%; }
+	#ipn-count-discrepancies { border-collapse:separate; border-spacing:2px; }
+	#ipn-count-discrepancies th, #ipn-count-discrepancies td { padding:2px 5px; }
+	#ipn-count-discrepancies th { padding-right:20px; }
+	#ipn-count-discrepancies .no-data { font-size:1.2em; font-weight:bold; text-align:center; padding:10px; }
+	#totals { text-align:center; font-size:1.5em; }
+	.top-fifty-flag td { background-color:#ff0000 !important; color:#fff !important; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<h3>IPN Count Discrepancies</h3>
+	<table id="ipn-count-discrepancies" class="tablesorter">
+		<thead>
+			<tr>
+				<th>IPN</th>
+				<th>Recorded Qty</th>
+				<th>Figured Qty</th>
+				<th>Discrepancy Qty</th>
+				<th>Recorded Total Cost</th>
+				<th>Figured Total Cost</th>
+				<th>Discrepancy Cost</th>
+				<th>Days Disagreed</th>
+				<th>Record Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#ipns}}
+			<tr>
+				<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{ipn}}</a></td>
+				<td>{{recorded_quantity}}</td>
+				<td>{{figured_quantity}}</td>
+				<td>{{absolute_qty_off}}</td>
+				<td>{{recorded_total_cost}}</td>
+				<td>{{figured_total_cost}}</td>
+				<td>{{absolute_dollar_off}}</td>
+				<td>{{days_discrepancy}}</td>
+				<td>{{record_date}}</td>
+			</tr>
+			{{/ipns}}
+			{{^ipns}}
+			<tr>
+				<td colspan="9" class="no-data">No IPNs Disagree</td>
+			</tr>
+			{{/ipns}}
+		</tbody>
+	</table>
+</td>
+<script>
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			/*10: { sorter: 'urgency' },
+			12: { sorter: 'digit' },
+			13: { sorter: false }*/
+		}
+	});
+</script>

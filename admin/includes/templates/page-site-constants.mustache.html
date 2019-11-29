@@ -1,0 +1,137 @@
+<style>
+	.keys { font-size:12px; }
+	.key { margin-top:14px; border-style:solid; border-color:#aaa; border-width:1px 1px 2px 1px; padding:8px; background-color:#eee; }
+	.key:hover { background-color:#ffc; }
+	.key textarea { margin-bottom:3px; }
+
+	.key.add { display:none; }
+
+	.key.updated, .key.updated:hover { background-color:#cfc; }
+	.key.deleted, .key.deleted:hover { background-color:#fcc; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3 class="page-heading">Site Constants</h3>
+
+	<div class="keys">
+		<button type="button" id="add-key">Add New Key</button>
+		<div class="key add" id="key-id-add">
+			<form class="submit-key" action="/admin/site-constants" method="post">
+				<input type="hidden" name="ajax" value="1">
+				<input type="hidden" name="key_id" value="add">
+				Description:<br>
+				<textarea name="description" cols="120" rows="1" data-default=""></textarea><br>
+				<span class="field_holder"><input type="text" name="master_key" value="" data-default=""></span> . <span class="field_holder"><input type="text" name="subkey" value="" data-default=""></span> : <textarea name="keyval" cols="30" rows="1" data-default=""></textarea>
+				<button name="action" class="submit-button" value="add-key">Add</button>
+			</form>
+		</div>
+
+		{{#keys}}
+		<div class="key" id="key-id-{{key_id}}">
+			<form class="submit-key" action="/admin/site-constants" method="post">
+				<input type="hidden" name="ajax" value="1">
+				<input type="hidden" name="key_id" value="{{key_id}}">
+				Description:<br>
+				<textarea name="description" cols="120" rows="1" data-default="{{description}}">{{description}}</textarea><br>
+				<span class="field_holder"><input type="text" name="master_key" value="{{master_key}}" disabled data-default="{{master_key}}"></span> . <span class="field_holder"><input type="text" name="subkey" value="{{subkey}}" disabled data-default="{{subkey}}"></span> : <textarea name="keyval" cols="30" rows="1" data-default="{{safe_keyval}}">{{safe_keyval}}</textarea>
+				<button name="action" class="submit-button" value="update-key">Update</button>
+				<button name="action" class="submit-button" value="delete-key">Delete</button>
+				<button name="action" type="reset" value="reset-key">Reset</button>
+			</form>
+		</div>
+		{{/keys}}
+	</div>
+</td>
+<script>
+	jQuery('textarea[name=keyval]').on('focus', function() {
+		jQuery(this).attr('cols', 68).attr('rows', 3);
+	});
+
+	jQuery('textarea[name=description]').on('focus', function() {
+		jQuery(this).attr('rows', 2);
+	});
+
+	jQuery('body').on('click', function() {
+		jQuery('.key textarea[name=description]').attr('rows', 1);
+		jQuery('.key textarea[name=keyval]').attr('cols', 30).attr('rows', 1);
+	});
+
+	jQuery('.key').on('click', function(e) {
+		e.stopPropagation();
+		jQuery(this).addClass('focus-key');
+
+		jQuery('.key:not(.focus-key) textarea[name=description]').attr('rows', 1);
+		jQuery('.key:not(.focus-key) textarea[name=keyval]').attr('cols', 30).attr('rows', 1);
+
+		jQuery(this).removeClass('focus-key');
+	});
+
+	jQuery('.field_holder').on('dblclick', function() {
+		jQuery(this).find('input').attr('disabled', false);
+	});
+
+	jQuery('.submit-key').on('reset', function(e) {
+		e.preventDefault();
+		jQuery(this).find('.field_holder input').attr('disabled', true);
+		jQuery(this).find('[data-default]').each(function() {
+			jQuery(this).val(jQuery(this).attr('data-default'));
+		});
+
+		jQuery('.key textarea[name=description]').attr('rows', 1);
+		jQuery('.key textarea[name=keyval]').attr('cols', 30).attr('rows', 1);
+	});
+
+	jQuery('.submit-button').on('click', function() {
+		jQuery(this).addClass('clicked');
+	});
+
+	jQuery('#add-key').on('click', function() {
+		jQuery('#key-id-add').toggle();
+	});
+
+	jQuery('.submit-key').on('submit', function(e) {
+		e.preventDefault();
+
+		let $self = jQuery(this);
+
+		$self.find('input[disabled]').attr('disabled', false);
+
+		let $submit = jQuery('.clicked');
+
+		let call = {
+			url: $self.attr('action'),
+			type: 'post',
+			dataType: 'json',
+			data: $self.serialize()+'&'+$submit.attr('name')+'='+$submit.attr('value'),
+			success: function(data) {
+				if (data.errors) alert(data.errors);
+				else {
+					if (data.key_id == 'reload') window.location.reload();
+					if ($submit.attr('value') == 'delete-key') {
+						jQuery('#key-id-'+data.key_id).addClass('deleted');
+						setTimeout(function() { jQuery('#key-id-'+data.key_id).remove(); }, 300);
+					}
+					else {
+						$self.find('[data-default]').each(function() {
+							jQuery(this).attr('data-default', jQuery(this).val());
+						});
+						$self.trigger('reset');
+
+						jQuery('#key-id-'+data.key_id).addClass('updated');
+						setTimeout(function() { jQuery('#key-id-'+data.key_id).removeClass('updated'); }, 800);
+					}
+				}
+			}
+		};
+
+		$submit.removeClass('clicked');
+
+		//console.log(call);
+
+		jQuery.ajax(call);
+	});
+</script>

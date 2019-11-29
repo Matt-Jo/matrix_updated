@@ -1,0 +1,5 @@
+.ui-accordion .ui-accordion-header a { font-size: 10px; }
+.ui-accordion .ui-accordion-content { padding: 0; }
+
+.ui-accordion .ui-accordion-content ul { margin: 0 0 5px 20px; padding-left: 0; line-height: 14px; }
+.ui-accordion .ui-accordion-content ul div { font-size: 12px; font-weight: bold; }

@@ -1,0 +1,221 @@
+/* Styles for for shipping & tracking changes 
+   125, 375 & 378 */
+
+#editpackDiv {
+  /*visibility: hidden;*/
+}
+
+#addPackagesDiv {
+   padding-bottom: 10px;
+   padding-top: 5px;
+}
+
+#packageTypesDiv {
+   visibility: hidden;
+   z-index:200;
+}
+
+#pckgDimDiv {
+   padding-top: 7px;
+   position: relative;
+   top: 0px;
+   left: 0px;
+	margin:10px;
+   width: 275px;
+   height: 23px;
+   /*z-index:500;*/
+	display: none;
+}
+
+#submitdiv {
+   /*visibility: hidden;*/
+   clear: both;
+   float: right;
+   top: 0px;left: 0px;
+}
+
+.lblhdrright, .lblhdrrightund {
+   text-align: right;
+   vertical-align: top;
+   font-weight: bold;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.lblhdrrightund {
+   text-decoration: underline;
+}
+
+.lblhdrleft {
+   text-align: left;
+   font-weight: bold;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.pckgtxt {
+   text-align: left;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+.pckgtxtright {
+   text-align: right;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.lblhdr {
+   text-align: center;
+   font-weight: bold;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.row1 {
+   background-color: #d8d8d8;
+   border-bottom: 1px #000 solid;
+   border-right: 1px #000 solid;
+   padding: 2px;
+   text-align: center;
+   vertical-align: top;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.row2 {
+   background-color: #fff;
+   border-bottom: 1px #000 solid;
+   border-right: 1px #000 solid;
+   padding: 2px;
+   text-align: center;
+   vertical-align: top;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.rowftr , .rowhdr {
+   border-bottom: 1px #000 solid;
+   border-right: 1px #000 solid;
+   padding: 5px;
+   font-weight: bold;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+}
+
+.rowhdr {
+   border-top: 1px #000 solid;
+   text-align: center;
+}
+
+
+.lnthru {
+   color:#f00;
+   text-decoration: line-through;
+}
+
+.dimInput {
+   width:30px;
+   text-align:right;
+}
+.shiplnk, a.shiplnk, a:link.shiplnk, a:visited.shiplnk {
+   color: #00f;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+   text-decoration: underline;
+}
+
+a:hover.shiplnk {
+   color: #0055ea;
+   font-family: calibri, arial, sans-serif;
+   font-size: 11pt;
+   text-decoration: none;
+}
+
+#shipaddrDiv , #shipaddrEditDiv {
+   background-color:#fff;width:240px;height:190px;
+}
+
+#shipaddrEditDiv {
+   background-color:#ffb3b5;
+}
+
+#shipaddrTopDiv, #shipaddrTopEditDiv {
+   width:240px;height:15px;position:relative;top:0;left:0;
+}
+
+#shipaddrTopDiv{
+   background-color:#ffb3b5;
+}
+
+#saerrorDiv  {
+   visibility: hidden;
+}
+
+#addrbookDiv {
+   visibility: hidden;
+}
+
+#msgrowDiv {
+   visibility: hidden;
+   font-size: 10px;
+}
+
+.shipaddrErrRow, .shipaddrRow {
+   width:239px;height:16px;overflow:hidden;
+}
+
+.shipaddrErrRow {
+   background-color:#ffb3b5;
+}
+
+.sa_input, sa_inputErr {
+   width:240px;
+   height:15px;
+   font-size:9px;
+   padding: 0px;
+}
+
+.sa_inputErr {
+   background-color:#fee3b4;
+}
+
+.sa_button {
+   font-size: 10px;
+}
+
+.sa_sel {
+   width:239px;
+   height:20px;
+   font-size:10px;
+}
+
+.shipaddrLnk, a.shipaddrLnk, a:link.shipaddrLnk, a:visited.shipaddrLnk {
+   color: #00f;
+   font-size: 10px;
+   text-decoration: underline;
+}
+
+a:hover.shipaddrLnk {
+   color: #0055ea;
+   font-size: 10px;
+   text-decoration: none;
+}
+
+.abrow1, .abrow2, .abrowx {
+   margin-left: -10px;
+   padding: 1px;
+   font-size: 10px;
+}
+
+.abrow1 {
+   background-color: #d8d8d8;
+}
+
+.abrow2 {
+   background-color: #fff;
+}
+
+.abrowx {
+   background-color: #fee3b4;
+}
+

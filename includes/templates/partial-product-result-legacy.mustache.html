@@ -1,0 +1,112 @@
+{{#product}}
+<div class="grid grid-pad-small productItemListing" style="border-bottom: 3px solid #eee;">
+	<div class="col-1-1 productListing-data" {{#json}}style="visibility:hidden;"{{/json}}>
+		<a href="{{url}}" class="product-info-link-title">{{name}}</a>
+	</div>
+	<div class="col-2-12 mobile-col-4-12 productListing-data" {{#json}}style="visibility:hidden;"{{/json}}>
+		<a id="product-info-link-{{id}}" href="{{url}}"><img src="{{cdn}}/{{image}}" alt="{{name_attr}}" title="{{name_attr}}"></a>
+	</div>
+	<div class="col-7-12 mobile-col-8-12 productListing-data mainProductInfo" {{#json}}style="visibility:hidden;"{{/json}}>
+		<div class="">
+			<div class="no-word-break"><strong>Model #:</strong> <span style="padding-left:5px; padding-right:15px;">{{model_num}}</span></div>
+			<div class="no-word-break"><strong>Condition:</strong> <span style="padding-left:5px;">{{condition}}</span></div>
+		</div>
+
+		<div>
+			<div class="no-word-break">
+				<strong>Availability:</strong>
+				{{#instock?}}
+				<strong style="color:#090;padding-left:10px;">In stock</strong>
+				{{/instock?}}
+				{{#stockavailable?}}
+				<strong style="padding-left:10px;">Available</strong>
+				{{/stockavailable?}}
+				{{#outofstock?}}
+					{{#on_order?}}
+				<strong style="padding-left:10px;">On order</strong>
+					{{/on_order?}}
+					{{^on_order?}}
+				<strong style="padding-left:10px;">Call</strong>
+					{{/on_order?}}
+				{{/outofstock?}}
+	
+				<a class="show-details" data-prodid="{{id}}" href="#">[details]</a>
+			</div>
+			<div class="no-word-break">
+				<strong>Ships:</strong>
+				{{#instock?}}
+				<strong style="color:#090;">{{#ships_today?}}Today{{/ships_today?}}{{#ships_ondate?}}{{ship_date}}{{/ships_ondate?}}</strong>
+				{{/instock?}}
+				{{#stockavailable?}}
+				<strong>{{ship_date}}</strong>
+				{{/stockavailable?}}
+				{{#outofstock?}}
+				<strong>Call</strong>
+				{{/outofstock?}}
+			</div>
+		</div>
+
+		<div id="product_availability_details_{{id}}" class="avail-details">
+			{{#instock?}}
+			<strong style="color:#090;">{{display_available_num}}</strong> in stock in Atlanta, GA - Ships {{#ships_today?}}Today{{/ships_today?}}{{#ships_ondate?}}{{ship_date}}{{/ships_ondate?}}
+
+				{{#on_order?}}
+			<br><strong style="color:#ff8500;">{{on_order}}</strong> on order - Please call to inquire about arrival date {{#always_available?}}or additional quantity{{/always_available?}}
+				{{/on_order?}}
+
+				{{#always_available?}}
+			<br>Additional quantity available - Ships {{addtl_ship_date}}
+				{{/always_available?}}
+			{{/instock?}}
+			{{#stockavailable?}}
+				{{#on_order?}}
+			<strong style="color:#ff8500;">{{on_order}}</strong> on order - Please call to inquire about arrival date<br>
+				{{/on_order?}}
+			Additional quantity available - Ships {{ship_date}}
+			{{/stockavailable?}}
+			{{#outofstock?}}
+				{{#on_order?}}
+			<strong style="color:#ff8500;">{{on_order}}</strong> on order - Please call to inquire about arrival date or additional quantity
+				{{/on_order?}}
+				{{^on_order?}}
+			If you need this item, we would love to help. Even though it's currently out of stock, we can get it for you! Please contact us to check on options available to meet your needs.
+				{{/on_order?}}
+			{{/outofstock?}}
+		</div>
+
+		{{#short_description}}
+		<div class="prod-short-desc">{{{.}}}</div>
+		{{/short_description}}
+		
+		<div class="listing-price show-on-mobile">
+			{{#special?}}
+			<span class="original">{{reg_price}}</span>&nbsp;&nbsp;<span class="productSpecialPrice">{{price}}</span>
+			{{/special?}}
+			{{^special?}}
+				{{price}}
+			{{/special?}}
+		</div>
+	</div>
+	<div class="col-3-12 hide-on-mobile productListing-data" {{#json}}style="visibility:hidden;"{{/json}}>
+		<div class="listing-price">
+			{{#special?}}
+			<span class="original">{{reg_price}}</span>&nbsp;&nbsp;<span class="productSpecialPrice">{{price}}</span>
+			{{/special?}}
+			{{^special?}}
+				{{price}}
+			{{/special?}}
+		</div>
+		<div class="buy-now">
+			{{#has_options?}}
+			<a href="{{url}}?cPath={{cpath}}" class="direct-add mo bn col-green"><img src="{{static_files}}/img/catalog-buy-now.png" alt="Buy Now" title="Buy Now"></a>
+			{{/has_options?}}
+			{{^has_options?}}
+			<button class="direct-add tc bn col-green buy-now-button add-to-cart-flyout" alt="Buy Now Button" title="Buy Now Button" data-product-id="{{id}}" data-quantity-one="1">Buy Now</button>
+			<input type="hidden" id="discontinued-{{id}}" value="{{discontinued}}">
+			<input type="hidden" id="product_quantity-{{id}}" value="{{display_available_num}}">
+			{{/has_options?}}
+		</div>
+	</div>
+</div>
+{{!<hr style="color:#eee; background-color:#eee; border: 1px solid;margin:0px;">}}
+{{/product}}

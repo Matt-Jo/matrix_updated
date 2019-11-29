@@ -1,0 +1,199 @@
+<html>
+<head>
+	<title>CablesAndKits.com Order #{{order_number}}</title>
+	<style>
+		body { font-family:'arial'; margin:0px; background-color:#ffffff; }
+
+		.main { background-color:#fff; /*width:1024px;*/ text-align:left; font-family:'arial'; color:#676465; text-align:left; }
+
+		.header { background-color:#fff; /*width:1024px;*/ text-align:left; font-family:'arial'; color:#676465; }
+		.header td { font-weight:bold; }
+
+		.message { /*width:900px;*/ font-family:'arial'; color:#676465; padding:30px; }
+
+		.tracking_number { /*width:900px;*/ padding:10px; }
+
+		.order-notes { /*width:900px;*/ padding:10px; }
+
+		.credit-warning { padding:20px; font-weight:bold; color:#f00; }
+
+		.details-header { /*width:970px;*/ }
+		.details { color:#333; padding:20px; }
+
+		.address { height:180px; padding:10px; vertical-align:top; background-color:#f3f3f4; }
+
+		.products { padding-top:30px; background-color:#f4f4f4; }
+		.products th, .products td { border-left:1px solid #fff; border-bottom:1px solid #fff; padding:4px 6px; }
+		.products th { text-align:left; font-weight:normal; background-color:#999; }
+		.products td { vertical-align:top; }
+		.products .totals td { text-align:right; border-width:0px; }
+
+		.footer { text-align:center; /*width:1000px;*/ padding-top:50px; }
+	</style>
+</head>
+<body>
+	<table class="main" width="1024">
+		<tr>
+			<td>
+				<table class="header">
+					<tr>
+						<td width="800"><img src="{{media}}/email_logo.gif" border="0" alt=""></td>
+						<td>
+							{{date}}
+							<p>{{{store_address}}}</p>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="message" style="padding:30px;">
+				{{#first?}}
+				<p>Woah! That's a pretty awesome looking order you placed!</p>
+				<p>We will begin processing your shipment very soon, but in the meantime if you wouldn't mind checking your order for accuracy. We want to make sure you get exactly what you ordered, exactly when you need it.</p>
+				<p>If you find your order to be inaccurate or if you just want to shoot the breeze with someone from your awesome sales team please contact us immediately at <b>{{contact_phone}}</b> during our business hours of <b>9AM-6PM EST (M-F)</b> or you can chat with us online at <a href="{{fqdn}}">{{fqdn}}</a>.</p>
+				<p>&nbsp;Have a great day!<br>&nbsp;CK Sales Team<br></p>
+				<p>P.S. Be on the lookout for a nice little shipping confirmation email soon. We'll send it to you once your order is all packed up by our Rock Star Shipping Team and is ready to ship out to its final destination.</p>
+				{{/first?}}
+				{{#update_status?}}
+				<p><br><br><strong>Your Order has been updated</strong></p>
+				<p>Your order has been updated to the following status. New Status: {{.}}</p>
+				<p>
+					&nbsp;Sales Department<br>
+					&nbsp;CablesAndKits.Com<br>
+					&nbsp;Ph. {{contact_phone}}<br>
+					&nbsp;<a href="{{fqdn}}">{{fqdn}}</a>
+				</p>
+				{{/update_status?}}
+			</td>
+		</tr>
+
+		{{#tracking.0}}
+		<tr>
+			<td class="tracking_number" style="padding:10px;">
+				Track your package(s):<br>
+				{{#tracking}}
+					<a href="https://cablesandkits.aftership.com/{{tracking_num}}" target="_blank">{{tracking_num}}</a><br>
+				{{/tracking}}
+			</td>
+		</tr>
+		{{/tracking.0}}
+
+		<tr>
+			<td class="order-notes" style="padding:10px;">
+				{{#order_comments}}
+				<div>{{#update_status?}}<strong>Order Comments</strong><br><br>{{/update_status?}}{{{.}}}{{#update_status?}}<br><br>Should you have any questions or comments please do not hesitate to contact us.{{/update_status?}}</div>
+				{{/order_comments}}
+			</td>
+		</tr>
+
+		<tr>
+			<td class="details-header"><img width="950" src="{{media}}/your-order-details.gif"></td>
+		</tr>
+
+		{{#cannot_place_any_order}}
+		<tr>
+			<td class="credit-warning">YOUR CREDIT TERMS HAVE BEEN SUSPENDED. ALL ORDERS WILL BE HELD UNTIL FURTHER NOTICE. PLEASE CONTACT OUR <a href="mailto:accounting@cablesandkits.com">ACCOUNTING DEPARTMENT</a> TO RESOLVE.</td>
+		</tr>
+		{{/cannot_place_any_order}}
+		{{#prepaid_only}}
+		<tr>
+			<td class="credit-warning">Your credit terms have been TEMPORARILY SUSPENDED. You must prepay via credit card or paypal to release this order immediately. Please contact our <a href="mailto:accounting@cablesandkits.com">accounting department</a> to resolve any pending issues and have your terms reinstated.</td>
+		</tr>
+		{{/prepaid_only}}
+		{{#over_limit}}
+		<tr>
+			<td class="credit-warning">This order will place you over your credit limit.  You have {{remaining_credit}} available credit.  This order will be held until your previous invoices have been paid, or until you pre-pay for this order.</td>
+		</tr>
+		{{/over_limit}}
+		{{#unreleased}}
+		<tr>
+			<td class="credit-warning">This transaction has been placed on credit hold.  Your account is still in good standing.  Please contact our <a href="mailto:accounting@cablesandkits.com">accounting department</a> to resolve the issue.</td>
+		</tr>
+		{{/unreleased}}
+
+		<tr>
+			<td class="details" style="padding:20px;">
+				<strong>Order#:</strong> {{order_number}}
+				{{#ponum?}} | <strong>PO #:</strong> {{.}}{{/ponum?}}
+				| <strong>Ordered By:</strong> {{customer_name}}
+				{{#purchase_order_number?}} | <strong>Reference #:</strong> {{.}}{{/purchase_order_number?}}
+				| <strong>Date of Order: </strong>{{date_purchased}}
+				| <strong>Payment Method: </strong>{{payment_method}}
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<table class="addresses" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="40"></td>
+						<td><img width="450" src="{{media}}/email-address-top.gif"></td>
+						<td width="40"></td>
+						<td><img width="450" src="{{media}}/email-address-top.gif"></td>
+					</tr>
+					<tr>
+						<td width="40"></td>
+						<td class="address">
+							<strong>SOLD TO:</strong><br><br>
+							{{#customer}}
+								{{> partial-enhanced-address-format.mustache.html}}
+								{{sold_to_telephone}}<br>
+								{{sold_to_email}}<br>
+							{{/customer}}
+						</td>
+						<td></td>
+						<td class="address">
+							<strong>SHIP TO:</strong><br><br>
+							{{#delivery}}
+								{{> partial-enhanced-address-format.mustache.html}}<br>
+							{{/delivery}}
+						</td>
+					</tr>
+					<tr>
+						<td width="40"></td>
+						<td><img width="450" src="{{media}}/email-address-bottom.gif"></td>
+						<td></td>
+						<td><img width="450" src="{{media}}/email-address-bottom.gif"></td>
+					</tr>
+					<tr><td colspan="4" height="30">&nbsp;</td></tr>
+				</table>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<table class="products" cellspacing="0" cellpadding="0">
+					<tr>
+						<th width="50">Qty</th>
+						<th width="400">Products</th>
+						<th width="200">Model/Part #</th>
+						<th width="100" align="right">Price</th>
+						<th width="130" align="right">Total</th>
+					</tr>
+					{{#products}}
+					<tr>
+						<td valign="middle">{{qty}}</td>
+						<td>{{name}}</td>
+						<td>{{model}}</td>
+						<td align="right"><strong>{{price}}</strong></td>
+						<td align="right"><strong>{{total}}</strong></td>
+					</tr>
+					{{/products}}
+					{{#totals}}
+					<tr class="totals">
+						<td colspan="4">{{description}}</td>
+						<td>{{{value}}}</td>
+					</tr>
+					{{/totals}}
+				</table>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="footer" style="padding-top:50px;">Looking Forward to your next purchase at CablesAndKits.com</td>
+		</tr>
+	</table>
+</body>
+</html>

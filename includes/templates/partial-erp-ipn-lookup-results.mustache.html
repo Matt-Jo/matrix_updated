@@ -1,0 +1,168 @@
+<style>
+	.autocomplete-results-table { border-collapse:collapse; font-size:14px; width:100%; margin-top:4px; margin-bottom:4px; }
+	.autocomplete-results-table th, .autocomplete-results-table td { border:1px solid #999; padding:4px 8px; }
+	.autocomplete-results-table th { background-color:#888; color:#fff; }
+	.autocomplete-results-table tr:hover td { background-color:#ffc; }
+	.autocomplete-results-table select { font-size:14px; width:100%; }
+	.autocomplete-results-table input { font-size:14px; width:100%; box-sizing:border-box; }
+	.autocomplete-results-table select.add-to-cart-pid { width:85%; }
+	.autocomplete-results-table tr:nth-child(even) { background-color:#eee; }
+
+	.serial-details { border-collapse:collapse; font-size:12px; }
+	.serial-details th, .serial-details td { border:1px solid #000; padding:3px 5px; }
+
+	.ipn { white-space:nowrap; }
+	.serial-costs { display:none; position:absolute; background-color:#efe; border:1px solid #999; border-radius:3px; padding:4px; white-space:nowrap; }
+	.costs:hover .serial-costs { display:block; }
+	.listings { white-space:nowrap; }
+	.quote-price { display:none; }
+	.qty { text-align:center; }
+
+	.inactive-listing { background-color:#fcc; color:#c00; }
+
+	.atc { text-align:right; }
+</style>
+<form method="post" action="/cart-flyout" class="add-to-cart-form">
+	<input type="hidden" name="action" value="erp-add-to-cart">
+	<div class="atc"><button type="submit">Add To Cart</button></div>
+	<table cellpadding="0" cellspacing="0" border="0" class="autocomplete-results-table">
+		<thead>
+			<tr>
+				<th>IPN</th>
+				<th>Condition</th>
+				<th>Avg Cost</th>
+				<th>Info</th>
+				<th>Listings</th>
+				<th>On Hand</th>
+				<th>On Hold</th>
+				<th>Available</th>
+				<th>Price</th>
+				<th>Qty</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#results}}
+			<tr class="table-entry">
+				<td class="ipn"><a href="/admin/ipn_editor.php?ipnId={{safe_ipn}}" target="_blank">{{{ipn}}}</a></td>
+				<td>{{condition}}</td>
+				<td class="costs unloaded" data-stock-id="{{stock_id}}">
+					{{average_cost}}
+					<div class="serial-costs">
+						Loading ...
+					<div>
+				</td>
+				<td>{{{info}}}</td>
+				<td class="listings">
+					{{#multi-products}}
+					<select name="products_id[{{stock_id}}]" class="add-to-cart-pid" data-stock-id="{{stock_id}}">
+						{{#products}}
+						<option value="{{products_id}}" class="{{#inactive}}inactive{{/inactive}}" data-link="{{link}}">{{model_number}}{{#inactive}} [INACTIVE]{{/inactive}}</option>
+						{{/products}}
+					</select>
+					<a href="#" id="link-product-{{stock_id}}" target="_blank">[&#8599;]</a>
+					{{/multi-products}}
+					{{^multi-products}}
+						{{#products}}
+					<input type="hidden" name="products_id[{{stock_id}}]" value="{{products_id}}">
+					<a href="{{link}}" target="_blank">{{model_number}}</a>{{#inactive}} <span class="inactive-listing">[INACTIVE]</span>{{/inactive}}
+						{{/products}}
+					{{/multi-products}}
+				</td>
+				<td class="qty" title="{{full_availability}}"><a href="/admin/ipn_editor.php?ipnId={{safe_ipn}}" target="_blank">{{on_hand}}</a></td>
+				<td class="qty" title="{{full_availability}}"><a href="/admin/ipn_editor.php?ipnId={{safe_ipn}}" target="_blank">{{on_hold}}</a></td>
+				<td class="qty" title="{{full_availability}}"><a href="/admin/ipn_editor.php?ipnId={{safe_ipn}}" target="_blank">{{available}}</a></td>
+				<td>
+					<select class="add-to-cart-price-level" name="price_level[{{stock_id}}]" data-stock-id="{{stock_id}}">
+						{{#prices}}
+						<option value="{{reason}}" {{#sel}}selected{{/sel}}>{{friendly_reason}}: {{price}}</option>
+						{{/prices}}
+						<option value="quote">Quote Price</option>
+					</select>
+					<div class="quote-price quote-price-{{stock_id}}">
+						<input type="text" name="quote_price[{{stock_id}}]" placeholder="Enter Price">
+					</div>
+				</td>
+				<td><input type="text" name="quantity[{{stock_id}}]" style="width:45px;"></td>
+			</tr>
+			{{/results}}
+			{{^results}}
+			<tr>
+				<th colspan="9">No Results</th>
+			</tr>
+			{{/results}}
+		</tbody>
+	</table>
+	<div class="atc"><button type="submit">Add To Cart</button></div>
+</form>
+<script>
+	jQuery('.add-to-cart-price-level').change(function() {
+		let stock_id = jQuery(this).attr('data-stock-id');
+		if (jQuery(this).val() == 'quote') {
+			jQuery('.quote-price-'+stock_id).show();
+			jQuery('.quote-price-'+stock_id+' input').select();
+		}
+		else {
+			jQuery('.quote-price-'+stock_id).hide();
+			jQuery('.quote-price-'+stock_id+' input').val('');
+		}
+	});
+
+	jQuery('.add-to-cart-price-level').trigger('change');
+
+	function assign_product_link(sel) {
+		let $sel;
+		if (sel) $sel = jQuery(sel);
+		else $sel = jQuery('.add-to-cart-pid');
+
+		$sel.each(function() {
+			let $opt = jQuery(this).find('option:selected');
+			let stock_id = jQuery(this).attr('data-stock-id');
+
+			jQuery('#link-product-'+stock_id).attr('href', $opt.attr('data-link'));
+		});
+	}
+
+	jQuery('.add-to-cart-pid').change(function () { assign_product_link.call(this); });
+
+	assign_product_link();
+
+	add_product_to_cart();
+
+	jQuery('.add-to-cart-form').submit(function() {
+		let self = this;
+		setTimeout(function() {
+			jQuery(self).trigger('reset');
+			jQuery('.quote-price').hide();
+		}, 1000);
+	});
+
+	jQuery('.costs.unloaded').mouseover(function() {
+		let stock_id = jQuery(this).attr('data-stock-id');
+
+		let $self = jQuery(this);
+
+		if (!$self.hasClass('unloaded')) return;
+		$self.removeClass('unloaded');
+
+		jQuery.ajax({
+			url: '/erp/ipn-lookup',
+			data: { ajax: 1, action: 'get-serials', stock_id: stock_id },
+			dataType: 'json',
+			success: function(data) {
+				let $table = jQuery('<table cellpadding="0" cellspacing="0" border="0" class="serial-details"></table>');
+				let $tbody = jQuery('<tbody></tbody>');
+
+				if (data.serials.length == 0) $tbody.append('<tr><td>No Serials</td></tr>');
+				else {
+					for (let i=0; i<data.serials.length; i++) {
+						let srl = data.serials[i];
+						$tbody.append('<tr><td>'+srl.serial+'</td><td>'+srl.status+'</td><td>'+srl.cost+'</td><td>'+srl.owner+'</td><td>'+srl.notes+'</td></tr>');
+					}
+				}
+
+				$table.append($tbody);
+				$self.find('.serial-costs').html($table);
+			},
+		});
+	});
+</script>

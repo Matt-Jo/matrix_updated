@@ -1,0 +1,70 @@
+<style>
+	#page-body { width:100%; }
+	.ca-shipping-errors-table { border-collapse:separate; border-spacing:2px; width:90%; }
+	.ca-shipping-errors-table th, .ca-shipping-errors-table td { padding:2px 5px; text-align:center; }
+	.ca-shipping-errors-table th { padding-right:20px; }
+	.ca-shipping-errors-table .no-data { font-size:1.2em; font-weight:bold; padding:10px; }
+
+	.label-container { margin:5px; }
+	.input-label-container { border:1px solid #000; display:inline-block; margin:.3em; font-size:.8em; padding:.3em; border-radius:4%; }
+
+	.block { display: block; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<h3>Channel Advisor Errors</h3>
+	<div class="label-container">
+		{{#current_ca_admins}}
+		<div class="input-label-container">
+			CA Admin: {{admin_firstname}} {{admin_lastname}}
+		</div>
+		{{/current_ca_admins}}
+	</div>
+	<form method="POST" action="/admin/ca-shipping-errors.php?action=add_ca_admin" class="block">
+		<select name="admin_id">
+			<option selected>Admins</option>
+			{{#admin_options}}
+			<option value="{{admin_id}}">{{admin_firstname}} {{admin_lastname}}</option>
+			{{/admin_options}}
+		</select>
+		<button type="submit">Add CA Admin</button>
+	</form>
+	<table class="tablesorter ca-shipping-errors-table" id="ca-shipping-errors-table">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Order Id</th>
+				<th>Created</th>
+				<th>Error Message</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#ca_errors}}
+			<tr>
+				<td>{{ca_shipping_export_error_id}}</td>
+				<td>{{#orders_id}}<a href="/admin/orders_new.php?oID={{orders_id}}&amp;action=edit">{{orders_id}}</a>{{/orders_id}}</td>
+				<td>{{created_date}}</td>
+				<td style="max-width:800px;">{{{error_message}}}</td>
+				<td>
+					{{#orders_id}}
+					<a href="/admin/ca-shipping-errors.php?action=mark_order_exported&amp;orders_id={{orders_id}}" class="button-link">Set As Exported</a>
+					{{/orders_id}}
+					<a href="/admin/ca-shipping-errors.php?action=clear-error&amp;ca_shipping_export_error_id={{ca_shipping_export_error_id}}" class="button-link">Clear Error</a>
+				</td>
+			</tr>
+			{{/ca_errors}}
+			{{^ca_errors}}
+				<td class="no-data" colspan="6">No Errors At This Time</td>
+			{{/ca_errors}}
+		</tbody>
+	</table>
+</td>
+<script>
+    jQuery('#ca-shipping-errors-table').tablesorter({
+        widgets: ['zebra']
+    });
+</script>

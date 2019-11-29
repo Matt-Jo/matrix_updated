@@ -1,0 +1,38 @@
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-9ralMzdK1QYsk4yBY680hmsb4/hJ98xK3w0TIaJ3ll4POWpWUYaA2bRjGGujGT8w" crossorigin="anonymous">
+<style>
+	#page-body { width:100%; }
+	#redirect-table { width:100%; text-align:center; margin:10px auto; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+	<br>ERRORS:<br>
+	{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<h3>Category Redirects</h3>
+	<table id="redirect-table" class="ck-table-manager">
+		<thead>
+			<tr>
+				<th>Category Id</th>
+				<th>Category Name</th>
+				<th>URL</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#redirected_categories}}
+			<tr>
+				<td>{{id}}</td>
+				<td>{{get_header.categories_name}}</td>
+				<td>{{get_url}}</td>
+				<td>
+					<a href="/admin/categories.php?cPath=&categories_id={{id}}&action=edit_category" target="_blank">
+						<i class="fal fa-external-link-square-alt fa-2x"></i>
+					</a>
+				</td>
+			</tr>
+			{{/redirected_categories}}
+		</tbody>
+	</table>
+</td>
+<script>
+</script>

@@ -1,0 +1,133 @@
+<script src="../includes/javascript/jquery.tablesorter.min.js"></script>
+<link rel="stylesheet" href="../../tablesorter-blue.css">
+<style>
+	.button-group { display:inline; }
+	.input-group { cursor:pointer; margin-top:2px; }
+	.reset-button-container { display:block; }
+	#check-uncheck-button-container { display:block; width:100%; margin:15px auto; }
+	#check-uncheck-button-container button { display:inline; cursor:pointer; background-color:#fff; border:1px solid #000; height:25px; font-weight:bold; width:47%; }
+	.active-button { background-color:yellow; }
+	.verticals-heading { text-align:center; display:block; margin:0; padding:0; border-bottom:1px solid #fff; font-size:20px; }
+	#auto-search-box { height:25px; width:200px; padding:0; }
+	#menu-nav { display:none; width:300px; overflow-y:auto; height:95%; position:fixed; left:0; top:0; background-color:#fff; padding:10px; padding-bottom:5%; border:1px solid #000; }
+	#close-side-nav { float:right; font-size:20px; cursor:pointer; }
+	#close-side-nav:hover { font-weight:bold; }
+	#menu-nav::-webkit-scrollbar { display:none; }
+	.input-group { display:inline-block; margin:5px; }
+	#inventory-table th { width:auto; }
+	@media (min-width:1630px) {
+		#menu-nav { display:initial; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<button id="toggle-menu">Filter</button>
+	<nav id="menu-nav">
+		<span id="close-side-nav">X</span>
+		<div id="check-uncheck-button-container">
+			<button id="check-all-selection">Check All</button>
+			<button id="uncheck-all-selection">Uncheck All</button>
+		</div>
+		<div class="button-group">
+			{{#verticals}}
+				{{#name}}<h4 class="verticals-heading">{{.}}</h4>{{/name}}
+				{{#categories}}
+					<div class="input-group">
+						<label for="{{categories_id}}">{{name}}</label>
+						<input type="checkbox" id="{{categories_id}}" class="category-option" data-category="{{categories_id}}">
+					</div>
+				{{/categories}}
+			{{/verticals}}
+		</div>
+	</nav>
+	<div id="search-results">
+		<table id="inventory-table" class="tablesorter">
+			<thead>
+				<tr>
+					<th>IPN</th>
+					<th>Stock Quantity</th>
+					<th>Price</th>
+					<th>Dealer Price</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#ipn_list}}
+				<tr class="ipn-row" data-category="{{categories_id}}">
+					<td>{{ipn}}</td>
+					<td>{{stock_quantity}}</td>
+					<td>{{price}}</td>
+					<td>{{dealer_price}}</td>
+				</tr>
+				{{/ipn_list}}
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+	var category_id = [];
+	var toggle = true;
+
+	jQuery('#toggle-menu').click(function () {
+		jQuery('#menu-nav').animate({
+			width: "toggle"
+		});
+	});
+
+	jQuery('.category-option').each(function () {
+		jQuery(this).prop('checked', true);
+		category_id.push(jQuery(this).data('category'));
+	});
+
+	jQuery('#uncheck-all-selection').click(function () {
+		jQuery('.category-option').each(function () {
+			jQuery(this).prop('checked', false);
+			category_id = [];
+			jQuery('.ipn-row').hide();
+		});
+	});
+
+	jQuery('#check-all-selection').click(function () {
+		jQuery('.category-option').each(function () {
+			jQuery(this).prop('checked', true);
+		});
+		jQuery('.ipn-row').each(function () {
+			category_id.push(jQuery(this).data('category'));
+			jQuery(this).show();
+		});
+	});
+
+	jQuery('.category-option').click(function () {
+		if (!jQuery(this).is(':checked')) {
+			var category_check = jQuery(this).data('category');
+			jQuery('.ipn-row').each(function () {
+				if (jQuery(this).data('category') == category_check) {
+					jQuery(this).hide();
+					category_id.splice(category_id.indexOf(jQuery(this).data('category')), 1);
+				}
+			});
+		}
+		else {
+			category_id.push(jQuery(this).data('category'));
+			jQuery('.ipn-row').each(function () {
+				for (var i=0;i<category_id.length; i++) {
+					if (category_id[i] == jQuery(this).data('category')) {
+						jQuery(this).show();
+					}
+				}
+			});
+		}
+		console.log(category_id);
+	});
+
+	jQuery('#close-side-nav').click(function () {
+		jQuery('#menu-nav').animate({
+			width: "toggle"
+		});
+	});
+
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			1: {sorter:'digit'}
+		}
+	});
+</script>

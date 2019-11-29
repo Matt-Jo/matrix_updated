@@ -1,0 +1,208 @@
+<style>
+	#shipping-methods { width:100%; font-family:Arial, sans-serif; }
+	#shipping-methods th, #shipping-methods td { padding:2px 4px; }
+	#shipping-methods thead th { border-top:1px solid #000; font-size:13px; }
+	#shipping-methods td { font-size:11px; }
+
+	#shipping-methods td.rate-group-header { padding:0px; }
+	.fedex-warning { color:red; display:inline-block; margin-left:40px; }
+	.rate-group-header div { border-top:1px solid #ccc; padding-top:10px; margin:0px; }
+	.ship-method-row td { cursor:pointer; }
+	.ship-method-row:hover td { background-color:#ffffdf; }
+	.ship-method-row.selected td { background-color:#dfebff; }
+	.ship-method-row input { position:relative; top:2px; }
+	#shipping-methods td.rate-quote-name { padding-left:15px; font-weight:bold; white-space:nowrap; }
+	.freight-residential { padding-left:35px; background-color:#dedede; color:#252; font-weight:bold; }
+	.freight-additional-services { padding-left:35px; background-color:#eea; }
+	.freight-additional-services span { position:relative; left:20px; }
+	#shipping-methods td.freight-service-option { padding-left:35px; }
+	a.freight-info { color:#00f; }
+	.freight-info-box { display:none; position:absolute; background-color:#ccc; border:1px solid #c00; padding:4px 7px; margin-top:-5px; width:300px; }
+	.freight-service-warning { padding-left:35px; background-color:#ffdede; color:#900; }
+
+	.shipcost { text-align:right; min-width:55px; padding-left:6px; padding-right:3px; }
+	.shipcost.freight { font-size:14px; }
+	.customer-account .shipcost .ctrl { display:none; }
+	.shipping-account-notice { font-weight:bold; font-size:12px; text-align:right; }
+	.shipping-account-notice .shipper { display:block; }
+	.shipping-account-notice .customer { display:none; }
+	.customer-account .shipping-account-notice .shipper { display:none; }
+	.customer-account .shipping-account-notice .customer { display:block; }
+
+	@media (max-width:600px) {
+		#shipping-methods { display:block; }
+		#shipping-methods tbody { display:block; }
+		#shipping-methods tr { display:block; text-align:right; }
+		#shipping-methods tr.ship-method-row { border-bottom:1px solid #888; }
+		#shipping-methods tr.ship-method-row.selected { background-color:#dfebff; }
+		#shipping-methods .ship-method-row:hover { background-color:#ffffdf; }
+		#shipping-methods td { display:inline-block; }
+		#shipping-methods td.rate-group-header { display:block; text-align:left; }
+		#shipping-methods td.rate-quote-name { display:block; text-align:left; }
+	}
+
+	@media (max-width:475px) {
+		#shipping-methods td.estimated-delivery { display:block; text-align:left; }
+	}
+</style>
+<table id="shipping-methods" class="{{#customer_account}}customer-account{{/customer_account}}">
+	{{#shipping_account}}
+	<tbody>
+		<tr>
+			<td colspan="4" class="rate-group-header shipping-account-notice">
+				<div class="shipper">Select a shipping method, which will be charged as part of your order as indicated.</div>
+				<div class="customer">Select a shipping method, which will be billed to your account as indicated.</div>
+			</td>
+		</tr>
+	</tbody>
+	{{/shipping_account}}
+	{{#rate_groups}}
+	<tbody>
+		<tr>
+			<td colspan="4" class="rate-group-header"><div>{{#group_img?}}{{{.}}}{{/group_img?}}{{^group_img?}}&nbsp;{{/group_img?}}</div></td>
+		</tr>
+			{{#ups_group_warning}}
+		<tr>
+			<td colspan="4"><strong class="fedex-warning">**Attention: All UPS services cutoff is 4 pm EST. Any UPS orders picked after 4pm will be shipped the following business day.</strong></td>
+		</tr>
+			{{/ups_group_warning}}
+			{{#rate_quotes}}
+		<tr class="ship-method-row {{#selected?}}selected{{/selected?}}" data-ship-method-id="{{shipping_method_id}}">
+			<td class="rate-quote-name">{{name}}</td>
+			{{#error?}}
+			<td colspan="3" title="Error">{{{.}}}</td>
+			{{/error?}}
+			{{^error?}}
+			<td class="estimated-delivery">{{estimated_delivery}}</td>
+			<td class="shipcost" title="Price" data-price="{{price}}"><span class="ctrl">{{price}}</span></td>
+			<td class="select-method"><input type="radio" class="ship-method" name="ship-method" value="{{shipping_method_id}}" required {{#selected?}}checked{{/selected?}}></td>
+			{{/error?}}
+		</tr>
+			{{/rate_quotes}}
+			{{#freight_quote}}
+				{{#possible_residential?}}
+		<tr>
+			<td colspan="4" class="freight-residential">{{.}}</td>
+		</tr>
+				{{/possible_residential?}}
+		<tr>
+			<td colspan="2" class="rate-quote-name">{{name}}</td>
+			<td class="shipcost freight" data-price="{{price}}">{{price}}</td>
+			<td class="select-method">Required<input type="hidden" class="ship-method" name="ship-method" value="{{shipping_method_id}}" required {{#selected?}}checked{{/selected?}}></td>
+		</tr>
+		<tr>
+			<td colspan="4" class="freight-additional-services"><strong>Additional delivery services that may be required:</strong></td>
+		</tr>
+		<tr>
+			<td colspan="2" class="freight-service-option">
+				Do you have a loading dock or forklift? <a href="#" class="freight-info" id="freight-forklift">(Why?)</a>
+				<div id="freight-forklift-info" class="freight-info-box">
+					If you do not have a loading dock or forklift, the freight carrier will charge an additional fee to use a liftgate to get your item off of the truck.
+				</div>
+			</td>
+			<td colspan="2" class="shipcost">
+				{{#possible_residential?}}
+				[Cost&nbsp;Included&nbsp;for<br>Residential&nbsp;Addresses]
+				<input type="hidden" name="freight_opts[liftgate]" class="freight-liftgate required" value="1">
+				<input type="hidden" name="freight-residential" value="1">
+				{{/possible_residential?}}
+				{{^possible_residential?}}
+				{{! the question asks if they *have* a liftgate, we store the option in the backend as if they *need* a liftgate (to mirror the other options), so that's why it looks opposite here }}
+				[YES ($0) <input type="radio" name="freight_opts[liftgate]" class="freight-liftgate yes" value="0" required {{#freight_liftgate_no?}}checked{{/freight_liftgate_no?}}>]<br>
+				[NO ($70) <input type="radio" name="freight_opts[liftgate]" class="freight-liftgate no" value="1" required {{#freight_liftgate_yes?}}checked{{/freight_liftgate_yes?}}>]
+				{{/possible_residential?}}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="freight-service-option">
+				Do you require inside delivery? <a href="#" class="freight-info" id="freight-inside">(What does this mean?)</a>
+				<div id="freight-inside-info" class="freight-info-box">
+					The freight carrier will bring your package to your door. If you need them to carry it inside your building, they charge an additional fee.
+				</div>
+			</td>
+			<td colspan="2" class="shipcost">
+				[YES ($100) <input type="radio" name="freight_opts[inside]" class="freight-inside yes" value="1" required {{#freight_inside_yes?}}checked{{/freight_inside_yes?}}>]<br>
+				[NO ($0) <input type="radio" name="freight_opts[inside]" class="freight-inside no" value="0" required {{#freight_inside_no?}}checked{{/freight_inside_no?}}>]
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="freight-service-option">
+				Is your address a Limited Access location? <a href="#" class="freight-info" id="freight-limited">(What does this mean?)</a>
+				<div id="freight-limited-info" class="freight-info-box">
+					Per our freight carriers, the term LIMITED ACCESS LOCATION includes, but is not limited to, the following:
+					<ul>
+						<li>Individual (mini) storage units</li>
+						<li>Churches</li>
+						<li>Schools</li>
+						<li>Commercial establishments not open to walk-in public during normal business hours (appointment needed or Guard Shack entrance)</li>
+						<li>Construction sites</li>
+						<li>Fairs or carnivals</li>
+						<li>Prisons</li>
+						<li>Military Base/Installations</li>
+						<li>Rural route or out of town highway access locations</li>
+						<li>Businesses located in residential areas in Canada</li>
+					</ul>
+				</div>
+			</td>
+			<td colspan="2" class="shipcost">
+				[YES ($100) <input type="radio" name="freight_opts[limitaccess]" class="freight-limitaccess yes" value="1" required {{#freight_limitaccess_yes?}}checked{{/freight_limitaccess_yes?}}>]<br>
+				[NO ($0) <input type="radio" name="freight_opts[limitaccess]" class="freight-limitaccess no" value="0" required {{#freight_limitaccess_no?}}checked{{/freight_limitaccess_no?}}>]
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" class="freight-service-warning"><strong>FREIGHT CHARGES ARE ESTIMATED. YOU WILL BE CONTACTED WITH A FINAL RATE AS YOUR ORDER IS PROCESSED.<br><br>If you do not select all services necessary to deliver to your address during the checkout process, you are responsible for all charges incurred to re-deliver with the needed services.</strong></td>
+		</tr>
+			{{/freight_quote}}
+			{{#fedex_group_warning}}
+		<tr>
+			<td colspan="4"><strong class="fedex-warning">**Attention: FedEx Ground cutoff is 5 pm EST. Any Fedex Ground orders picked after 5pm will be shipped the following business day.</strong></td>
+		</tr>
+			{{/fedex_group_warning}}
+	</tbody>
+	{{/rate_groups}}
+	{{^rate_groups}}
+	<tbody>
+		<tr>
+			<th colspan="4">
+				No available shipping methods could be found - please contact <a href="mailto:{{contact_email}}" title="{{contact_phone}}">your sales team</a>
+			</th>
+		</tr>
+	</tbody>
+	{{/rate_groups}}
+</table>
+<script>
+	jQuery('.ship-method-row').click(function(e) {
+		//jQuery('.ship-method-row').removeClass('selected');
+		jQuery(this)/*.addClass('selected')*/.find('input.ship-method').attr('checked', true).click();
+	});
+
+	jQuery('input.ship-method').click(function(e) {
+		jQuery('.ship-method-row').removeClass('selected');
+		jQuery('.ship-method-row[data-ship-method-id='+jQuery(this).val()+']').addClass('selected');
+		e.stopPropagation();
+	});
+
+	jQuery('.freight-info').click(function(e) {
+		e.preventDefault();
+		jQuery('#'+jQuery(this).attr('id')+'-info').toggle();
+		return false;
+	});
+	jQuery('.freight-info-box').click(function() {
+		jQuery(this).toggle();
+	});
+	jQuery('body').click(function() {
+		jQuery('.freight-info-box').hide();
+	});
+
+	jQuery('.freight-liftgate.yes').click(function(e) {
+		if (jQuery('.freight-inside.yes').is(':checked')) {
+			alert('The liftgate option must be selected if you require inside delivery.');
+			e.preventDefault();
+			return false;
+		}
+	});
+
+	jQuery('.freight-inside.yes').click(function(e) {
+		jQuery('.freight-liftgate.no').attr('checked', true);
+	});
+</script>

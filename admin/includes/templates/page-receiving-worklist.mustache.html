@@ -1,0 +1,95 @@
+<style>
+	#page-body { width:100%; }
+	#receiving-worklist { border-collapse:separate; border-spacing:2px; }
+	#receiving-worklist th, #receiving-worklist td { padding:2px 5px; }
+	#receiving-worklist th { padding-right:20px; }
+	#receiving-worklist .no-data { font-size:1.2em; font-weight:bold; text-align:center; padding:10px; }
+	#totals { text-align:center; font-size:1.5em; }
+	.top-fifty-flag td { background-color:#ff0000 !important; color:#fff !important; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<h3>Receiving Worklist</h3>
+	<table class="tablesorter">
+		{{#totals}}
+		<tr id="totals">
+			<th>Work Order: {{work_order}}</th>
+			<th>Allocated: {{allocated}}</th>
+			<th>Zero Available: {{zero_available}}</th>
+			<th>Total: {{total_entries}}</th>
+		</tr>
+		{{/totals}}
+	</table>
+	<table id="receiving-worklist" class="tablesorter">
+		<thead>
+			<tr>
+				<th>PO #</th>
+				<th>PO Date</th>
+				<th>Vendor</th>
+				<th>Tracking #</th>
+				<th>Bin #</th>
+				<th>Days Since Scanned</th>
+				<th>Days Until Terms Due</th>
+				<th>PO Qty</th>
+				<th>Open Qty</th>
+				<th>Recv'd</th>
+				<th>Administrator</th>
+				<th>Urgency</th>
+				<th>Days @ Zero</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#tracking_numbers}}
+			<tr{{{top_fifty_flag}}}>
+				<td><a href="/admin/po_viewer.php?poId={{po_id}}" target="_blank">{{po_number}}</a></td>
+				<td>{{po_date}}</td>
+				<td>{{vendor}}</td>
+				<td>{{tracking_number}}</td>
+				<td>{{bin_number}}</td>
+				<td title="{{scanned}}">{{days_since_scanned}}</td>
+				<td title="{{terms_due}}">{{days_until_terms_due}}</td>
+				<td class="numeric">{{po_qty}}</td>
+				<td class="numeric">{{open_qty}}</td>
+				<td class="numeric">{{received_qty}}</td>
+				<td>{{administrator}}</td>
+				<td>{{urgency}}</td>
+				<td>{{zero_since}}</td>
+				<td><a href="/admin/po_receiver.php?poId={{po_id}}" class="button-link new-tab">Receive &#187;</a></td>
+			</tr>
+			{{/tracking_numbers}}
+			{{^tracking_numbers}}
+			<tr>
+				<td colspan="12" class="no-data">No Waiting Tracking #s</td>
+			</tr>
+			{{/tracking_numbers}}
+		</tbody>
+	</table>
+</td>
+<script>
+	var urgency_priority = [
+		'[[[[NOT FOUND]]]]',
+		'0 Available',
+		'Allocated',
+		'Work Order'
+	];
+	jQuery.tablesorter.addParser({
+		id: 'urgency',
+		is: function(s) { return false; },
+		format: function(s) {
+			return urgency_priority.indexOf(s);
+		},
+		type: 'numeric'
+	});
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			10: { sorter: 'urgency' },
+			12: { sorter: 'digit' },
+			13: { sorter: false }
+		}
+	});
+</script>

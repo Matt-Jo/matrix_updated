@@ -1,0 +1,135 @@
+</main>
+<footer id="ck-footer">
+	{{#foot.show_full?}}
+	<div id="ck-contentmap">
+		<div class="section-content foot-flex">
+			<section id="help-desk">
+				<strong class="ft-head">HELP DESK</strong>
+				<div class="link-group link-group-left">
+					<a class="ft-link" href="/custserv.php">Customer Service</a><br>
+					<a class="ft-link" href="/info/returns-page">Return Form</a><br>
+					<a class="ft-link" href="/info/about-us">About Us</a><br>
+					<a class="ft-link" href="/info/conditions-of-use">Conditions of Use</a><br>
+					<a class="ft-link" href="/info/terms-and-conditions">Terms &amp; Conditions</a>
+				</div>
+				<div class="link-group link-group-right">
+					<a class="ft-link" href="/info/lifetime-warranty">Lifetime Warranty</a><br>
+					<a class="ft-link" href="/info/shipping-policy">Shipping Policy</a><br>
+					<a class="ft-link" href="/info/returns-exchanges">Return Policy</a><br>
+					<a class="ft-link" href="/info/privacy">Privacy Policy</a><br>
+					<a class="ft-link" href="/info/request-quote">Request Quote</a>
+				</div>
+			</section>
+			<div class="boxborder"></div>
+			<section id="cat-map">
+				<strong class="ft-head">SHOPPING</strong>
+				{{#category_url}}
+				<div class="link-group">
+					<a class="ft-link" href="{{{cisco_switches_url}}}">Cisco Switches</a><br>
+					<a class="ft-link" href="{{{fiber_om3_url}}}">OM3 Fiber Cables</a><br>
+					<a class="ft-link" href="{{{cisco_transceivers_url}}}">Cisco Transceivers</a><br>
+					<a class="ft-link" href="{{{power_products_url}}}">Power Cables</a><br>
+					<a class="ft-link" href="https://www.cablesandkits.com/c/deals-of-the-week">Deals of the Week</a>
+				</div>
+				<div class="link-group">
+					<a class="ft-link" href="{{{cisco_console_cables_url}}}">Cisco Console Cables</a><br>
+					<a class="ft-link" href="{{{servers_url}}}">Servers</a><br>
+					<a class="ft-link" href="{{{ethernet_cat6_url}}}">Cat6 Ethernet</a><br>
+					<a class="ft-link" href="{{{cable_management_url}}}">Cable Management</a><br>
+				</div>
+				{{/category_url}}
+			</section>
+			<div class="boxborder"></div>
+			<section id="connect">
+					<div class="link-group about-us">
+						<a class="ft-link" href="https://blog.cablesandkits.com" target="_blank">Blog</a>
+						<a class="ft-link" href="/info/reviews">Testimonials</a>
+						<a class="ft-link" href="/info/careers">Careers</a>
+						<a class="ft-link" href="/learning-center/home">Learning Center</a>
+					</div>
+					<div id="newsletter-signup">
+						<div id="newsletter-intro">Sign Up for Our eMail Newsletter</div>
+						<div id="newsletter-hsForm">
+						</div>
+					</div>
+			</section>
+		</div>
+	</div>
+	<div id="be-social">
+		<div id="social-icons">
+			<div>Be Social:</div>
+			<a class="social-icon" href="http://www.facebook.com/cablesandkits" aria-label="CablesAndKits on Facebook" target="_blank"><i class="fab fa-facebook"></i></a>
+			<a class="social-icon" href="https://www.instagram.com/cablesandkits/" aria-label="CablesAndKits on Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+			<a class="social-icon" href="https://www.youtube.com/cablesandkits" aria-label="CablesAndKits on YouTube" target="_blank"><i class="fab fa-youtube"></i></a>
+			<a class="social-icon" href="https://www.linkedin.com/company/cablesandkits-com?trk=biz-companies-cym" aria-label="CablesAndKits on LinkedIn" target="_blank"><i class="fab fa-linkedin"></i></a>
+			<a class="social-icon" href="http://www.twitter.com/cablesandkits/" aria-label="CablesAndKits on Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+		</div>
+	</div>
+	<div id="ck-confidence">
+		<div class="section-content">
+			<div id="confidence-cc" class="icon">
+				<picture>
+					<source srcset="{{static_files}}/img/accepted-cc.webp?optimg" type="image/webp">
+					<img src="{{static_files}}/img/accepted-cc.png" alt="We accept all major credit cards">
+				</picture>
+			</div>
+			<div id="confidence-secondary">
+				<div id="confidence-bizrate" class="icon">
+					<a href="http://www.bizrate.com/ratings_guide/cust_reviews__mid--135501.html" target="_blank"><img src="https://medals.bizrate.com/medals/dynamic/135501_medal.gif" alt="BizRate Customer Certified (GOLD) Site - CablesAndKits.com Reviews at Bizrate" height="60"></a>
+				</div>
+
+				<div id="confidence-bbb" class="icon">
+					<a href="http://www.bbb.org/atlanta/business-reviews/telecommunications-equipment-and-suppliers/cablesandkitscom-in-buford-ga-5001494" target="_blank"><img height="70" src="{{cdn}}/BBB_Icon.jpg" alt="BBB Accredited Business"></a>
+				</div>
+
+				<div id="confidence-ssl" class="icon">
+					<script language="JavaScript" type="text/javascript">
+						TrustLogo("https://media.cablesandkits.com/static/img/comodo_secure_seal_100x85_transp.png", "CL1", "none");
+					</script>
+					<a  href="https://ssl.comodo.com" id="comodoTL">SSL Certificates</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/foot.show_full?}}
+	<div id="ck-byline">
+		<div class="section-content">
+			<div class="reach-us">
+				<span class="chosen"><a href="tel:{{clickable_contact_phone}}">{{contact_phone}}</a></span> |
+				<a href="tel:{{clickable_local_phone}}">{{contact_local_phone}}</a>
+			</div>
+			<div class="reach-us">
+				<address>
+					4555 Atwater Court Suite A Buford GA 30518
+				</address>
+			</div>
+			<div class="copyright">
+				Copyright &copy; {{copydate}} CablesAndKits.com
+			</div>
+		</div>
+		<div id="mobile-footer-legal">
+			<span><a href="/privacy-i-3.html">Privacy Policy</a></span> |
+			<span><a href="/info/terms-and-conditions">Terms & Conditions</a></span> |
+			<span><a href="/conditions-of-use-i-4.html">Conditions of Use</a></span>
+		</div>
+	</div>
+</footer>
+{{#errlog}}
+<div id="debug">
+	<pre>
+		{{{errlog}}}
+	</pre>
+</div>
+{{/errlog}}
+<script src="/images/static/js/ck-flyout.js?v=1"></script>
+<!--[if lte IE 8]>
+<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2-legacy.js"></script>
+<![endif]-->
+<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
+<script>
+	hbspt.forms.create({
+		portalId: "3353942",
+		formId: "33684739-693b-4d51-8d05-2d130214fa5d", target: "#newsletter-hsForm"
+	});
+</script>
+

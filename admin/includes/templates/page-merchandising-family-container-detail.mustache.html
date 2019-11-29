@@ -1,0 +1,248 @@
+<style>
+	h3 { margin:3px 0px 6px 0px; color:#727272; }
+	h4 { margin:10px 0px 10px 0px; color:#727272; padding:3px 3px 3px 10px; border-top:1px solid #727272; border-bottom:1px solid #727272; background-color:#337272; color:#fff; }
+	input[required], select[required], textarea[required] { border:1px solid #f55; }
+	input::placeholder { color:#aaa; }
+	#page-body *[title] { text-decoration:underline dashed; }
+	#page-body *[title]::after { content:" [?]"; cursor:pointer; }
+	button[disabled] { color:#c99; }
+
+	#family-form, #family-assets { font-size:13px; display:block; }
+	#family-form { width:800px; }
+	#family-assets { width:800px; }
+
+	.model-field { column-count:2; column-width:300px; column-rule:1px solid #cecece; height:auto; margin-bottom:12px; position:relative; }
+	.model-field label { display:block; }
+
+	.view-template { cursor:pointer; text-decoration:underline dotted; }
+
+	.rel { margin:-10px 0px 10px 0px; padding-left:400px; }
+
+	.inactive td { background-color:#333 !important; color:#fff; }
+	.inactive a { color:#fff; }
+
+	.color-rows tr:nth-child(even) input[type=text] { background-color:#eee; border:1px solid #888; margin:0px 2px 0px 0px; padding:2px 0px 2px 2px; }
+	.color-rows tr:nth-child(even):hover input[type=text] { background-color:#fff; }
+
+	.family-actions { text-align:right; margin:0px 0px 3px 0px; padding:0px 1px 0px 0px; }
+
+	#family-categories { width:100%; }
+	#family-categories .short { width:80px; text-align:center; }
+
+	.no-results { text-align:center; font-weight:bold; padding:8px; }
+
+	.show-actual-size { display:block; height:120px; width:180px; }
+	.show-actual-size img { height:120px; width:180px; position:absolute; border:1px solid #00f; }
+	.show-actual-size img:hover { height:auto; width:auto; z-index:100; border-color:#fff; }
+
+	#templates { display:none; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<a href="/admin/merchandising-family-container-list.php" class="button-link">&larr; Back</a><br>
+	<h3>{{^family}}New{{/family}} Family Container {{#family}}{{name}} (#{{family_container_id}}){{/family}}</h3>
+	<form action="/admin/merchandising-family-container-detail.php" id="family-form" method="post">
+		<input type="hidden" name="action" value="{{context}}">
+		<input type="hidden" id="family_container_id" name="family_container_id" value="{{family.family_container_id}}">
+		<h4>Details</h4>
+		<div class="model-field">
+			<label for="name" title="Display Title on the page">Family Container Name</label>
+			<textarea id="name" name="name" required maxlength="145" autocomplete="off">{{family.name}}</textarea>
+		</div>
+		<!--div class="model-field">
+			<label for="primary_container" title="This will force all siblings on the attached family to treat this container as their primary URL.  You must view the IPNs to see if they are currently set as desired.">Force Primary Redirect Container (SMASH)</label>
+			<input type="checkbox" id="primary_container" name="primary_container" value="redirect">
+		</div-->
+		<div class="model-field">
+			<label for="primary_container_with_listing" title="This will create redirects for the custom product listings you choose on the family unit page">Force Listing Relationship Redirects (SMASH-lite)</label>
+			<input type="checkbox" id="primary_container_with_listing" name="primary_container_with_listing" value="redirect">
+		</div>
+		<div class="model-field">
+			<label for="url" title="Defaults to Name">URL</label>
+			<input type="text" id="url" name="url" value="{{family.url}}" placeholder="{{^family.url}}{{family.name}}{{/family.url}}" maxlength="64">
+		</div>
+		<div class="rel">
+			{{#family.full_url}}<small><a href="{{{.}}}" target="_blank">{{{.}}}</a></small>{{/family.full_url}}
+		</div>
+		<div class="model-field">
+			<label for="url_with_categories" title="Include default category path in URL">Include Categories in URL</label>
+			<input type="checkbox" id="url_with_categories" name="url_with_categories" {{#family.url_with_categories}}checked{{/family.url_with_categories}}>
+		</div>
+		<div class="model-field">
+			<label for="meta_title" title="Tab Title - Defaults to Name">Meta Title</label>
+			<textarea id="meta_title" name="meta_title" placeholder="{{^family.meta_title}}{{family.name}}{{/family.meta_title}}" maxlength="75">{{family.meta_title}}</textarea>
+		</div>
+		<div class="model-field">
+			<label for="meta_description" title="Search Engine Description - Defaults to Name">Meta Description</label>
+			<textarea id="meta_description" name="meta_description" placeholder="{{^family.meta_description}}{{family.name}}{{/family.meta_description}}" maxlength="185">{{family.meta_description}}</textarea>
+		</div>
+		<div class="model-field">
+			<label for="meta_keywords" title="Considered worthless - ignore/don't use">Meta Keywords</label>
+			<input type="text" id="meta_keywords" name="meta_keywords" value="{{family.meta_keywords}}">
+		</div>
+		<div class="model-field" style="height:50px;">
+			<label for="summary" title="Short Description">Summary</label>
+			<textarea id="summary" name="summary" cols="60" rows="2" wrap="soft" style="position:absolute;left:100px;" required>{{{family.summary}}}</textarea>
+		</div>
+		<div class="model-field" style="height:290px;">
+			<label for="description">Description</label>
+			<textarea id="description" name="description" cols="80" rows="20" wrap="soft" style="position:absolute;left:100px;" required>{{{family.description}}}</textarea>
+		</div>
+		<div class="model-field" style="height:290px;">
+			<label for="details">Details</label>
+			<textarea id="details" name="details" cols="80" rows="20" wrap="soft" style="position:absolute;left:100px;" required>{{{family.details}}}</textarea>
+		</div>
+		<div class="model-field">
+			<label for="default_image">Default Image</label>
+			<input type="file" id="default_image" name="default_image">
+		</div>
+		<div class="rel">
+			{{#family.default_image}}
+			<span class="show-actual-size"><img src="/images/{{family.default_image}}"></span>
+			<img src="/images/{{family.default_image_medium}}">
+			<img src="/images/{{family.default_image_small}}">
+			<br>
+			[<input type="checkbox" name="remove_default_image"> Remove]
+			{{/family.default_image}}
+		</div>
+		<div class="model-field">
+			<label for="template_id">Template</label>
+			<select id="template_id" name="template_id" required>
+				<option value=""></option>
+				{{#templates}}
+				<option value="{{managed_template_id}}" {{#selected_template}}selected{{/selected_template}}>{{template_name}}</option>
+				{{/templates}}
+			</select>
+			<!--span class="view-template" data-template_id="{{family.template_id}}" data-family_container_id="{{family.family_container_id}}">[VIEW]</span-->
+		</div>
+		<div class="model-field">
+			<label for="nav_template_id">Nav Template</label>
+			<select id="nav_template_id" name="nav_template_id" required>
+				<option value=""></option>
+				{{#nav_templates}}
+				<option value="{{managed_template_id}}" {{#selected_template}}selected{{/selected_template}}>{{template_name}}</option>
+				{{/nav_templates}}
+			</select>
+			<!--span class="view-template" data-template_id="{{family.template_id}}" data-family_container_id="{{family.family_container_id}}">[VIEW]</span-->
+		</div>
+		<div class="model-field">
+			<label for="offer_template_id">Offer Template</label>
+			<select id="offer_template_id" name="offer_template_id">
+				<option value=""></option>
+				{{#offer_templates}}
+				<option value="{{managed_template_id}}" {{#selected_template}}selected{{/selected_template}}>{{template_name}}</option>
+				{{/offer_templates}}
+			</select>
+		</div>
+		<div class="model-field">
+			<label for="show_lifetime_warranty">Show Lifetime Warranty</label>
+			<input type="checkbox" id="show_lifetime_warranty" name="show_lifetime_warranty" {{#family.show_lifetime_warranty}}checked{{/family.show_lifetime_warranty}}>
+		</div>
+		<div class="model-field">
+			<label for="family_unit_id">Family Unit</label>
+			<select id="family_unit_id" name="family_unit_id" required>
+				<option value=""></option>
+				{{#family_units}}
+				<option value="{{family_unit_id}}" {{#selected_family_unit}}selected{{/selected_family_unit}}>{{name}}</option>
+				{{/family_units}}
+			</select>
+			{{#family}}
+			<a href="/admin/merchandising-unit-family-detail.php?context=edit&family_unit_id={{family_unit_id}}" target="_blank"><strong>[&#8599;]</strong></a>
+			{{/family}}
+		</div>
+		<div class="model-field">
+			<label for="default_family_unit_sibling_id">Default Sibling</label>
+			<select id="default_family_unit_sibling_id" name="default_family_unit_sibling_id">
+				<option value=""></option>
+				{{#siblings}}
+				<option value="{{family_unit_sibling_id}}" {{#selected_sibling}}selected{{/selected_sibling}}>{{ipn}}</option>
+				{{/siblings}}
+			</select>
+		</div>
+		<div class="model-field">
+			<label for="admin_only">Admin Only</label>
+			<input type="checkbox" id="admin_only" name="admin_only" {{#family.admin_only}}checked{{/family.admin_only}}>
+		</div>
+		{{#family}}
+		<div class="model-field">
+			<label for="active">Active/Published</label>
+			<input type="checkbox" id="active" name="active" {{#family.active}}checked{{/family.active}}>
+		</div>
+		{{/family}}
+		<hr>
+		<div class="family-actions">
+			{{#family}}
+			<button type="submit" name="submit-action" value="edit">Edit</button>
+			{{/family}}
+			{{^family}}
+			<button type="submit" name="submit-action" value="create">Create</button>
+			{{/family}}
+		</div>
+	</form>
+	{{#family}}
+	<div id="family-assets">
+		<h4>Categories</h4>
+		<div class="model-field">
+			<form action="/admin/merchandising-family-container-detail.php" method="post">
+				<input type="hidden" name="action" value="add-category">
+				<input type="hidden" name="family_container_id" value="{{family_container_id}}">
+				<label for="add-category">Add New Category Relationship</label>
+				<select id="add-category" name="add-category">
+					<option value="">SELECT</option>
+				</select>
+				[Make Default <input type="checkbox" name="set_default_relationship">]
+				<input type="submit" value="Add">
+			</form>
+		</div>
+		<form action="/admin/merchandising-family-container-detail.php" method="post">
+			<input type="hidden" name="action" value="update-categories">
+			<input type="hidden" name="family_container_id" value="{{family_container_id}}">
+			{{#categories.0}}
+			<input type="submit" value="Update">
+			{{/categories.0}}
+			<table cellpadding="0" cellspacing="0" border="0" id="family-categories" class="ck-table-manager color-rows">
+				<thead>
+					<tr>
+						<th>Category</th>
+						<th title="Default category is used to build the canonical URL for this page, if we're including categories in the URL">Default</th>
+						<th>[X]</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#categories}}
+					<tr>
+						<td><a href="/admin/categories.php?cPath=&categories_id={{categories_id}}&action=edit_category" target="_blank">{{category}}</a></td>
+						<td class="short"><input type="radio" name="default_relationship" value="{{categories_id}}" {{#default_relationship}}checked{{/default_relationship}}></td>
+						<td class="short"><input type="checkbox" name="delete[{{categories_id}}]"></td>
+					</tr>
+					{{/categories}}
+					{{^categories}}
+					<tr>
+						<td colspan="3" class="no-results">No Categories Found</td>
+					</tr>
+					{{/categories}}
+				</tbody>
+			</table>
+			{{#categories.0}}
+			<input type="submit" value="Update">
+			{{/categories.0}}
+		</form>
+	</div>
+	{{/family}}
+</td>
+<script>
+	jQuery('#name').on('keyup', function() {
+		jQuery('#url').attr('placeholder', jQuery(this).val());
+		jQuery('#meta_title').attr('placeholder', jQuery(this).val());
+		jQuery('#meta_description').attr('placeholder', jQuery(this).val());
+	});
+
+	var cn = new ck.category_navigator(jQuery('#add-category'));
+	cn.load_top_level({{{encoded_top_level}}});
+	cn.load_selections({{{encoded_selections}}});
+
+	var erc = new enhanced_radio_control('default_relationship');
+</script>

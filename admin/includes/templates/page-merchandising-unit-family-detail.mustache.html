@@ -1,0 +1,343 @@
+<style>
+	h3 { margin:3px 0px 6px 0px; color:#727272; }
+	h4 { margin:10px 0px 10px 0px; color:#727272; padding:3px 3px 3px 10px; border-top:1px solid #727272; border-bottom:1px solid #727272; background-color:#337272; color:#fff; }
+	input[required], select[required], textarea[required] { border:1px solid #f55; }
+	input::placeholder { color:#aaa; }
+	#page-body *[title] { text-decoration:underline dashed; }
+	#page-body *[title]::after { content:" [?]"; cursor:pointer; }
+	button[disabled] { color:#c99; }
+
+	#family-form, #family-assets { font-size:13px; display:block; }
+	#family-form { width:600px; }
+	#family-assets { width:800px; }
+
+	.ck-table-manager.color-rows tbody tr.value-header th { background-color:#888; color:#fff; }
+
+	.model-field { column-count:2; column-width:200px; column-rule:1px solid #cecece; height:20px; margin-bottom:12px; position:relative; }
+	.model-field label { display:block; }
+
+	#family-variances, #family-siblings { width:100%; }
+
+	.inactive td { background-color:#333 !important; color:#fff; }
+	.inactive a { color:#fff; }
+
+	.color-rows tr:nth-child(even) input[type=text] { background-color:#eee; border:1px solid #888; margin:0px 2px 0px 0px; padding:2px 0px 2px 2px; }
+	.color-rows tr:nth-child(even):hover input[type=text] { background-color:#fff; }
+
+	.family-actions { text-align:right; margin:0px 0px 3px 0px; padding:0px 1px 0px 0px; }
+
+	.no-results { text-align:center; font-weight:bold; padding:8px; }
+
+	#templates { display:none; }
+
+	.products-cell { white-space:nowrap; text-align:center; }
+	.no-active-products-notice { color:#33c4ff; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<a href="/admin/merchandising-unit-family-list.php" class="button-link">&larr; Back</a><br>
+	<h3>{{^family}}New{{/family}} Family {{#family}}{{name}} (#{{family_unit_id}}){{/family}}</h3>
+	<form action="/admin/merchandising-unit-family-detail.php" id="family-form" method="post">
+		<input type="hidden" name="action" value="{{context}}">
+		<input type="hidden" id="family_unit_id" name="family_unit_id" value="{{family.family_unit_id}}">
+		<h4>Details</h4>
+		<div class="model-field">
+			<label for="generic_model_number">Generic Model #</label>
+			<input type="text" id="generic_model_number" name="generic_model_number" value="{{family.generic_model_number}}">
+		</div>
+		<div class="model-field">
+			<label for="name">Family Name</label>
+			<input type="text" id="name" name="name" value="{{family.name}}" required>
+		</div>
+		<div class="model-field" style="height:80px;">
+			<label for="description">Description</label>
+			<textarea id="description" name="description" cols="60" rows="4" wrap="soft" style="position:absolute;left:100px;">{{{family.description}}}</textarea>
+		</div>
+		<div class="model-field">
+			<label for="homogeneous" title="Are all of the IPNs in this group essentially similar - i.e. can they all be used to solve the same problem?">Homogeneous</label>
+			<input type="checkbox" id="homogeneous" name="homogeneous" {{#family.homogeneous?}}checked{{/family.homogeneous?}}>
+		</div>
+		{{#family}}
+		<div class="model-field">
+			<label for="active">Active</label>
+			<input type="checkbox" id="active" name="active" {{#active?}}checked{{/active?}}>
+		</div>
+		{{/family}}
+		<hr>
+		<div class="family-actions">
+			{{#family}}
+			<button type="submit" name="submit-action" value="edit">Edit</button>
+			{{/family}}
+			{{^family}}
+			<button type="submit" name="submit-action" value="create">Create</button>
+			{{/family}}
+		</div>
+	</form>
+	{{#family}}
+	<div id="family-assets">
+		<h4>Variances</h4>
+		<div class="model-field">
+			<label for="add-key">Add New Variance</label>
+			<input type="text" id="add-key" name="add-key">
+		</div>
+		<table cellpadding="0" cellspacing="0" border="0" id="family-variances" class="ck-table-manager color-rows">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Key</th>
+					<th>Name</th>
+					<th>Descriptor</th>
+					<th title="Choose this option to show the other variant's options grouped by this variant's options.">Group On</th>
+					<th>Sort</th>
+					<th>Active</th>
+					<th>Manage</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#variances}}
+				<tr class="{{^var-active?}}inactive{{/var-active?}}">
+					<td>{{family_unit_variance_id}}</td>
+					<td>{{key}} - {{target}}</td>
+					<td><input type="text" name="name" data-idx="variance-{{family_unit_variance_id}}" class="external-field" value="{{name}}"></td>
+					<td><input type="text" name="descriptor" data-idx="variance-{{family_unit_variance_id}}" class="external-field" value="{{descriptor}}"></td>
+					<td><input type="checkbox" name="group_on" data-idx="variance-{{family_unit_variance_id}}" class="external-field" {{#var-group-on?}}checked{{/var-group-on?}}></td>
+					<td><input type="text" name="sort_order" data-idx="variance-{{family_unit_variance_id}}" class="external-field" value="{{sort_order}}" style="width:50px;"></td>
+					<td><input type="checkbox" name="active" data-idx="variance-{{family_unit_variance_id}}" class="external-field" {{#var-active?}}checked{{/var-active?}}></td>
+					<td>
+						<form action="/admin/merchandising-unit-family-detail.php" method="post">
+							<input type="hidden" name="family_unit_id" value="{{family_unit_id}}">
+							<input type="hidden" name="family_unit_variance_id" value="{{family_unit_variance_id}}">
+
+							<input type="hidden" id="name-variance-{{family_unit_variance_id}}" name="name" value="{{name}}" data-initial="{{name}}" data-changed="1">
+							<input type="hidden" id="descriptor-variance-{{family_unit_variance_id}}" name="descriptor" value="{{descriptor}}" data-initial="{{descriptor}}" data-changed="2">
+							<input type="hidden" id="group_on-variance-{{family_unit_variance_id}}" name="group_on" value="{{#var-group-on?}}1{{/var-group-on?}}{{^var-group-on?}}0{{/var-group-on?}}" data-initial="{{#var-group-on?}}1{{/var-group-on?}}{{^var-group-on?}}0{{/var-group-on?}}" data-changed="16">
+							<input type="hidden" id="sort_order-variance-{{family_unit_variance_id}}" name="sort_order" value="{{sort_order}}" data-initial="{{sort_order}}" data-changed="4">
+							<input type="hidden" id="active-variance-{{family_unit_variance_id}}" name="active" value="{{#var-active?}}1{{/var-active?}}{{^var-active?}}0{{/var-active?}}" data-initial="{{#var-active?}}1{{/var-active?}}{{^var-active?}}0{{/var-active?}}" data-changed="8">
+
+							<button type="submit" name="action" id="edit-variance-{{family_unit_variance_id}}" value="edit-variance" disabled data-changed-fields="0">Edit</button>
+							<button type="submit" name="action" value="delete-variance">Delete</button>
+						</form>
+					</td>
+				</tr>
+					{{#variance-options.0}}
+				<tr class="value-header">
+					<th></th>
+					<th>Variance Value</th>
+					<th colspan="2">Alias</th>
+					<th colspan="2">Sort</th>
+					<th colspan="2">Manage</th>
+				</tr>
+					{{/variance-options.0}}
+					{{#variance-options}}
+				<tr>
+					<td></td>
+					<td>{{attribute_value}}</td>
+					<td colspan="2"><input type="text" name="alias" data-idx="variance-{{family_unit_variance_id}}-option-{{attribute_value_safe}}" class="external-field" value="{{alias}}"></td>
+					<td colspan="2"><input type="text" name="sort_order" data-idx="variance-{{family_unit_variance_id}}-option-{{attribute_value_safe}}" class="external-field" value="{{sort_order}}" style="width:50px;"></td>
+					<td colspan="2">
+						<form action="/admin/merchandising-unit-family-detail.php" method="post">
+							<input type="hidden" name="family_unit_id" value="{{family_unit_id}}">
+							<input type="hidden" name="family_unit_variance_id" value="{{family_unit_variance_id}}">
+							<input type="hidden" name="attribute_value" value="{{attribute_value_db}}">
+
+							<input type="hidden" id="alias-variance-{{family_unit_variance_id}}-option-{{attribute_value_safe}}" name="alias" value="{{alias}}" data-initial="{{alias}}" data-changed="1">
+							<input type="hidden" id="sort_order-variance-{{family_unit_variance_id}}-option-{{attribute_value_safe}}" name="sort_order" value="{{sort_order}}" data-initial="{{sort_order}}" data-changed="2">
+
+							<button type="submit" name="action" id="edit-variance-{{family_unit_variance_id}}-option-{{attribute_value_safe}}" value="edit-variance-attribute-value" disabled data-changed-fields="0">Edit</button>
+						</form>
+					</td>
+				</tr>
+					{{/variance-options}}
+					{{#variance-options.0}}
+				<tr class="value-header">
+					<th colspan="8"></th>
+				</tr>
+					{{/variance-options.0}}
+				{{/variances}}
+				{{^variances}}
+				<tr>
+					<td colspan="8" class="no-results">No Variances Found</td>
+				</tr>
+				{{/variances}}
+			</tbody>
+		</table>
+		<h4>Siblings</h4>
+		<div class="model-field">
+			<label for="add-sibling">Add New IPN</label>
+			<input type="text" id="add-sibling" name="add-sibling" value="{{generic_model_number}}">
+		</div>
+		<!--div class="model-field">
+			<label for="add-sibling-product">Product</label>
+			<input type="text" id="add-sibling-product" name="add-sibling-product">
+		</div-->
+		<table cellpadding="0" cellspacing="0" border="0" id="family-siblings" class="ck-table-manager color-rows">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>IPN</th>
+					<th>Model #</th>
+					<th>Product</th>
+					<!-- th>Name</th -->
+					<!-- th>Description</th -->
+					<th>Primary Container</th>
+					<th>Active</th>
+					<th>Manage</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#siblings}}
+				<tr class="{{^sib-active?}}inactive{{/sib-active?}}">
+					<td {{#missing-attributes}}title="This sibling is missing attributes"{{/missing-attributes}}>{{family_unit_sibling_id}}</td>
+					<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{ipn}}</a></td>
+					{{#has_products?}}
+					<td>
+						<input type="text" name="model_number" data-idx="sibling-{{family_unit_sibling_id}}" class="external-field" value="{{model_number}}" placeholder="{{default_model_number}}">
+					</td>
+					<td class="products-cell">
+						<select class="product-selection external-field" name="products_id" data-stock-id="{{stock_id}}" data-idx="sibling-{{family_unit_sibling_id}}">
+							{{#products}}
+							<option value="{{products_id}}" {{#selected?}}selected{{/selected?}}>{{products_model}}</option>
+							{{/products}}
+						</select>
+					</td>
+					{{/has_products?}}
+					{{^has_products?}}
+					<td></td>
+					<td><i class="no-active-products-notice">No Active Products</i></td>
+					{{/has_products?}}
+					<td>
+						{{#primary_link}}
+						<a href="{{url}}" target="_blank">{{description}}</a>
+						{{/primary_link}}
+						{{^primary_link}}
+						[NONE]
+						{{/primary_link}}
+					</td>
+					<td><input type="checkbox" name="active" data-idx="sibling-{{family_unit_sibling_id}}" class="external-field" {{#sib-active?}}checked{{/sib-active?}}></td>
+					<td>
+						<form action="/admin/merchandising-unit-family-detail.php" method="post">
+							<input type="hidden" name="family_unit_id" value="{{family_unit_id}}">
+							<input type="hidden" name="family_unit_sibling_id" value="{{family_unit_sibling_id}}">
+							<input type="hidden" id="model_number-sibling-{{family_unit_sibling_id}}" name="model_number" value="{{model_number}}" data-initial="{{model_number}}" data-changed="1">
+							<input type="hidden" id="name-sibling-{{family_unit_sibling_id}}" name="name" value="{{name}}" data-initial="{{name}}" data-changed="2">
+							<input type="hidden" id="description-sibling-{{family_unit_sibling_id}}" name="description" value="{{description}}" data-initial="{{description}}" data-changed="4">
+							<input type="hidden" id="active-sibling-{{family_unit_sibling_id}}" name="active" value="{{#sib-active?}}1{{/sib-active?}}{{^sib-active?}}0{{/sib-active?}}" data-initial="{{#sib-active?}}1{{/sib-active?}}{{^sib-active?}}0{{/sib-active?}}" data-changed="8">
+							<input type="hidden" id="products_id-sibling-{{family_unit_sibling_id}}" name="products_id" value="{{products_id}}" data-initial="{{products_id}}" data-changed="16">
+							<button type="submit" name="action" id="edit-sibling-{{family_unit_sibling_id}}" value="edit-sibling" disabled data-changed-fields="0">Edit</button>
+							<button type="submit" name="action" value="delete-sibling">Delete</button>
+						</form>
+					</td>
+				</tr>
+				{{/siblings}}
+				{{^siblings}}
+				<tr>
+					<td colspan="7" class="no-results">No Siblings Found</td>
+				</tr>
+				{{/siblings}}
+			</tbody>
+		</table>
+	</div>
+	{{/family}}
+</td>
+<script>
+	jQuery('.external-field').on('change keyup', function() {
+		var $target = jQuery('#'+jQuery(this).attr('name')+'-'+jQuery(this).data('idx'));
+
+		if (jQuery(this).is(':checkbox')) {
+			if (jQuery(this).is(':checked')) $target.val(1);
+			else $target.val(0);
+		}
+		else $target.val(jQuery(this).val());
+
+		var $edit = jQuery('#edit-'+jQuery(this).data('idx'));
+		var flag = parseInt($edit.data('changed-fields'));
+		var flagval = parseInt($target.data('changed'));
+
+		if ($target.val() != $target.data('initial')) {
+			flag |= flagval;
+			$edit.data('changed-fields', flag);
+		}
+		else {
+			flag &= ~flagval;
+			$edit.data('changed-fields', flag);
+		}
+
+		if ($edit.data('changed-fields') > 0) $edit.attr('disabled', false);
+		else $edit.attr('disabled', true);
+	});
+
+	var variance_ac = new ck.autocomplete('add-key', '/admin/merchandising-unit-family-detail.php', {
+		minimum_length: 0,
+		autocomplete_action: 'variance-lookup',
+		autocomplete_field_name: 'key',
+		process_additional_fields: function(data) {
+			data.family_unit_id = jQuery('#family_unit_id').val();
+			return data;
+		},
+		select_result: function(data) {
+			var fields = {};
+
+			fields.ajax = 1;
+			fields.action = 'add-variance';
+			fields.family_unit_id = jQuery('#family_unit_id').val();
+			fields.context = data.context;
+
+			fields.variance_type = data.variance_type;
+			fields.variance_key = data.result_id;
+
+			jQuery.ajax({
+				url: '/admin/merchandising-unit-family-detail.php',
+				dataType: 'json',
+				data: fields,
+				type: 'POST',
+				timeout: 800,
+				success: function(data) {
+					if (data.success == 1) window.location.reload();
+					else alert(data.error);
+				},
+			});
+		},
+		auto_select_single: false
+	});
+
+	var ipn_ac = new ck.autocomplete('add-sibling', '/admin/merchandising-unit-family-detail.php', {
+		minimum_length: 2,
+		autocomplete_action: 'sibling-lookup',
+		autocomplete_field_name: 'ipn',
+		process_additional_fields: function(data) {
+			data.family_unit_id = jQuery('#family_unit_id').val();
+			return data;
+		},
+		select_result: function(data) {
+			var fields = {};
+
+			fields.ajax = 1;
+			fields.action = 'add-sibling';
+			fields.family_unit_id = jQuery('#family_unit_id').val();
+			fields.context = data.context;
+
+			if (data.context == 'single') fields.stock_id = data.result_id;
+			else if (data.context == 'all') fields.lookup = data.lookup;
+
+			jQuery.ajax({
+				url: '/admin/merchandising-unit-family-detail.php',
+				dataType: 'json',
+				data: fields,
+				type: 'POST',
+				timeout: 800,
+				success: function(data) {
+					if (data.success == 1) window.location.reload();
+					else alert(data.error);
+				},
+			});
+		},
+		auto_select_single: false
+	});
+
+	ck.autocomplete.styles({
+		'.autocomplete-results .entry': 'font-size:12px;', //width:148px;
+	});
+</script>

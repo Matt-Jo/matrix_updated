@@ -1,0 +1,26 @@
+<style>
+	.option { margin:4px 10px; padding:5px 8px; width:300px; border:1px solid #bbb; border-radius:2px; cursor:pointer; }
+	.option:hover { background-color:#cfc; }
+	.option strong { font-size:16px; }
+</style>
+<td id="page-body">
+	<h3>Manage Tax Liabilities</h3>
+	<form action="/admin/manage-tax-liabilities" method="post">
+		<input type="hidden" name="action" value="update">
+		<button type="submit">Update</button>
+		{{#liabilities}}
+		<div class="option">
+			[<input type="checkbox" class="option-direct" name="tax_liability[{{sales_tax_liability_id}}]" {{#sales_tax_liable}}checked{{/sales_tax_liable}}>] <strong>{{zone_name}} - {{countries_iso_code_2}}</strong>
+		</div>
+		{{/liabilities}}
+	</form>
+</td>
+<script>
+	jQuery('.option').click(function() {
+		jQuery(this).find('.option-direct').click();
+	});
+
+	jQuery('.option-direct').click(function(e) {
+		e.stopPropagation();
+	});
+</script>

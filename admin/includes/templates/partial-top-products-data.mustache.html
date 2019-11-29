@@ -1,0 +1,94 @@
+<style>
+	.none-available { background-color:#fe2; }
+	.ck-table-manager { font-size:10px; }
+</style>
+{{#title}}<h3>{{.}}</h3>{{/title}}
+{{#description}}<p>{{{.}}}</p>{{/description}}
+<table id="top-products-report" cellpadding="0" cellspacing="0" border="0" class="ck-table-manager">
+	<thead>
+		<tr>
+			<th>Rank</th>
+			<th>IPN</th>
+			<th>IPN Category</th>
+			<th>IPN Vertical</th>
+			<th>Min</th>
+			<th>Tgt</th>
+			<th>Max</th>
+			<th>Daily Qty</th>
+			<th>Days Supply</th>
+			<th>On Hand Qty</th>
+			<th>Available Qty</th>
+			<th>On Order</th>
+			<th>Last Price Review</th>
+			<th>Qty Sold</th>
+			<th>6mo Monthly Avg</th>
+			<th>31-60 Qty</th>
+			<th>0-30 Qty</th>
+			<th>Total Rev</th>
+			<th>Gross Margin</th>
+			<th>Inventory Value</th>
+			<th>Vendor</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#report}}
+		<tr class="{{#unavailable}}none-available{{/unavailable}}">
+			<th>{{idx}}</th>
+			<td><a href="/admin/ipn_editor.php?ipnId={{ipn}}" target="_blank">{{ipn}}</a></td>
+			<td>{{ipn_category}}</td>
+			<td>{{ipn_vertical}}</td>
+			<td>{{min_inventory_level}}</td>
+			<td>{{target_inventory_level}}</td>
+			<td>{{max_inventory_level}}</td>
+			<td>{{daily_runrate}}</td>
+			<td style="background-color:#{{forecast_severity}}">{{days_coverage}}</td>
+			<td>{{on_hand}}</td>
+			<td>{{available}}</td>
+			<td>{{on_order}}</td>
+			<td title="{{last_stock_price_change_date}}">{{last_stock_price_change_days}}</td>
+			<td>{{billed_units}}</td>
+			<td>{{runrate_180}}</td>
+			<td>{{units_30_to_60_days}}</td>
+			<td>{{units_last_30_days}}</td>
+			<td>{{billed_revenue}}</td>
+			<td>{{billed_margin}}</td>
+			<td>{{inventory_value}}</td>
+			<td>{{vendors_company_name}}</td>
+		</tr>
+		{{/report}}
+		{{^report}}
+		<tr>
+			<td colspan="21">No Data</td>
+		</tr>
+		{{/report}}
+	</tbody>
+</table>
+<script>
+	jQuery('#top-products-report').table_manager({
+		color_rows: true,
+		sortable: true,
+		sort_methods: {
+			0: 'integer', //rank
+			// 1: ipn
+			// 2: category
+			// 3: vertical
+			4: 'integer', // min days
+			5: 'integer', // target days
+			6: 'integer', // max days
+			7: 'numeric', // daily runrate
+			8: 'integer', // days coverage
+			9: 'integer', // on hand
+			10: 'integer', // available
+			11: 'integer', // on order
+			// 12: last price review days/never
+			13: 'integer', // qty sold
+			14: 'integer', // 6mo avg
+			15: 'integer', // 30-60 days
+			16: 'integer', // 0-30 days
+			17: 'money', // revenue
+			18: 'money', // gross margin
+			19: 'money', // inventory value
+			// 20: vendor
+		},
+	});
+</script>

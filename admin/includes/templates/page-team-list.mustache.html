@@ -1,0 +1,232 @@
+<style>
+	h3 { margin:3px 0px 6px 0px; color:#727272; }
+
+	input[required], select[required], textarea[required] { border:1px solid #f55; }
+
+	.expand { cursor:pointer; line-height:1px; }
+	.expand div { display:none; }
+	.expand .ellipsis { display:inline-block; line-height:1px; position:relative; bottom:3px; }
+	.expand.show { line-height:initial; vertical-align:initial; }
+	.expand.show div { display:block; }
+	.expand.show .ellipsis { display:none; }
+
+	.member { margin-bottom:5px; }
+
+	.ck-table-manager tfoot .add-new-team { text-align:right; border-width:0px; }
+
+	.add-new-team-form { display:none; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>CK Teams</h3>
+
+	<table cellpadding="0" cellspacing="0" border="0" id="team-list" class="ck-table-manager color-rows">
+		<thead>
+			<tr>
+				<th>Team ID</th>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Phone #</th>
+				<th>Local #</th>
+				<th>Sales Team</th>
+				<th>Salesforce Key</th>
+				<th>Active</th>
+				<th class="no-sort">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#teams}}
+			<tr class="team" data-team-id="{{team_id}}">
+				<td>{{team_id}}</td>
+				<td><input type="text" class="team-name-{{team_id}}" value="{{label}}"></td>
+				<td><input type="text" class="team-email-{{team_id}}" value="{{email_address}}"></td>
+				<td><input type="text" class="team-phone-{{team_id}}" value="{{phone_number}}"></td>
+				<td><input type="text" class="team-local-phone-{{team_id}}" value="{{local_phone_number}}"></td>
+				<td><input type="checkbox" class="team-sales-{{team_id}}" {{#is_sales_team}}checked{{/is_sales_team}}></td>
+				<td><input type="text" class="team-salesforce-key-{{team_id}}" value="{{salesforce_key}}"></td>
+				<td>{{#is_active}}Yes{{/is_active}}{{^is_active}}No{{/is_active}}</td>
+				<td>
+					<button class="edit-team" value="{{team_id}}">Edit</button>
+					{{#is_active}}
+					<button class="deactivate-team" value="{{team_id}}">Deactivate</button>
+					{{/is_active}}
+					{{^is_active}}
+					<button class="activate-team" value="{{team_id}}">Activate</button>
+					{{/is_active}}
+				</td>
+			</tr>
+			<tr class="members" data-team-id="{{team_id}}">
+				<td class="expand" colspan="9">
+					<span class="ellipsis">...</span>
+					{{#members}}
+					<div class="member">{{member}} &lt;<a href="mailto:{{email_address}}">{{email_address}}</a>&gt; - Added {{assignment_date}} <button class="remove-member" data-team-id="{{team_id}}" value="{{admin_id}}">Remove</button></div>
+					{{/members}}
+					<div>
+						<select id="new-member-for-{{team_id}}">
+							<option>Select...</option>
+							{{#available_admins}}
+							<option value="{{admin_id}}">{{admin}} &lt;{{email_address}}&gt;</option>
+							{{/available_admins}}
+						</select>
+						<button class="add-new-team-member" value="{{team_id}}">Add New Member</button>
+					</div>
+				</td>
+			</tr>
+			{{/teams}}
+			{{^teams}}
+			<tr>
+				<td colspan="9" class="no-results">No Teams Found</td>
+			</tr>
+			{{/teams}}
+		</tbody>
+		<tfoot>
+			<tr class="add-new-team-form">
+				<td></td>
+				<td><input type="text" id="new-team-name" required></td>
+				<td><input type="text" id="new-team-email"></td>
+				<td><input type="text" id="new-team-phone"></td>
+				<td><input type="text" id="new-team-local-phone"></td>
+				<td><input type="checkbox" id="new-team-sales-team"></td>
+				<td><input type="text" id="new-team-salesforce-key"></td>
+				<td></td>
+				<td><button class="add-new-team-complete">Add</button></td>
+			</tr>
+			<tr>
+				<td colspan="9" class="add-new-team">
+					<button class="add-new-team-button">Add New Team</button>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</td>
+<script>
+	/*jQuery('#team-list').table_manager({
+		color_rows: true,
+		sortable: true,
+		sort_methods: {
+			0: 'integer',
+			//1: 'text',
+			//2: 'text',
+			//3: 'text',
+			//4: 'text',
+		},
+	});*/
+
+	jQuery('.expand').click(function() {
+		jQuery(this).toggleClass('show');
+	});
+	
+	jQuery('.expand select, .expand button').click(function(e) {
+		e.stopPropagation();
+	});
+
+	jQuery('.add-new-team-button').click(function() {
+		jQuery('.add-new-team-form').toggle();
+	});
+
+	jQuery('.add-new-team-complete').click(function() {
+		var team = { label: jQuery('#new-team-name').val(), email_address: jQuery('#new-team-email').val(), phone_number: jQuery('#new-team-phone').val(), local_phone_number: jQuery('#new-team-local-phone').val(), salesforce_key: jQuery('#new-team-salesforce-key').val() };
+		if (jQuery('#new-team-sales-team').is(':checked')) team.sales_team = 1;
+
+		team.action = 'create-new-team';
+		team.ajax = 1;
+
+		jQuery.ajax({
+			url: '/admin/team-list',
+			method: 'post',
+			dataType: 'json',
+			data: team,
+			success: function(data) {
+				if (data.success) window.location.reload();
+				else if (data.err) alert(data.err);
+				else alert('There was a problem creating this team.');
+			}
+		});
+	});
+
+	jQuery('.edit-team').click(function() {
+		var team_id = jQuery(this).val();
+
+		jQuery.ajax({
+			url: '/admin/team-list',
+			method: 'post',
+			dataType: 'json',
+			data: { action: 'edit-team', ajax: 1, team_id: team_id, label: jQuery('.team-name-'+team_id).val(), email_address: jQuery('.team-email-'+team_id).val(), phone_number: jQuery('.team-phone-'+team_id).val(), local_phone_number: jQuery('.team-local-phone-'+team_id).val(), sales_team: jQuery('.team-sales-'+team_id).is(':checked')?1:0, salesforce_key: jQuery('.team-salesforce-key-'+team_id).val() },
+			success: function(data) {
+				if (data.success) window.location.reload();
+				else if (data.err) alert(data.err);
+				else alert('There was a problem editing this team.');
+			}
+		});
+	});
+
+	jQuery('.deactivate-team').click(function() {
+		var team_id = jQuery(this).val();
+
+		jQuery.ajax({
+			url: '/admin/team-list',
+			method: 'post',
+			dataType: 'json',
+			data: { action: 'deactivate-team', ajax: 1, team_id: team_id },
+			success: function(data) {
+				if (data.success) window.location.reload();
+				else if (data.err) alert(data.err);
+				else alert('There was a problem deactivating this team.');
+			}
+		});
+	});
+
+	jQuery('.activate-team').click(function() {
+		var team_id = jQuery(this).val();
+
+		jQuery.ajax({
+			url: '/admin/team-list',
+			method: 'post',
+			dataType: 'json',
+			data: { action: 'activate-team', ajax: 1, team_id: team_id },
+			success: function(data) {
+				if (data.success) window.location.reload();
+				else if (data.err) alert(data.err);
+				else alert('There was a problem activating this team.');
+			}
+		});
+	});
+
+	jQuery('.add-new-team-member').click(function() {
+		var team_id = jQuery(this).val();
+
+		var admin_id = jQuery('#new-member-for-'+team_id).val();
+
+		if (!admin_id) return false;
+
+		jQuery.ajax({
+			url: '/admin/team-list',
+			method: 'post',
+			dataType: 'json',
+			data: { action: 'add-team-member', ajax: 1, team_id: team_id, admin_id: admin_id },
+			success: function(data) {
+				if (data.success) window.location.reload();
+				else if (data.err) alert(data.err);
+				else alert('There was a problem adding this team member.');
+			}
+		});
+	});
+
+	jQuery('.remove-member').click(function() {
+		jQuery.ajax({
+			url: '/admin/team-list',
+			method: 'post',
+			dataType: 'json',
+			data: { action: 'remove-team-member', ajax: 1, team_id: jQuery(this).data('team-id'), admin_id: jQuery(this).val() },
+			success: function(data) {
+				if (data.success) window.location.reload();
+				else if (data.err) alert(data.err);
+				else alert('There was a problem removing this team member.');
+			}
+		});
+	});
+</script>

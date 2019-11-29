@@ -1,0 +1,413 @@
+<style>
+	#address-book-container { display:flex; flex-wrap:wrap; width:100%; margin-top:5px; }
+	.address-card { display:flex; flex-direction:column; width:32%; border:1px solid #bcbec0; border-radius:3px; margin:1.5px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	.address-details { list-style-type:none; margin:0; padding:10px 0 10px 10px; color:#666; }
+	.default-address { text-align:center; width:100%; color:#fff; font-weight:bold; padding:5px 0; font-size:18px; border-bottom:3px solid #285e73; height:25px; background-color:#3b8baa; }
+	.address-changes { padding:10px 0 10px 10px; color:#666; }
+	.edit-button { background-color:#3b8baa; color:#fff; padding:4px 12px; border-radius:3px; margin-right:15px; border:none; width:75px; outline:none; }
+	.new-address-card { justify-content:center; align-items:center; padding:25px 0; }
+	.fa-plus-square { font-size:110px; padding:15px; color:#cecece; }
+
+	#new-address-button { background-color:#a1ba3e; color:#fff; font-size:18px; border-radius:3px; padding:5px 15px; border:none; outline:none; }
+	.asterix { color:#e21836; font-weight:bold; padding-left:10px; }
+	.address-form-title { font-size:12px; color:#666; padding:0 0 5px 0; }
+	.inputs-style { font-size:10px; margin-bottom:10px; padding:4px; }
+	.inputs-dropdown-style { font-size:10px; margin-bottom:10px; height:24px }
+	#address-form { display:flex; flex-direction:column; width:62%; justify-content:space-around; padding:20px; }
+	#address-form-organize { display:flex; justify-content:space-around;}
+	.address-form-columns { display:flex; flex-direction:column; width:45%; }
+	#address-modal-title { display:flex; flex-direction:column; width:30%; background-color:#333; padding:0 20px; color:#fff; font-weight:bold; font-size:22px; border-bottom-left-radius:5px; border-right:5px solid #111; }
+	#pack-icon { font-size:60px; padding-bottom:15px; text-align:center; color:#e21836; }
+	#modal-title-words { font-size:25px; text-align:center; }
+	#create-address-instructions { font-weight:normal; font-size:14px; padding:20px; margin:0; }
+	#instructions-title { font-weight:bold; font-size:18px; padding-bottom:10px; }
+	#address-modal { display:none; position:fixed; z-index:99999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:#fff; background-color:rgba(0,0,0,0.4); }
+	#address-modal-content { display:flex; justify-content:space-between; background-color: #fefefe; margin:auto; border:1px solid #888; width:55%; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); border-radius:5px; }
+	#modal-close { position:relative; top:-10px; left:-32px; color:#e21836; font-size:36px; font-weight:bold; width:40px; height:40px; text-align:center; border-radius:50%; background-color:#fff; display:flex; align-items:center; justify-content:center; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	#modal-close:hover,
+	#modal-close:focus { color:#666666; text-decoration:none; cursor:pointer; }
+	#submit-address-button { background-color:#e21836; padding:5px 10px; width:40%; border-radius:5px; color:#fff; }
+	#address-form-closing-block { display:flex; justify-content:center; padding-top:15px; }
+	#default-address { margin-left:10px; }
+	.plain-text-button { border:none; background-color:#fff; outline:none; }
+	#tag-line { color:#3b8baa; font-size:21px; font-weight:lighter; padding-top:10px; text-align:center; }
+	.delete-address-button { color:#e21836; }
+
+	@media only screen and (max-width: 1183px) {
+		.address-card { flex-grow:1; }
+		#address-modal-title { width:100%; border-bottom-left-radius:0; flex-direction:initial; align-items:center; padding:20px 0 20px 0; justify-content:center; border-right:0; }
+		#address-form { width:90%; }
+		#address-modal { padding-top:50px; }
+		#address-modal-content { flex-direction:column; justify-content:center; margin:auto; border: 1px solid #888; width:80%; border-radius:0; }
+		#pack-icon { font-size:50px; padding-bottom:5px; }
+		#modal-title-words { font-size:30px; padding-bottom:5px; padding-left:10px; }
+		#create-address-instructions { display:none; }
+		#tag-line { display:none; }
+		#modal-close { top:20px; left:20px; position:fixed; }
+		#address-inputs { width:90%; }
+	}
+	@media only screen and (max-width: 500px) {
+		#address-modal-title { width:100%; border-bottom-left-radius:0; flex-direction:initial; align-items:center; justify-content:center; }
+		#address-modal-content { flex-direction:column; justify-content:center; margin:auto; border:1px solid #888; width:100%; border-radius:0; }
+		.address-card { width:100%; }
+		#pack-icon { font-size:50px; padding-bottom:5px; }
+		#modal-title-words { font-size:30px; padding-bottom:5px; padding-left:10px; }
+		#modal-close { top:4px; left:4px; position:fixed; }
+		#address-form { width:90%; }
+		#address-form-organize { flex-direction:column; }
+		.address-form-columns { width:90%; }
+		#address-modal { padding-top:0px; top:0; }
+	}
+</style>
+{{#address_message}}
+<div class="error-stack">{{{.}}}</div>
+{{/address_message}}
+<div id="address-book-container">
+	{{#customer_addresses}}
+	<div class="address-card">
+		{{#default}}
+		<div class="default-address">
+			<span>Default Address</span>
+		</div>
+		{{/default}}
+		<ul class="address-details">
+			<li>{{name}}</li>
+			<li>{{address_company}}</li>
+			<li>{{address1}}</li>
+			<li>{{address2}}</li>
+			<li>{{city}}, {{state}} {{postcode}}</li>
+			<li>{{country}}</li>
+			<li>{{phone}}</li>
+		</ul>
+		<div class="address-changes">
+			<button class="edit-button" data-id="{{id}}">Edit</button>
+			<span>
+				<form action="/my-account/addresses" method="POST">
+					<input type="hidden" name="action" value="delete">
+					<input type="hidden" name="id" value="{{id}}">
+					<button type="submit" class="plain-text-button delete-address-button">Delete</button>
+				</form>
+				{{^default}} |
+				<form action="/my-account/addresses" method="POST">
+					<input type="hidden" name="action" value="set-default">
+					<input type="hidden" name="id" value="{{id}}">
+					<button type="submit" class="plain-text-button">Set as Default</button>
+				</form>
+				{{/default}}
+			</span>
+		</div>
+	</div>
+	{{/customer_addresses}}
+	<div class="address-card new-address-card">
+		<i class="fas fa-plus-square"></i>
+		<button id="new-address-button">Add New Address</button>
+	</div>
+
+	<div id="address-modal">
+		<div id="address-modal-content">
+			<div id="address-modal-title">
+				<span id="modal-close">&times;</span>
+				<i id="pack-icon" class="far fa-address-book"></i>
+				<div id="modal-title-words">Create New Address</div>
+				<ul id="create-address-instructions">
+					<div id="instructions-title">ADDRESS HELP</div>
+					<li>First and Last Name will be the "send to" Name</li>
+					<li>Zip Code must be at least 5 digits</li>
+					<li>Phone number must be at least 10 digits</li>
+					<li>If you need further help use chat at bottom of screen</li>
+				</ul>
+				<!--<div id="tag-line">Partners in IT Procurement</div>-->
+			</div>
+			<form id="address-form" method="POST" action="/my-account/addresses">
+				<div id="address-form-organize">
+					<div class="address-form-columns">
+						<input type="hidden" name="action" id="form-action" value="create-new-address">
+						<label for="first-name" class="address-form-title">First Name<span class="asterix">*</span></label>
+						<input id="first-name" class="inputs-style" type="text" name="first_name" required>
+						<label for="last-name" class="address-form-title">Last Name<span class="asterix">*</span></label>
+						<input id="last-name" class="inputs-style" type="text" name="last_name" required>
+						<label for="company-name" class="address-form-title">Company Name</label>
+						<input id="company-name" class="inputs-style" type="text" name="company_name">
+						<label for="address1" class="address-form-title">Address Line 1<span class="asterix">*</span></label>
+						<input id="address1" class="inputs-style" type="text" name="address1" required>
+						<label for="address2" class="address-form-title">Address Line 2</label>
+						<input id="address2" class="inputs-style" type="text" name="address2">
+					</div>
+					<div class="address-form-columns">
+						<label for="city" class="address-form-title">City<span class="asterix">*</span></label>
+						<input id="city" class="inputs-style" type="text" name="city" required>
+						<label for="state" class="address-form-title">State<span class="asterix">*</span></label>
+						<div class="address-state-block">
+							{{#states.0}}
+							<select id="state" class="inputs-dropdown-style" name="state" required>
+								<option value="">Choose</option>
+								{{#states}}
+								<option value="{{zone_name}}" {{#selected?}}selected{{/selected?}}>{{zone_name}}</option>
+								{{/states}}
+							</select>
+							{{/states.0}}
+							{{^states.0}}
+							<input id="state" class="inputs-style" type="text" name="state">
+							{{/states.0}}
+						</div>
+						<label for="postcode" class="address-form-title">Post Code<span class="asterix">*</span></label>
+						<input id="postcode" class="inputs-style" type="text" name="postcode" required>
+						<label for="country" class="address-form-title">Country<span class="asterix">*</span></label>
+						<select id="country" class="inputs-dropdown-style" name="country_id" required>
+							<option>Please Select</option>
+							{{#countries}}
+							<option value="{{countries_id}}" {{#selected?}}selected{{/selected?}}>{{countries_name}}</option>
+							{{/countries}}
+						</select>
+						<label for="telephone" class="address-form-title">Phone Number<span class="asterix">*</span></label>
+						<input id="telephone" class="inputs-style" type="text" name="telephone" required>
+					</div>
+				</div>
+				<div id="address-form-closing-block">
+					<button type="submit" id="submit-address-button">Create New Address</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	jQuery('#country').change(reload_zones);
+
+	function reload_zones(zone) {
+		jQuery.ajax({
+			url: '/my-account/addresses',
+			type: 'get',
+			dataType: 'json',
+			data: { action: 'reload-zones', ajax: 1, countries_id: jQuery('#country').val() },
+			timeout: 8000,
+			success: function(data) {
+				if (data.states.length > 0) {
+					let $select = jQuery('<select id="state" class="inputs-dropdown-style" name="state" required><option value="">Choose</option></select>');
+
+					for (var i=0; i<data.states.length; i++) {
+						$select.append('<option value="'+data.states[i].zone_code+'" '+(data.states[i].zone_code==zone?'selected':'')+'>'+data.states[i].zone_name+'</option>');
+					}
+
+					jQuery('.address-state-block').html($select);
+				}
+				else jQuery('.address-state-block').html('<input id="state" class="inputs-style" type="text" name="state">');
+			}
+		});
+	}
+
+	function clear_inputs() {
+		jQuery('#first-name').val('');
+		jQuery('#last-name').val('');
+		jQuery('#company-name').val('');
+		jQuery('#address1').val('');
+		jQuery('#address2').val('');
+		jQuery('#city').val('');
+		jQuery('#state').val('');
+		jQuery('#country').val({{default_country}});
+		jQuery('#postcode').val('');
+		jQuery('#telephone').val('');
+		jQuery('#default-address').val('');
+		jQuery('#default-address').attr('checked', false);
+
+		reload_zones();
+	}
+
+	jQuery('.edit-button').on('click', function () {
+		let address_id = jQuery(this).data('id');
+		clear_inputs();
+
+		jQuery('#modal-title-words').text('Edit Address');
+		jQuery('#form-action').val('edit-address');
+		jQuery('#submit-address-button').text('Edit Address');
+		jQuery('#address-form').append('<input type="hidden" name="edit_address_id" value="'+address_id+'">');
+
+		jQuery.ajax({
+			url:'/my-account/addresses',
+			method:'POST',
+			dataType:'json',
+			data: { ajax:1, action:'get-address-data', address_id:address_id },
+			success: function (data) {
+				jQuery('#first-name').val(data.first_name);
+				jQuery('#last-name').val(data.last_name);
+				jQuery('#company-name').val(data.company_name);
+				jQuery('#address1').val(data.address1);
+				jQuery('#address2').val(data.address2);
+
+				jQuery('#city').val(data.city);
+				jQuery('#country').val(data.country_id);
+
+				jQuery('#postcode').val(data.postcode);
+				jQuery('#telephone').val(data.telephone);
+				if (data.default_address == 1) jQuery('#default-address').attr('checked', true);
+
+				reload_zones(data.state_region_code);
+
+				jQuery('#address-modal').css('display', 'flex');
+			}
+		});
+	});
+
+	jQuery('#new-address-button').on('click', function () {
+		clear_inputs();
+		jQuery('#modal-title-words').text('Create New Address');
+		jQuery('#form-action').val('create-address');
+		jQuery('#submit-address-button').text('Create Address');
+		jQuery('#address-modal').css('display', 'flex');
+	});
+
+	jQuery('#modal-close').on('click', function () {
+		jQuery('#address-modal').fadeOut();
+	});
+
+	jQuery('#address-modal').on('click', function (event) {
+		if (event.target.id == 'address-modal') jQuery('#address-modal').fadeOut();
+	});
+
+	// this validation is borrowed from the login page -- probably at somepoint need this centralized in it's own class
+	var form = '';
+	var submitted = false;
+	var error = false;
+	var error_message = '';
+
+	function check_input(field_name, field_size, message) {
+		if (form.elements[field_name] && (form.elements[field_name].type != 'hidden')) {
+			var field_value = form.elements[field_name].value;
+
+			if (field_value == '' || field_value.length < field_size) {
+				error_message = error_message + "* " + message + "\n";
+				error = true;
+			}
+		}
+	}
+
+	function check_postcode() {
+		check_input('postcode', {{validation.entry_postcode.min_length}}, '{{validation.entry_postcode.error}}');
+
+		var valid = '0123456789-';
+		var hyphencount = 0;
+		var country = form.elements['country'].value;
+		if (country == '223') {
+			var field = form.elements['postcode'].value;
+
+			if (field.length!=5 && field.length!=10) {
+				error_message = error_message + '* ' + 'Please enter your 5 digit or 5 digit+4 zip code.\n';
+				error = true;
+				return false;
+			}
+
+			for (var i=0; i < field.length; i++) {
+				temp = '' + field.substring(i, i+1);
+				if (temp == '-') hyphencount++;
+				if (valid.indexOf(temp) == '-1') {
+					error_message = error_message + '* Invalid characters in your zip code. Please try again.\n';
+					error = true;
+					return false;
+				}
+				if ((hyphencount > 1) || ((field.length==10) && ''+field.charAt(5)!='-')) {
+					error_message = error_message + '* ' + "The hyphen character should be used with a properly formatted 5 digit+four zip code, like '12345-6789'. Please try again.\n";
+					error = true;
+					return false;
+				}
+			}
+		}
+	}
+
+	function check_radio(field_name, message) {
+		var isChecked = false;
+
+		if (form.elements[field_name] && (form.elements[field_name].type != 'hidden')) {
+			var radio = form.elements[field_name];
+
+			for (var i=0; i<radio.length; i++) {
+				if (radio[i].checked == true) {
+					isChecked = true;
+					break;
+				}
+			}
+
+			if (isChecked == false) {
+				error_message = error_message + '* ' + message + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_select(field_name, field_default, message) {
+		if (form.elements[field_name] && (form.elements[field_name].type != 'hidden')) {
+			var field_value = form.elements[field_name].value;
+
+			if (field_value == field_default) {
+				error_message = error_message + '* ' + message + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_password(field_name_1, field_name_2, field_size, message_1, message_2) {
+		if (form.elements[field_name_1] && (form.elements[field_name_1].type != 'hidden')) {
+			var password = form.elements[field_name_1].value;
+			var confirmation = form.elements[field_name_2].value;
+
+			if (password == '' || password.length < field_size) {
+				error_message = error_message + '* ' + message_1 + '\n';
+				error = true;
+			}
+			else if (password != confirmation) {
+				error_message = error_message + '* ' + message_2 + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_password_new(field_name_1, field_name_2, field_name_3, field_size, message_1, message_2, message_3) {
+		if (form.elements[field_name_1] && (form.elements[field_name_1].type != 'hidden')) {
+			var password_current = form.elements[field_name_1].value;
+			var password_new = form.elements[field_name_2].value;
+			var password_confirmation = form.elements[field_name_3].value;
+
+			if (password_current == '' || password_current.length < field_size) {
+				error_message = error_message + '* ' + message_1 + '\n';
+				error = true;
+			}
+			else if (password_new == '' || password_new.length < field_size) {
+				error_message = error_message + '* ' + message_2 + '\n';
+				error = true;
+			}
+			else if (password_new != password_confirmation) {
+				error_message = error_message + '* ' + message_3 + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_form(form_name) {
+		if (submitted == true) {
+			alert('This form has already been submitted. Please press Ok and wait for this process to be completed.');
+			return false;
+		}
+
+		error = false;
+		form = form_name;
+		error_message = 'Errors have occured during the process of your form.\n\nPlease make the following corrections:\n\n';
+
+		check_input('first_name', {{validation.entry_firstname.min_length}}, '{{validation.entry_firstname.error}}');
+		check_input('last_name', {{validation.entry_lastname.min_length}}, '{{validation.entry_lastname.error}}');
+		check_input('address1', {{validation.entry_street_address.min_length}}, '{{validation.entry_street_address.error}}');
+		check_input('address2', {{validation.entry_street_address.min_length}}, '{{validation.entry_street_address.error}}');
+		check_postcode();
+		check_input('city', {{validation.entry_city.min_length}}, '{{validation.entry_city.error}}');
+		check_input('state', {{validation.entry_state.min_length}}, '{{validation.entry_state.error}}');
+		check_select('country', '', 'You must select a country form the Countries pull down menu.');
+
+		check_input('telephone', {{validation.entry_telephone.min_length}}, '{{validation.entry_telephone.error}}');
+
+		if (error == true) {
+			alert(error_message);
+			return false;
+		}
+		else {
+			submitted = true;
+			return true;
+		}
+	}
+</script>

@@ -1,0 +1,95 @@
+; Production site configuration data
+[production]
+webhost                         = ${APACHE_SUBDOMAIN}.cablesandkits.com
+database.adapter                = ${DB_ADAPTER}
+database.params.host            = ${MYSQL_IP}
+database.params.username        = ${MYSQL_USER}
+database.params.password        = ${MYSQL_PASSWORD}
+database.params.dbname          = ${MYSQL_DATABASE}
+; ---- zend-db settings ----
+db.params.host                  = ${MYSQL_IP}
+db.params.username              = ${MYSQL_USER}
+db.params.password              = ${MYSQL_PASSWORD}
+db.params.driver                = ${DB_DRIVER}
+db.params.database              = ${MYSQL_DATABASE}
+db.params.hostname              = ${MYSQL_HOSTNAME}
+db.params.charset               = ${DB_CHARSET}
+; ---- end of zend-db settings ----
+database.webstats.params.dbname = ${DB_WEBSTATS_DBNAME}
+session.cookie_lifetime         = ${WEB_SESSION_COOKIE_LIFETIME}
+session.cookie_path             = ${WEB_SESSION_COOKIE_PATH}
+session.gc_maxlifetime          = ${WEB_SESSION_GC_MAXTTL}
+session.name                    = ${WEB_SESSION_NAME}
+session.use_only_cookies        = ${WEB_SESSION_USE_ONLY_COOKIES}
+session.remember_me_seconds     = ${WEB_SESSION_REMEMBER_ME_TTL}
+admin.session.name              = ${WEB_ADMIN_SESSION_NAME}
+mail.recipient                  = ${ADMIN_NOTICE_EMAIL}
+paypal.username                 = ${PAYPAL_USERNAME}
+paypal.password                 = ${PAYPAL_PASSWORD}
+paypal.signature                = ${PAYPAL_SIGNATURE}
+paypal.endpoint                 = ${PAYPAL_ENDPOINT}
+fedex.endpoint                  = ${PAYPAL_ENDPOINT}
+fedex.account_number            = ${FEDEX_ACCOUNT_NUMBER}
+fedex.meter_number              = ${FEDEX_METER_NUMBER}
+; ---- AWS ------
+aws_access_key_id               = ${AWS_ACCESS_KEY_ID}
+aws_secret_access_key           = ${AWS_SECRET_ACCESS_KEY}
+
+; Staging site configuration data inherits from production and
+; overrides values as necessary
+[staging : production]
+database.params.username        = ${MYSQL_ROOT_USER}
+database.params.password        = ${MYSQL_ROOT_PASSWORD}
+database.params.dbname          = ${MYSQL_DATABASE}
+database.params.database        = ${MYSQL_DATABASE}
+; ---- zend-db settings ----
+db.params.host                  = ${MYSQL_IP}
+db.params.username              = ${MYSQL_ROOT_USER}
+db.params.password              = ${MYSQL_ROOT_PASSWORD}
+db.params.driver                = ${DB_DRIVER}
+db.params.database              = ${MYSQL_DATABASE}
+db.params.hostname              = ${MYSQL_HOSTNAME}
+db.params.charset               = ${DB_CHARSET}
+; ---- end of zend-db settings ----
+database.webstats.params.dbname = ${DB_WEBSTATS_DBNAME}
+mail.recipient                  = ${ADMIN_NOTICE_EMAIL}
+paypal.username                 = ${PAYPAL_USERNAME}
+paypal.password                 = ${PAYPAL_PASSWORD}
+paypal.signature                = ${PAYPAL_SIGNATURE}
+paypal.endpoint                 = ${PAYPAL_ENDPOINT}
+
+[development : production]
+database.params.host            = ${MYSQL_IP}
+database.params.username        = ${MYSQL_ROOT_USER}
+database.params.password        = ${MYSQL_ROOT_PASSWORD}
+database.params.dbname          = ${MYSQL_DATABASE}
+; ---- zend-db settings ----
+db.params.host                  = ${MYSQL_IP}
+db.params.username              = ${MYSQL_ROOT_USER}
+db.params.password              = ${MYSQL_ROOT_PASSWORD}
+db.params.driver                = ${DB_DRIVER}
+db.params.database              = ${MYSQL_DATABASE}
+db.params.hostname              = ${MYSQL_HOSTNAME}
+db.params.charset               = ${DB_CHARSET}
+; ---- end of zend-db settings ----
+database.webstats.params.dbname = ${DB_WEBSTATS_DBNAME}
+mail.recipient                  = ${ADMIN_NOTICE_EMAIL}
+paypal.username                 = ${PAYPAL_USERNAME}
+paypal.password                 = ${PAYPAL_PASSWORD}
+paypal.signature                = ${PAYPAL_SIGNATURE}
+paypal.endpoint                 = ${PAYPAL_ENDPOINT}
+ups.license                     = ${UPS_LICENSE}
+ups.userid                      = ${UPS_USERID}
+ups.password                    = ${UPS_PASSWORD}
+ups.url                         = ${UPS_URL}
+ups.shippername                 = ${UPS_SHIPPERNAME}
+ups.shipperphonenumber          = ${UPS_SHIPPERPHONENUMBER}
+ups.shipperaddress1             = ${UPS_SHIPPERADDRESS1}
+ups.shippercity                 = ${UPS_SHIPPERCITY}
+ups.shipperstate                = ${UPS_SHIPPERSTATE}
+ups.shipperzip                  = ${UPS_SHIPPERZIP}
+ups.shippercountry              = ${UPS_SHIPPERCOUNTRY}
+ups.savexmltofile               = ${UPS_SAVEXMLTOFILE}
+ups.debug                       = ${UPS_DEBUG}
+
+

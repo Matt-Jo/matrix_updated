@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie lt-ie9 lt-ie8 lt-ie7 {{context}}" lang="en"> <![endif]-->
+<!--[if IE 7]> <html class="no-js ie lt-ie9 lt-ie8 {{context}}" lang="en"> <![endif]-->
+<!--[if IE 8]> <html class="no-js ie lt-ie9 {{context}}" lang="en"> <![endif]-->
+<!--[if gt IE 8]> <html class="no-js ie {{context}}" lang="en"> <![endif]-->
+<!-- this one gets all non-ie browsers, and ie10 + since conditional comments are no longer supported as of ie10 -->
+<!--[if !IE]><!--> <html class="no-js {{context}}" lang="en"> <!--<![endif]-->
+    <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>{{head.title}}</title>
+		{{#head.canonical?}}
+		<link rel="canonical" href="{{.}}">
+		{{/head.canonical?}}
+		<meta name="description" content="{{head.meta.description}}">
+		<meta name="viewport" content="width=device-width">
+		{{#head.verify-v1?}}
+		<meta name="verify-v1" content="{{.}}">
+		{{/head.verify-v1?}}
+		{{#head.fb:admins?}}
+		<meta property="fb:admins" content="{{.}}">
+		{{/head.fb:admins?}}
+
+		{{#head.meta.robots}}
+		<meta name="robots" content="{{.}}">
+		{{/head.meta.robots}}
+
+		{{#head.links}}
+		<link rel="{{rel}}" href="{{{href}}}" {{#attributes}}{{key}}="{{val}}"{{/attributes}}>
+		{{/head.links}}
+
+		<meta name="theme-color" content="#e51937">
+
+		<meta name="google-site-verification" content="qT9IeQfP2NJjLPmfLbaGEdcQuFbLbXBa4NJmXhryhks">
+		<meta name="msvalidate.01" content="666CDC2747D40307065D261E4E6EE395">
+
+		{{#head.meta.refresh?}}
+		<meta http-equiv="refresh" content="{{.}}">
+		{{/head.meta.refresh?}}
+
+		<link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+		<link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
+		<link rel="apple-touch-icon" href="{{static_files}}/img/ck_logo_180x180.png">
+<!---Change Here for Css Loading-->
+		<link rel="stylesheet" href="/images/static/css/consolidated.a.css">
+		<link rel="stylesheet" href="/images/static/css/consolidated.b.css">
+		<link rel="stylesheet" href="/images/static/css/consolidated.c.css">
+
+		{{! These are the framework scripts }}
+		<!-- script src="/images/static/js/vendor/modernizr-2.6.2.min.js"></script -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="{{static_files}}/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+		<script src="images/static/js/vendor/jquery-migrate-1.2.1.min.js"></script> {{! mainly, for the "live" method, which should be pretty easy to migrate from but for now we'll just use this }}
+		<script src="images/static/js/plugins.js"></script>
+		<!-- script src="{{static_files}}/js/main.js"></script -->
+
+		{{! Site custom files start here }}
+
+		<!--link href="//fonts.googleapis.com/css?family=Roboto+Condensed:400italic,700italic,400,300,700" rel="stylesheet" type="text/css"-->
+		{{!Roboto:400,300,400italic,500,700,900,500italic,700italic,900italic|}}
+
+
+		{{! new static files }}
+		<script src="images/static/js/topnav.js?v=2"></script>
+		<script src="images/static/js/rotator.js?v=3"></script>
+		<script src="images/static/js/ck-styleset.max.js?v=7"></script>
+		<script src="images/static/js/ck-ajaxify.max.js"></script>
+		{{! old static files }}
+		<script type="text/javascript" src="templates/Pixame_v1/js/slick.min.js?v=1.0.2"></script>
+		<script type="text/javascript" src="templates/Pixame_v1/js/jquery.matchHeight-min.js?v=1.0.2"></script>
+		<script type="text/javascript" src="templates/Pixame_v1/js/scripts.js?v=1.0.4"></script>
+		<script type="text/javascript" src="templates/Pixame_v1/js/tabs.js?v=1.0.2"></script>
+		<script type="text/javascript">(function e(){var e=document.createElement("script");e.type="text/javascript",e.async=true,e.src="//staticw2.yotpo.com/RS5sKge5HAa1Oe1gbgC5XkKMu2IATDFERi5Cypav/widget.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();</script>
+		<script>
+			// https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/includes#Polyfill
+			if (!String.prototype.includes) {
+				String.prototype.includes = function(search, start) {
+					if (typeof start !== 'number') {
+						start = 0;
+					}
+
+					if (start + search.length > this.length) {
+						return false;
+					}
+					else {
+						return this.indexOf(search, start) !== -1;
+					}
+				};
+			}
+		</script>
+	    <script type="text/javascript"> //<![CDATA[
+	    var tlJsHost = ((window.location.protocol == "https:") ? "https://secure.comodo.com/" : "http://www.trustlogo.com/");
+	    document.write(unescape("%3Cscript src='" + tlJsHost + "trustlogo/javascript/trustlogo.js' type='text/javascript'%3E%3C/script%3E"));
+	    //]]>
+	    </script>
+
+	    <script src="https://kit.fontawesome.com/806d5770c4.js" crossorigin="anonymous" async></script>
+    </head>
+    <body class="{{body.class}}" style="width:100%; height:100%;">
+
+		{{^head.skip_gtm?}}
+		<script>
+		dataLayer = [{{#head.gtm_data_layer}}{{{.}}}{{/head.gtm_data_layer}}];
+
+		{{#head.gtm_dl_events}}
+		dataLayer.push({'event': '{{.}}'});
+		{{/head.gtm_dl_events}}
+		</script>
+		{{! Google Tag Manager }}
+		<noscript><iframe src="//www.googletagmanager.com/ns.html?id={{head.gtm_id}}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{head.gtm_id}}');</script>
+		{{! End Google Tag Manager }}
+		{{/head.skip_gtm?}}
+
+		{{!
+			all we want is the opening of the page structure here.  anything that requires actual processing will be completed and pushed to the page as it's ready.
+			a side effect of this strategy, meant to maximize perceived page-load speed, is that we must remember to close the tags with a finishing template
+		}}
+
+		{{{body.javascript}}}
+
+		{{#body.error_message?}}
+		<link rel="stylesheet" type="text/css" href="yui/build/fonts/fonts-min.css">
+		<link rel="stylesheet" type="text/css" href="yui/build/container/assets/skins/sam/container.css">
+		<script type="text/javascript" src="yui/build/utilities/utilities.js"></script>
+		<script type="text/javascript" src="yui/build/container/container-min.js"></script>
+		<script type="text/javascript">
+			YAHOO.namespace("candk.warning");
+			document.body.className += " yui-skin-sam";
+			function init_warning() {
+				YAHOO.candk.warning.dialog = new YAHOO.widget.Panel("warning", { width: "240px", fixedcenter: true, close: false, draggable: false, zindex:4, modal: true, visible: false });
+				YAHOO.candk.warning.dialog.setHeader("Error");
+				YAHOO.candk.warning.dialog.setBody("{{.}}<br><br><input type=\"button\" onclick=\"javascript: YAHOO.candk.warning.dialog.hide();\" value=\"Continue\"/>");
+				YAHOO.candk.warning.dialog.render(document.body);
+				YAHOO.candk.warning.dialog.show();
+			}
+			init_warning();
+		</script>
+		{{/body.error_message?}}

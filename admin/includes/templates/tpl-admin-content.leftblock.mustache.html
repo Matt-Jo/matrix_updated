@@ -1,0 +1,17 @@
+<style>
+	#left-nav { vertical-align:top; width:125px; }
+	.fullscreen #menu { display:none; }
+</style>
+<td id="left-nav">
+	<div id="menu">
+		{{{leftnav}}}
+	</div>
+	<a href="#" class="leftnav-hide">HIDE MENU</a>
+	<script type="text/javascript">
+		jQuery("#menu").accordion({
+			collapsible: true,
+			autoHeight: false,
+			active: {{selected_box}}
+		});
+	</script>
+</td>

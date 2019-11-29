@@ -1,0 +1,119 @@
+<!--<div class="pagejumpers pagination">-->
+	<!--<div class="col-3-12 mobile-col-6-12 col-sm-12 col-sm-center">-->
+		<!--<div class="pjshowing results-place"><strong>Showing</strong> <span><strong>{{results_start}}-{{results_end}}</strong> of <strong>{{results_cnt}}</strong></span></div>-->
+	<!--</div>-->
+
+	<!--<div class="col-5-12 mobile-col-6-12 col-sm-12 col-sm-center">-->
+		<!--<div class="pjpagination">-->
+			<!--<a href="#" data-page="{{previous_page}}" class="page-link"><img class="pagearrow" src="{{cdn}}/static/img/pglt-arrow.gif"></a>-->
+			<!--{{#pages}}-->
+			<!--{{#ellipses?}}...{{/ellipses?}}-->
+			<!--{{^ellipses?}}-->
+			<!--<a href="#" data-page="{{pagenum}}" class="page-link {{#current?}}current{{/current?}}">{{pagenum}}</a>-->
+			<!--{{/ellipses?}}-->
+			<!--{{/pages}}-->
+			<!--<a href="#" data-page="{{next_page}}" class="page-link"><img class="pagearrow" src="{{cdn}}/static/img/pgrt-arrow.gif"></a>-->
+		<!--</div>-->
+	<!--</div>-->
+
+	<!--<div class="col-2-12 mobile-col-5-12 col-sm-6 col-sm-center">-->
+
+		<!--<div class="pjshowtop">-->
+			<!--<div class="pjshowdd">-->
+				<!--<select name="results_per_page" size="1" id="showselect" class="">-->
+					<!--{{#page_sizes}}-->
+					<!--<option value="{{size}}" {{#selected?}}selected{{/selected?}}>Showing: {{size}}</option>-->
+					<!--{{/page_sizes}}-->
+				<!--</select>-->
+			<!--</div>-->
+		<!--</div>-->
+	<!--</div>-->
+
+
+	<!--<div class="col-2-12 mobile-col-7-12 col-sm-6 col-sm-center">-->
+		<!--<div class="pjsort">-->
+			<!--<select name="sort_by" size="1" id="sortby" class="">-->
+				<!--{{#sorts}}-->
+				<!--<option value="{{sort_key}}" {{#selected?}}selected{{/selected?}}>Sort By: {{sort_value}}</option>-->
+				<!--{{/sorts}}-->
+			<!--</select>-->
+		<!--</div>-->
+	<!--</div>-->
+
+	<!--<div class="grid-list-selector">-->
+		<!--<span>View:</span>-->
+		<!--<i class="far fa-th"></i>-->
+		<!--<i class="far fa-th-list"></i>-->
+	<!--</div>-->
+<!--</div>-->
+
+
+
+<!--Jeremy Notes-->
+<style>
+	.visual-page-editor { display:flex; width:100%; justify-content:space-evenly; flex-wrap:wrap; }
+	.show-total-pages { }
+	.page-selector {  }
+	.showing-display {  }
+	.sort-by-display {  }
+	.grid-list-selector { display:flex; }
+	.grid-view { padding:0 5px; }
+	.list-view {  }
+	@media all and (max-width:550px) {
+		.visual-page-editor { flex-direction:column; align-items:center; }
+		.show-total-pages { }
+	}
+</style>
+<div class="pagejumpers pagination visual-page-editor">
+	<div class="show-total-pages">
+		<div class="pjshowing results-place"><strong>Showing</strong> <span><strong>{{results_start}}-{{results_end}}</strong> of <strong>{{results_cnt}}</strong></span></div>
+	</div>
+
+	<div class="page-selector">
+		<div class="pjpagination">
+			<a href="#" data-page="{{previous_page}}" class="page-link"><img class="pagearrow" src="{{cdn}}/static/img/pglt-arrow.gif"></a>
+			{{#pages}}
+			{{#ellipses?}}...{{/ellipses?}}
+			{{^ellipses?}}
+			<a href="#" data-page="{{pagenum}}" class="page-link {{#current?}}current{{/current?}}">{{pagenum}}</a>
+			{{/ellipses?}}
+			{{/pages}}
+			<a href="#" data-page="{{next_page}}" class="page-link"><img class="pagearrow" src="{{cdn}}/static/img/pgrt-arrow.gif"></a>
+		</div>
+	</div>
+
+	<div class="showing-display">
+		<div class="pjshowtop">
+			<div class="pjshowdd">
+				<select name="results_per_page" size="1" id="showselect" class="">
+					{{#page_sizes}}
+					<option value="{{size}}" {{#selected?}}selected{{/selected?}}>Showing: {{size}}</option>
+					{{/page_sizes}}
+				</select>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="sort-by-display">
+		<div class="pjsort">
+			<select name="sort_by" size="1" id="sortby" class="">
+				{{#sorts}}
+				<option value="{{sort_key}}" {{#selected?}}selected{{/selected?}}>Sort By: {{sort_value}}</option>
+				{{/sorts}}
+			</select>
+		</div>
+	</div>
+
+	<!--<div class="grid-list-selector desktop-only">-->
+		<!--<span>View:</span>-->
+		<!--<div class="grid-view"><i class="far fa-th"></i></div>-->
+		<!--<div><i class="far fa-th-list list-view"></i></div>-->
+	<!--</div>-->
+</div>
+
+<!--<script>-->
+	<!--jQuery(".grid-view").click(function() {-->
+		<!--div.classList.replace(".product-results-organize", ".product-results-organize.grid");-->
+	<!--});-->
+<!--</script>-->

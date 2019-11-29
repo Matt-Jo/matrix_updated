@@ -1,0 +1,103 @@
+<style>
+	#kickers { display:flex; justify-content:space-between; align-items:flex-start; margin-top:10px; flex-wrap:wrap; }
+	.new-kicker-group { width:49.5%; }
+	.new-kicker-group a img { width:100%; margin-bottom:10px; }
+
+	#hero-value-prop { width:100%; height:66px; margin:-16px 0 12px 0; position:relative; text-align:center; }
+	#hero-value-prop a img { height:auto; z-index:130; width:90%; max-width:1100px; }
+	#homepage-who-we-are { background-color:#fff; color:#666; padding:8px 20px; box-shadow: 0px 0px 34px -2px rgba(0,0,0,0.26); margin-bottom:13px; }
+	#homepage-who-we-are h1 { color:#3b8baa; margin:5px 0; }
+	#homepage-who-we-are h2 { color:#666; margin:0; }
+	.who-we-are-links { color:#3b8baa; text-decoration:underline; }
+	@media (max-width:860px) {
+		#hero-rotator { margin-bottom:10px; }
+		#hero-value-prop { display:none; }
+	}
+	@media (max-width:600px) {
+		.new-kicker-group { width:100%; }
+		.new-kicker-group a img { height:auto; }
+	}
+</style>
+{{! We'll need to mustache-ify the rotator and kickers, so they can be controlled from a CMS type interface }}
+<div id="hero-rotator" class="rotator-viewer">
+	<div class="hero-container rotator-container">
+		{{#rotate_banners}}
+		<a class="hero-rotator-element" href="{{{link}}}" {{#newpage?}}target="_blank"{{/newpage?}}>
+			<picture>
+				<source srcset="{{optimg}}" type="image/webp">
+				<img src="{{img}}" alt="{{alt}}">
+			</picture>
+		</a>
+		{{/rotate_banners}}
+	</div>
+</div>
+<div id="hero-value-prop">
+	<a href="https://www.cablesandkits.com/info/making-business-easy">
+		<picture>
+			<source srcset="{{static_files}}/img/homepage-wmdbe-banner_red.webp?optimg" type="image/webp">
+			<img src="{{static_files}}/img/homepage-wmdbe-banner_red.png" alt="Why CK">
+		</picture>
+	</a>
+</div>
+{{#has_showcases}}
+	{{#showcases}}
+	<div class="showcases">
+		{{{html}}}
+	</div>
+	{{/showcases}}
+{{/has_showcases}}
+<div id="kickers">
+	<div class="new-kicker-group">
+		{{#kickers.group1}}
+		<a href="{{link}}">
+			<picture>
+				<source srcset="{{optimg}}" type="image/webp">
+				<img src="{{img}}" alt="{{alt}}">
+			</picture>
+		</a>
+		{{/kickers.group1}}
+	</div>
+	<div class="new-kicker-group">
+		{{#kickers.group2}}
+		<a href="{{link}}">
+			<picture>
+				<source srcset="{{optimg}}" type="image/webp">
+				<img src="{{img}}" alt="{{alt}}">
+			</picture>
+		</a>
+		{{/kickers.group2}}
+	</div>
+</div>
+
+<div class="rcrSect">
+	<div class="reviews-title">Real Customer Reviews</div>
+	<div class="slideshow-container">
+		<div class="cReviews">
+			<div class="wideR">
+				<!--<p class="starLight">? ? ? ? ?</p>-->
+				<i class="fas fa-star"></i><i class="fas fa-star fa-1-5x"></i><i class="fas fa-star fa-2x"></i><i class="fas fa-star fa-1-5x"></i><i class="fas fa-star"></i>
+				<p>"Great service at a great price. Always so easy to do business with CablesAndKits. Fast and smooth process. Quality products at a great price."</p>
+				<span class="customer-name">- Reginald C.</span>
+			</div>
+			<div class="desktopOnly">
+				<!--<p class="starLight">? ? ? ? ?</p>-->
+				<i class="fas fa-star"></i><i class="fas fa-star fa-1-5x"></i><i class="fas fa-star fa-2x"></i><i class="fas fa-star fa-1-5x"></i><i class="fas fa-star"></i>
+				<p>"Always get what I ordered. 5 stars for CablesandKits staff, you never fail to amaze me, excellent products and services."</p>
+				<span class="customer-name">- Andrew N.</span>
+			</div>
+			<div class="desktopOnly">
+				<!--<p class="starLight">? ? ? ? ?</p>-->
+				<i class="fas fa-star"></i><i class="fas fa-star fa-1-5x"></i><i class="fas fa-star fa-2x"></i><i class="fas fa-star fa-1-5x"></i><i class="fas fa-star"></i>
+				<p>"The Right Stuff. I got the right stuff at the right price without having to wait very long. Who could ask for more?"</p>
+				<span class="customer-name">- Gordon F.</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="homepage-who-we-are">
+	<h1>CablesAndKits – The Cisco Equipment & Network Cabling You Need, When You Need It.</h1>
+	<h2>Cisco Switches, Transceivers, Ethernet, Fiber Cabling and More!</h2>
+	<p>Your business is relying on you, and we are here to help you be the hero! Every business wants their network infrastructure to be reliable and to be able to get the networking products they need right when they need it. CablesAndKits has been helping IT professionals, businesses, and suppliers, all types and at all levels, get the quality Cisco products and cabling their businesses' have needed for years. We know this industry and have the best Cisco equipment, accessories, and cabling to enable people, just like you, to make sure their data centers and networks run smoothly and stay running around the clock, without having to worry about network outages, slow turnaround times, and missing your project deadline.</p>
+	<p>We are continually adding new products and information to help you stay on top of the most recent developments in network infrastructure and solutions. Whether you are in need of new or refurbished <a class="who-we-are-links" href="https://www.cablesandkits.com/equipment/switches/cat-82/">Cisco Switches</a>, hot-swappable <a class="who-we-are-links" href="https://www.cablesandkits.com/equipment/transceivers/cat-85/">Cisco Transceivers</a>, easy-to-use <a class="who-we-are-links" href="https://www.cablesandkits.com/ethernet">Ethernet cables</a>, safe and high-speed <a class="who-we-are-links" href="https://www.cablesandkits.com/fiber">fiber cables</a>, network racking & cabinets, or those hard to find <a class="who-we-are-links" href="https://www.cablesandkits.com/power/cat-241/">cisco power cords</a>, we have all of the IT network solutions you need to get results and can ship it today! Even if you need a "hard to find" piece of equipment or a large amount of cabling, we will help source these for you and get it shipped out to you fast, so you can relax and hit your deadlines.</p>
+</div>

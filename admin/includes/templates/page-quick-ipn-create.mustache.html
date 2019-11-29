@@ -1,0 +1,258 @@
+<style>
+	h3 { margin:3px 0px 6px 0px; color:#727272; }
+	h4 { margin:10px 0px 10px 0px; color:#727272; padding:3px 3px 3px 10px; border-top:1px solid #727272; border-bottom:1px solid #727272; background-color:#337272; color:#fff; }
+	input[required], select[required], textarea[required] { border:1px solid #f55; }
+	input::placeholder { color:#aaa; }
+	#page-body *[title] { text-decoration:underline dashed; }
+	#page-body *[title]::after { content:" [?]"; cursor:pointer; }
+	button[disabled] { color:#c99; }
+	fieldset { border:2px groove threedface; margin:6px 4px; padding:4px; font-size:12px; }
+
+	legend.required { color:#f00; }
+	.model-field { column-count:2; column-width:200px; column-rule:1px solid #cecece; height:20px; margin-bottom:12px; position:relative; }
+	.model-field label { display:block; }
+
+	.copy-halt { background-color:#fee; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Quick IPN Create</h3>
+	<form id="create-ipn" action="/admin/quick-ipn-create.php" method="post">
+		<input type="hidden" name="action" value="create">
+		{{#reviewer}}
+		<input type="hidden" name="creation_reviewed" value="1">
+		{{/reviewer}}
+
+		{{#ipn}}
+		<p>Previous IPN: <a href="/admin/ipn_editor.php?ipnId={{.}}">{{.}}</a></p>
+		{{/ipn}}
+
+		[After Create:
+		<select name="follow-up">
+			{{#follow_ups}}
+			<option value="{{value}}" {{#selected}}selected{{/selected}}>{{description}}</option>
+			{{/follow_ups}}
+		</select>]
+
+		<fieldset>
+			<legend class="required">*Required</legend>
+			<div class="model-field">
+				<label for="stock_name">IPN (Stock Name):</label>
+				{{! <input type="hidden" id="ipn_editor_search_type" value="ipn"> }}
+				<input type="text" id="stock_name" {{! id="ipn_editor_search_box" }} class="{{#source_ipn}}copy-halt{{/source_ipn}}" name="stock_name" value="{{values.stock_name}}" data-source-ipn="{{source_ipn}}" maxlength="30" required>
+			</div>
+			<div class="model-field">
+				<label for="conditions">Condition:</label>
+				<select name="conditions" id="conditions" size="1" required>
+					<option value="">Choose One</option>
+					{{#conditions}}
+					<option value="{{conditions_id}}" {{#selected}}selected{{/selected}}>{{condition}}</option>
+					{{/conditions}}
+				</select>
+			</div>
+			<div class="model-field">
+				<label for="serialized">Serialized:</label>
+				<input type="checkbox" name="serialized" id="serialized" {{#values.serialized}}checked{{/values.serialized}}>
+			</div>
+			<div class="model-field">
+				<label for="products_stock_control_category_id">IPN Category:</label>
+				<select name="products_stock_control_category_id" id="products_stock_control_category_id" size="1" required>
+					<option value="">Choose One</option>
+					{{#categories}}
+					<option value="{{categories_id}}" {{#selected}}selected{{/selected}}>{{category}}</option>
+					{{/categories}}
+				</select>
+			</div>
+			<div class="model-field">
+				<label for="products_model">Product Model #:</label>
+				<input type="text" name="products_model" id="products_model" placeholder="Same as IPN" value="{{values.products_model}}">
+			</div>
+			<div class="model-field">
+				<label for="products_name">Product Name:</label>
+				<input type="text" name="products_name" id="products_name" value="{{values.products_name}}" required>
+			</div>
+			<div class="model-field">
+				<label for="manufacturers_id">Product Manufacturer:</label>
+				<select name="manufacturers_id" id="manufacturers_id" size="1" required>
+					<option value="">Choose One</option>
+					{{#manufacturers}}
+					<option value="{{manufacturers_id}}" {{#selected}}selected{{/selected}}>{{manufacturer}}</option>
+					{{/manufacturers}}
+				</select>
+			</div>
+			<button type="submit">Create</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>Optional/Pricing</legend>
+			<div class="model-field">
+				<label for="stock_price">Stock Price:</label>
+				<input type="text" name="stock_price" id="stock_price" value="{{values.stock_price}}">
+			</div>
+			<div class="model-field">
+				<label for="dealer_price">Dealer Price:</label>
+				<input type="text" name="dealer_price" id="dealer_price" value="{{values.dealer_price}}">
+			</div>
+			<div class="model-field">
+				<label for="wholesale_high_price">Wholesale High Price:</label>
+				<input type="text" name="wholesale_high_price" id="wholesale_high_price" value="{{values.wholesale_high_price}}">
+			</div>
+			<div class="model-field">
+				<label for="wholesale_low_price">Wholesale Low Price:</label>
+				<input type="text" name="wholesale_low_price" id="wholesale_low_price" value="{{values.wholesale_low_price}}">
+			</div>
+			<button type="submit">Create</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>Optional/Listing</legend>
+			<div class="model-field">
+				<label for="is_bundle">Bundled Product:</label>
+				<input type="checkbox" name="is_bundle" id="is_bundle" {{#values.is_bundle}}checked{{/values.is_bundle}}>
+			</div>
+			<div class="model-field">
+				<label for="dlao_product">Direct Link Admin Only Products:</label>
+				<input type="checkbox" name="dlao_product" {{#values.dlao_product}}checked{{/values.dlao_product}}>
+			</div>
+			<div class="model-field">
+				<label for="assign_upc">Auto Assign UPC:</label>
+				<input type="checkbox" name="assign_upc" {{#values.assign_upc}}checked{{/values.assign_upc}}>
+			</div>
+			<button type="submit">Create</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>Optional/General</legend>
+			<div class="model-field" style="height:80px;">
+				<label for="stock_description">IPN Description:</label>
+				<textarea name="stock_description" id="stock_description" rows="4" cols="25">{{values.stock_description}}</textarea>
+			</div>
+			<div class="model-field" style="height:80px;">
+				<label for="conditioning_notes">Conditioning Notes:</label>
+				<textarea name="conditioning_notes" id="conditioning_notes" rows="4" cols="25">{{values.conditioning_notes}}</textarea>
+			</div>
+			<div class="model-field">
+				<label for="stock_weight">Weight:</label>
+				<input type="text" name="stock_weight" id="stock_weight" value="{{values.stock_weight}}">
+			</div>
+			<div class="model-field">
+				<label for="stock_location" {{#source_ipn}}title="Bins do not get copied from the source IPN"{{/source_ipn}}>Bin 1:</label>
+				<input type="text" name="stock_location" id="stock_location" value="{{values.stock_location}}">
+			</div>
+			<div class="model-field">
+				<label for="stock_location_2" {{#source_ipn}}title="Bins do not get copied from the source IPN"{{/source_ipn}}>Bin 2:</label>
+				<input type="text" name="stock_location_2" id="stock_location_2" value="{{values.stock_location_2}}">
+			</div>
+			<div class="model-field">
+				<label for="max_displayed_quantity" {{#source_ipn}}title="Max Displayed Qty does not get copied from the source IPN"{{/source_ipn}}>Maximum Displayed to Customer:</label>
+				<input type="text" name="max_displayed_quantity" id="max_displayed_quantity" value="{{values.max_displayed_quantity}}">
+			</div>
+			<div class="model-field">
+				<label for="freight">Freight:</label>
+				<input type="checkbox" name="freight" {{#values.freight}}checked{{/values.freight}}>
+			</div>
+			<div class="model-field">
+				<label for="warranty_id">Warranties:</label>
+				<select name="warranty_id" id="warranty_id" size="1">
+					<option value="">Choose One</option>
+					{{#warranties}}
+					<option value="{{warranty_id}}" {{#selected}}selected{{/selected}}>{{warranty}}</option>
+					{{/warranties}}
+				</select>
+			</div>
+			<div class="model-field">
+				<label for="eccn_code">ECCN Code:</label>
+				<input type="text" name="eccn_code" id="eccn_code" value="{{values.eccn_code}}" maxlength="5">
+			</div>
+			<div class="model-field">
+				<label for="hts_code">HTS Code:</label>
+				<input type="text" name="hts_code" id="hts_code" value="{{values.hts_code}}" maxlength="10">
+			</div>
+			<button type="submit">Create</button>
+		</fieldset>
+
+		<fieldset>
+			<legend>Optional/Purchasing</legend>
+			<div class="model-field">
+				<label for="min_inventory_level">Minimum Inventory Level (Days):</label>
+				<input type="text" name="min_inventory_level" id="min_inventory_level" value="{{values.min_inventory_level}}">
+			</div>
+			<div class="model-field">
+				<label for="target_inventory_level">Target Inventory Level (Days):</label>
+				<input type="text" name="target_inventory_level" id="target_inventory_level" value="{{values.target_inventory_level}}">
+			</div>
+			<div class="model-field">
+				<label for="max_inventory_level">Maxiumum Inventory Level (Days):</label>
+				<input type="text" name="max_inventory_level" id="max_inventory_level" value="{{values.max_inventory_level}}">
+			</div>
+			<div class="model-field">
+				<label for="discontinued">Discontinued:</label>
+				<input type="checkbox" name="discontinued" id="discontinued" {{#values.discontinued}}checked{{/values.discontinued}}>
+			</div>
+			<div class="model-field">
+				<label for="drop_ship">Dropship IPN:</label>
+				<input type="checkbox" name="drop_ship" id="drop_ship" {{#values.drop_ship}}checked{{/values.drop_ship}}>
+			</div>
+			<div class="model-field">
+				<label for="non_stock">Non-stock IPN:</label>
+				<input type="checkbox" name="non_stock" id="non_stock" {{#values.non_stock}}checked{{/values.non_stock}}>
+			</div>
+			<button type="submit">Create</button>
+		</fieldset>
+
+		<fieldset>
+			<legend {{#source_ipn}}title="Preferred Vendor data does not get copied from the source IPN"{{/source_ipn}}>Optional/Preferred Vendor</legend>
+			<div class="model-field">
+				<label for="preferred_vendor_id">Preferred Vendor:</label>
+				<select name="preferred_vendor_id" id="preferred_vendor_id" size="1">
+					<option value="">Choose One</option>
+					{{#vendors}}
+					<option value="{{vendors_id}}" {{#selected}}selected{{/selected}}>{{vendor}}</option>
+					{{/vendors}}
+				</select>
+			</div>
+			<div class="model-field">
+				<label for="preferred_vendor_price">PV Price:</label>
+				<input type="text" name="preferred_vendor_price" id="preferred_vendor_price" value="{{values.preferred_vendor_price}}">
+			</div>
+			<div class="model-field">
+				<label for="preferred_vendor_part_number">PV Part Number:</label>
+				<input type="text" name="preferred_vendor_part_number" id="preferred_vendor_part_number" value="{{values.preferred_vendor_part_number}}">
+			</div>
+			<div class="model-field">
+				<label for="preferred_vendor_case_qty">PV Case Qty:</label>
+				<input type="text" name="preferred_vendor_case_qty" id="preferred_vendor_case_qty" value="{{values.preferred_vendor_case_qty}}">
+			</div>
+			<div class="model-field">
+				<label for="preferred_vendor_always_avail">PV Always Available:</label>
+				<input type="checkbox" name="preferred_vendor_always_avail" id="preferred_vendor_always_avail" {{#values.preferred_vendor_always_avail}}checked{{/values.preferred_vendor_always_avail}}>
+			</div>
+			<div class="model-field">
+				<label for="preferred_vendor_lead_time">PV Lead Time:</label>
+				<input type="text" name="preferred_vendor_lead_time" id="preferred_vendor_lead_time" value="{{values.preferred_vendor_lead_time}}">
+			</div>
+			<div class="model-field">
+				<label for="preferred_vendor_notes">PV Notes:</label>
+				<input type="text" name="preferred_vendor_notes" id="preferred_vendor_notes" value="{{values.preferred_vendor_notes}}">
+			</div>
+			<button type="submit">Create</button>
+		</fieldset>
+	</form>
+</td>
+<script>
+	jQuery('#stock_name').on('keyup', function() {
+		if (jQuery(this).val() == jQuery(this).data('source-ipn')) jQuery(this).addClass('copy-halt');
+		else jQuery(this).removeClass('copy-halt');
+	});
+
+	jQuery('#create-ipn').on('submit', function(e) {
+		if (jQuery('#stock_name').val() == jQuery('#stock_name').data('source-ipn')) {
+			e.preventDefault();
+			alert('You must change the IPN (Stock Name) to a different value from the IPN you copied from');
+		}
+	});
+</script>

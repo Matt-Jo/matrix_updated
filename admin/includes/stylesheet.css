@@ -1,0 +1,213 @@
+/*
+  $Id: stylesheet.css,v 1.1.1.1 2004/03/04 23:39:43 ccwjr Exp $
+
+  osCommerce, Open Source E-Commerce Solutions
+  http://www.oscommerce.com
+
+  Copyright (c) 2002 osCommerce
+
+  Released under the GNU General Public License
+*/
+@import url("menu.css");
+/* links */
+a:link { font-family: Verdana, Arial, sans-serif; color: #15489e; font-size: 10px; font-weight: normal; text-decoration: none; }
+
+a:visited { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #000000; font-weight: normal; text-decoration: none; }
+a:active { font-family: Verdana, Arial, sans-serif; color: #000000; font-weight: normal; text-decoration: none; }
+a:hover { font-family: Verdana, Arial, sans-serif; color: #000000; font-weight: normal; text-decoration: underline; }
+
+a:link.headerLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #cb2026; font-weight: bold; text-decoration: none; }
+a:visited.headerLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #cb2026; font-weight: bold; text-decoration: none }
+a:active.headerLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #cb2026; font-weight: bold; text-decoration: none; }
+a:hover.headerLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #cb2026; font-weight: bold; text-decoration: underline; }
+
+a:link.menuBoxHeadingLink { font-size: 10px; color: #616060; font-weight: bold; text-decoration: none; }
+a:visited.menuBoxHeadingLink { font-size: 10px; color: #616060; font-weight: bold; text-decoration: none; }
+a:active.menuBoxHeadingLink { font-size: 10px; color: #616060; font-weight: bold; text-decoration: none; }
+a:hover.menuBoxHeadingLink { font-size: 10px; color: #616060; font-weight: bold; text-decoration: none; }
+
+a:link.menuBoxContentLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #616060; font-weight: normal; text-decoration: none; }
+a:visited.menuBoxContentLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #616060; font-weight: normal; text-decoration: none; }
+a:active.menuBoxContentLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #616060; font-weight: normal; text-decoration: none; }
+a:hover.menuBoxContentLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #616060; font-weight: normal; text-decoration: underline; }
+
+a:link.splitPageLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #0000FF; font-weight: normal; text-decoration: none; }
+a:visited.splitPageLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #0000FF; font-weight: normal; text-decoration: none; }
+a:active.splitPageLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #0000FF; font-weight: normal; text-decoration: none; }
+a:hover.splitPageLink { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #0000FF; font-weight: normal; text-decoration: underline; background-color: #FFFF33; }
+
+/* menu box */
+.menuBoxHeading { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #616060; background-color: #ffffff; }
+.menuBoxContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #616060; }
+
+/* page */
+body { background-color: #ffffff; color: #000000; margin: 0px; font-family: verdana, arial, sans-serif;}
+.headerBar { background-color: #B3BAC5; }
+.headerBarContent { font-family: Verdana, Arial, sans-serif; font-size: 8px; color: #000080; font-weight: bold; padding: 2px }
+.columnLeft { background-color: #F0F1F1; border-color: #999999; border-width: 1px; border-style: solid; padding: 2px; }
+.pageHeading,
+div#main h2 { font-family: Verdana, Arial, sans-serif; font-size: 18px; color: #727272; font-weight: bold; }
+div#main { float: left; margin-left: 10px; font-family: Verdana, Arial, sans-serif; font-size: 12px; color: #000000; }
+
+/* data table */
+.dataTableHeadingRow { background-color: #C9C9C9; }
+.dataTableHeadingContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #ffffff; font-weight: bold; }
+.dataTableRow { background-color: #F0F1F1; }
+.dataTableRowSelected { background-color: #DEE4E8; }
+.dataTableRowOver { background-color: #FFFFFF; }
+.dataTableContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #000000; }
+
+/* info box */
+.infoBoxHeading { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #ffffff; background-color: #B3BAC5; }
+.infoBoxContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #000000; background-color: #DEE4E8; }
+
+.pagetitle { margin: 3px 0 16px 0; padding: 0; }
+
+/* message box */
+
+.messageBox { font-family: Verdana, Arial, sans-serif; font-size: 10px; }
+.messageStackError, .messageStackWarning { font-family: Verdana, Arial, sans-serif; font-size: 10px; background-color: #ffb3b5; }
+.messageStackSuccess { font-family: Verdana, Arial, sans-serif; font-size: 10px; background-color: #99ff00; }
+
+/* forms */
+CHECKBOX, INPUT, RADIO, SELECT, TEXTAREA, FILE { font-family: Verdana, Arial, sans-serif; font-size: 11px; }
+FORM { display: inline; }
+
+/* account */
+.formArea { background-color: #f1f9fe; border-color: #7b9ebd; border-style: solid; border-width: 1px; }
+.formAreaTitle { font-family: Tahoma, Verdana, Arial, sans-serif; font-size: 12px; font-weight: bold; }
+
+/* attributes */
+.attributes-odd { background-color: #f4f7fd; }
+.attributes-even { background-color: #ffffff; }
+
+/* miscellaneous */
+.specialPrice { color: #ff0000; }
+.oldPrice { text-decoration: line-through; }
+.fieldRequired { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #ff0000; }
+.smallText { font-family: Verdana, Arial, sans-serif; font-size: 10px; }
+.main { font-family: Verdana, Arial, sans-serif; font-size: 12px; }
+.errorText { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #ff0000; }
+
+/* WebMakers.com Added: Editing Attributes */
+.attributeBoxContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #000000; background-color: #808080; }
+.TR.attributeBoxContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #000000; background-color: #808080; }
+.TD.attributeBoxContent { font-family: Verdana, Arial, sans-serif; font-size: 10px; color: #000000; background-color: #C0C0C0; }
+
+/* Lango Infobox Admin */
+.infoboxAdmin { font-family: Verdana, Arial, sans-serif; font-size: 12px; color: #000000; }
+.infobox-listing-odd {   background: #f8f8f9; }
+.infobox-listing-even {   background: #F0F1F1; }
+
+.VisitorTableBox {border-top: solid 1px #000000; border-left: solid 1px #000000; }
+.VisitorTableHeadingContent { font: bold 8pt Verdana, Arial, sans-serif; color: #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; }
+.VisitorTableContent { font: normal 8pt Verdana, Arial, sans-serif; color: #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; }
+
+.tlo {background-image: url(/admin/images/l_on.gif); }
+.trf {background-image: url(/admin/images/r_off.gif); }
+
+.tmf {background-image: url(/admin/images/m_off.gif); }
+
+.acc_title {
+    padding-left:10px;
+    font-weight:bold;
+    color:#666666;
+    background-color:#EFEFEF;
+    border-bottom:1px solid #333333;
+    font-family: Arial, "MS Trebuchet", sans-serif;
+}
+.acc_content_box {
+    padding:10px;
+    font-size:12px;
+    font-family: Arial, "MS Trebuchet", sans-serif;
+}
+.acc_content_box img{
+    border: none;
+}
+.acc_expand a{
+    color:#0066CC;
+    font-size:16px;
+    font-weight:bold;
+}
+
+#dashboard-header ul {
+    list-style: none;
+    padding: 0;
+    margin-left: 20px;
+}
+
+#dashboard-header li {
+    float: left;
+    border: 1px solid #bbb;
+    border-bottom-width: 0;
+    margin: 0;
+}
+
+#dashboard-header a {
+    text-decoration: none;
+    display: block;
+    background: #eee;
+    padding: 0.24em 1em;
+    color: #15489e;
+    width: 150px;
+    text-align: center;
+}
+
+#dashboard-header a:hover {
+    background: #ddf;
+}
+
+#dashboard-header .selected {
+    border-color: black;
+}
+
+#dashboard-header .selected a {
+    position: relative;
+    top: 1px;
+    background: white;
+    color: black;
+    font-weight: bold;
+}
+
+
+#dashboard-content {
+    border: 1px solid black;
+    clear: both;
+    padding: 0 ;
+    }
+
+.overlay {
+    top: 100px;
+    left: 50%;
+    position: absolute;
+    margin-left: -100px;
+    width: 200px;
+    text-align: center;
+    display: none;
+    margin-top: -10px;
+    background: #000;
+    color: #FFF;
+}
+
+.please_wait {
+    display:none; 
+    position:absolute; 
+    top:0; 
+    left:0; 
+    width:100%; 
+    height:100%; 
+    z-index:5000; 
+    background-color:#fff; 
+    opacity:0.5;
+    filter: alpha(opacity = 50);
+
+}
+
+.please_wait_inner{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width:200px;
+    height:200px;
+    z-index:5500;
+}

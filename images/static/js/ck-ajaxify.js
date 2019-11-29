@@ -1,0 +1,3 @@
+var ck=ck||{};
+ck.ajaxify=function(b,c,d,e){b.submit(function(a){a.preventDefault();a={};a.url=jQuery(this).action;a.type=jQuery(this).method;a.dataType="json";a.data=jQuery(this).serialize();a.data+="&ajax=1";0!=jQuery(this).find(".clicked").length&&jQuery(this).find(".clicked").attr("name")&&(a.data+="&"+jQuery(this).find(".clicked").attr("name")+"="+jQuery(this).find(".clicked").val());b.find(".clicked").removeClass("clicked");c&&(a.success=c);d&&(a.error=d);e&&(a.beforeSend=e);jQuery.ajax(a)});b.find("input[type=submit]").click(function(){b.find(".clicked").removeClass("clicked");
+jQuery(this).addClass("clicked")})};

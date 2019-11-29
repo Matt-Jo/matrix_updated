@@ -1,0 +1,75 @@
+		<script src="/includes/javascript/ga_events_setup.js?v=1.0.8"></script>
+
+		{{! Google Remarketing Code }}
+		<script type="text/javascript">
+			var google_tag_params = {
+				ecomm_prodid: '{{google_remarketing.prodid}}',
+				ecomm_pagetype: '{{google_remarketing.pagetype}}',
+				{{#google_remarketing.totalvalue}}ecomm_totalvalue: {{.}},{{/google_remarketing.totalvalue}}
+			};
+		</script>
+		<script type="text/javascript">
+			var google_conversion_id = {{google_remarketing.key}};
+			var google_custom_params = window.google_tag_params;
+			var google_remarketing_only = true;
+		</script>
+
+		{{! Google Badge Code }}
+		<style>
+			#___ratingbadge_0 { left:0 !important; }
+		</style>
+		<script src="https://apis.google.com/js/platform.js?onload=renderBadge" async defer></script>
+		<script>
+		  window.renderBadge = function() {
+			var ratingBadgeContainer = document.createElement("div");
+			document.body.appendChild(ratingBadgeContainer);
+			window.gapi.load('ratingbadge', function() {
+			  window.gapi.ratingbadge.render(ratingBadgeContainer, {"merchant_id": 4090110});
+			});
+		  }
+		</script>
+		
+		<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+		<noscript>
+			<div style="display:inline;">
+				<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/{{google_remarketing.key}}/?value=0&amp;guid=ON&amp;script=0"/>
+			</div>
+		</noscript>
+		{{! END Google Remarketing Code }}
+
+		{{#google_remarketing_revisited}}
+		{{! Google Code for Visited Site Remarketing List }}
+		<script type="text/javascript">
+			var google_conversion_id = {{key}};
+			var google_conversion_language = "en";
+			var google_conversion_format = "3";
+			var google_conversion_color = "666666";
+			var google_conversion_label = "H_N8CLitrgIQzOu8_gM";
+			var google_conversion_value = 0;
+		</script>
+		<script type="text/javascript" src="https://www.googleadservices.com/pagead/conversion.js"></script>
+		<noscript>
+			<div style="display:inline;">
+				<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/{{key}}/?label=H_N8CLitrgIQzOu8_gM&amp;guid=ON&amp;script=0"/>
+			</div>
+		</noscript>
+		{{! /Google Code for Visited Site Remarketing List }}
+		{{/google_remarketing_revisited}}
+		
+		{{! AddShopper javascript }}
+		<script type="text/javascript">
+			var js = document.createElement('script'); js.type = 'text/javascript'; js.async = true; js.id = 'AddShoppers';
+			js.src = ('https:' == document.location.protocol ? 'https://shop.pe/widget/' : 'http://cdn.shop.pe/widget/') + 'widget_async.js#{{addshopper.key}}';
+			document.getElementsByTagName("head")[0].appendChild(js);
+		</script>
+		{{! END AddShopper javascript }}
+
+		{{#sitewide_notice.message?}}
+		<div style="position: absolute; top: 0px; left: 50%; margin-left: -400px; width: 800px; border: 1px solid black; padding: 10px; text-align: center; background-color: white; font-family: arial; font-size: 12px;">
+			{{{.}}}
+		</div>
+		<style type="text/css"> body{ padding-top: 40px; } </style>
+		{{/sitewide_notice.message?}}
+		</main>
+	</body>
+</html>

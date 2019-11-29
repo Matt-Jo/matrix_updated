@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html class="no-js {{context}}">
+    <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>{{head.title}}</title>
+		<meta name="description" content="{{head.meta.description}}">
+		<meta name="viewport" content="width=device-width">
+		<meta name="robots" content="noindex, nofollow">
+
+		{{#head.meta.refresh?}}
+		<meta http-equiv="refresh" content="{{.}}">
+		{{/head.meta.refresh?}}
+
+		<link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+		<link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
+		<link rel="apple-touch-icon" href="{{static_files}}/img/ck_logo_180x180.png">
+
+		{{! These are the framework stylesheets }}
+		<link rel="stylesheet" href="{{static_files}}/css/normalize.css">
+		<link rel="stylesheet" href="{{static_files}}/css/main.css">
+
+		{{! These are the framework scripts }}
+		<script src="{{static_files}}/js/vendor/modernizr-2.6.2.min.js"></script>
+		{{! REMOVAL CANDIDATES }}
+		<script type="text/javascript" src="/includes/javascript/prototype.js"></script>
+		<script type="text/javascript" src="/includes/javascript/scriptaculous/scriptaculous.js?load=effects,controls"></script>
+		{{! END REMOVAL CANDIDATES }}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="{{static_files}}/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+		<script src="{{static_files}}/js/vendor/jquery-migrate-1.2.1.min.js"></script>
+		<script src="{{static_files}}/js/plugins.js"></script>
+		{{! REMOVAL OR REORGANIZATION CANDIDATES }}
+		<script type="text/javascript" src="/includes/javascript/jquery-ui-1.8.custom.min.js"></script>
+		<script type="text/javascript" src="/includes/javascript/jquery.tablesorter.min.js"></script>
+		<script type="text/javascript" src="/includes/javascript/jquery.tablesorter.pager.js"></script>
+		<!-- script type="text/javascript" src="/admin/includes/javascript/jqModal.js"></script -->
+		<script type="text/javascript" src="/includes/javascript/jquery.qtip-1.0.min.js"></script>
+		<script type="text/javascript" src="/includes/javascript/chosen/chosen.jquery.min.js"></script>
+		<script type="text/javascript" src="/admin/includes/general.js?v=5"></script>
+		<link rel="stylesheet" type="text/css" href="/admin/css/smoothness/jquery-ui-1.8.custom.css">
+		<link type="text/css" href="/admin/css/ck-jquery-ui-changes.css" rel="stylesheet">
+		<link type="text/css" href="/admin/css/jquery.autocomplete.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="/admin/includes/stylesheet.css">
+		<link rel="stylesheet" type="text/css" href="/admin/css/jqModal.css">
+		<link rel="stylesheet" type="text/css" href="/admin/css/tablesorter-blue.css">
+		<link rel="stylesheet" type="text/css" href="/includes/javascript/chosen/chosen.min.css">
+		<link rel="stylesheet" type="text/css" href="/admin/css/printable.css" media="print">
+		<script type="text/javascript">
+			jQuery.noConflict();
+			function urlencode(str) {
+				return escape(str).replace('+', '%2B').replace('%20', '+').replace('*', '%2A').replace('/', '%2F').replace('@', '%40');
+			}
+		</script>
+
+		{{! Site custom files start here }}
+		<link rel="stylesheet" type="text/css" href="includes/stylesheet.css">
+		<link href="//fonts.googleapis.com/css?family=Roboto+Condensed:400italic,700italic,400,300,700" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" href="/admin/includes/stylesheet.css">
+		<link rel="stylesheet" type="text/css" href="/admin/css/printable.css" media="print">
+		{{!Roboto:400,300,400italic,500,700,900,500italic,700italic,900italic|}}
+		<link rel="stylesheet" type="text/css" href="/admin/static/admin-styles.css">
+
+		<script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+		<script src="/images/static/js/ck-styleset.max.js"></script>
+		<script src="/images/static/js/ck-autocomplete.max.js?v=0.02"></script>
+		<script src="/images/static/js/ck-tabs.max.js?v=2"></script>
+		<script src="/images/static/js/ck-button-links.max.js"></script>
+		<script src="/images/static/js/ck-ajaxify.max.js?v=1"></script>
+		<script src="/images/static/js/ck-modal.max.js?v=4"></script>
+		<script src="/images/static/js/ck-colgroups.max.js"></script>
+		<script src="/images/static/js/ck-j-greedy-search.max.js?v=2"></script>
+		<script src="/images/static/js/ck-j-table-manager.max.js?v=0.50"></script>
+		<script src="/images/static/js/ck-category-navigator.max.js?v=0.02"></script>
+		<script src="/images/static/js/enhanced_radio_control.js?v=0.04"></script>
+		<script src="/includes/javascript/moment.min.js"></script>
+
+		<style>
+			.ajax_response_data { margin:0px; }
+			.ajax_response_data td { margin:0px; padding:0px 5px; border-width:0px 0px 1px 1px; border-style:solid; border-color:#000; -moz-border-radius:3px;-webkit-border-radius:3px;-khtml-border-radius:3px;border-radius:3px; }
+			.ajax_response_data td:first-child { border-left-width:0px; }
+
+			#page-body { vertical-align:top; padding:10px; }
+
+			.leftnav-hide { font-size:10px; }
+			.leftnav-show { font-size:10px; display:none; }
+			.fullscreen .leftnav-hide { display:none; }
+			.fullscreen .leftnav-show { display:inline; }
+		</style>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				if ($('#show_invoiced_stats').val() != 1) return;
+
+				$('body').greedy_search({
+					$search_field: $('#header_search_box'),
+					$greedy_flag: $('#greedy-search')
+				});
+
+				$('#greedy-search').click(function() {
+					$.ajax({
+						data: { ajax: 1, action: 'set-greedy-search', 'greedy-search': $(this).is(':checked')?1:0 }
+					});
+					$(this).blur();
+				});
+
+				$('.leftnav-hide').click(function() {
+					$('body').addClass('fullscreen');
+				});
+
+				$('.leftnav-show').click(function() {
+					$('body').removeClass('fullscreen');
+				});
+			});
+		</script>
+    </head>
+    <body class="{{body.class}}">
+		{{!
+			all we want is the opening of the page structure here.  anything that requires actual processing will be completed and pushed to the page as it's ready.
+			a side effect of this strategy, meant to maximize perceived page-load speed, is that we must remember to close the tags with a finishing template
+		}}

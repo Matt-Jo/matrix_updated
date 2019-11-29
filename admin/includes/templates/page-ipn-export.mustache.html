@@ -1,0 +1,71 @@
+<style>
+    .input-label-container { border:1px solid #000; display:inline-block; margin:.3em; font-size:.8em; padding:.3em; border-radius:4%; }
+
+    .input-label-container input[type="checkbox"]:hover,
+    .input-label-container label:hover,
+    .input-label-container:hover { cursor:pointer; }
+
+    .input-label-container input[type="checkbox"] { padding:0; margin:0; }
+
+    #export-ipns legend { font-weight:bold; }
+    #export-ipns fieldset { display:block; border:2px groove threedface; border-image:initial; margin:1em; padding:1em; }
+
+    .display-block { display:inline-block; }
+
+</style>
+<td id="page-body">
+    {{#has_errors?}}
+        <br>Errors:</br>
+        {{#errors}}{{{.}}}<br>{{/errors}}
+    {{/has_errors?}}
+
+    <h3>IPN Export</h3>
+        <form action="ipn-export.php?selected_box=inventory" method="POST" id="export-ipns">
+            <fieldset>
+                <legend>Column Options</legend>
+                {{#ipn_export_options}}
+                <div class="input-label-container">
+                    <label for="{{id}}">{{title}}:</label>
+                    <input type="checkbox" id="{{id}}" name="{{name}}" class="export-options" checked>
+                </div>
+                {{/ipn_export_options}}
+                <div>
+                    <div class="input-label-container display-block">
+                        <label for="uncheck-all"><b>Uncheck/Check All:</b></label>
+                        <input type="checkbox" id="uncheck-all">
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Filter Options</legend>
+                <select id="vendor-selection" name="vendor_selection" class="jquery-chosen">
+                    <option value="all" selected>Vendor Selection</option>
+                    {{#vendor_options}}
+                    <option value="{{vendors_id}}" id="vendor-selector-{{vendors_id}}" data-email="{{vendors_email_address}}" data-terms="{{company_payment_terms}}">{{vendors_company_name}}</option>
+                    {{/vendor_options}}
+                </select>
+                <select id="serialized-selection" name="serialized_selection" class="jquery-chosen">
+                    <option value="all" selected>Serialized Selection</option>
+                    <option value="1">Serialized</option>
+                    <option value="0">Non Serialized</option>
+                </select>
+                <select id="category-selection" name="category_selection" class="jquery-chosen">
+                    <option value="all" selected>Category Selection</option>
+                    {{#category_options}}
+                    <option value="{{categories_id}}">{{category_name}}</option>
+                    {{/category_options}}
+                </select>
+            </fieldset>
+            <input type="submit" name="export" value="Export">
+        </form>
+<script>
+    jQuery('#uncheck-all').on('click', function() {
+        if (jQuery(".export-options").attr('checked')) {
+            jQuery(".export-options").attr('checked', false);
+        }
+        else {
+            jQuery(".export-options").attr('checked', true);
+        }
+    });
+</script>
+</td>

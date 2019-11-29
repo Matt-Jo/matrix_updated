@@ -1,0 +1,70 @@
+<style>
+	#page-body { width:100%; }
+	.open-receiving-sessions { border-collapse:separate; border-spacing:2px; width:90%; }
+	.open-receiving-sessions th, .open-receiving-sessions td { padding:2px 5px; }
+	.open-receiving-sessions th { padding-right:20px; }
+	.open-receiving-sessions .no-data { font-size:1.2em; font-weight:bold; text-align:center; padding:10px; }
+	#totals { text-align:center; font-size:1.5em; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+
+	<h3>Open Receiving Sessions</h3>
+	<main>
+		<table class="tablesorter open-receiving-sessions">
+			<thead>
+				<tr>
+					<th>PO #</th>
+					<th>Receiving Session ID</th>
+					<th>Status</th>
+					<th>Created By</th>
+					<th>Open Lines</th>
+					<th>Open Qty</th>
+					<th>Created</th>
+					<th>Receiving</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#receiving_sessions}}
+				<tr>
+					<td><a href="/admin/po_viewer.php?poId={{po_id}}" target="_blank">{{po_number}}</a></td>
+					<td>{{po_review_id}}</td>
+					<td>{{review_status}}</td>
+					<td>{{created_by_admin}}</td>
+					<td>{{open_lines}}</td>
+					<td>{{open_quantity}}</td>
+					<td>{{created_on}}</td>
+					<td>
+						<a href="/admin/po_receiver.php?poId={{po_id}}" target="_blank" class="button-link">Receive</a>
+						{{#close}}
+						<form action="/admin/open-receiving-sessions.php" method="post">
+							<input type="hidden" name="po_id" value="{{po_id}}">
+							<input type="hidden" name="po_review_id" value="{{po_review_id}}">
+							<input type="hidden" name="action" value="delete_review_session">
+							<input type="submit" value="Delete">
+						</form>
+						{{/close}}
+					</td>
+				</tr>
+				{{/receiving_sessions}}
+				{{^receiving_sessions}}
+				<tr>
+					<td colspan="9" class="no-data">No Open Receiving Sessions</td>
+				</tr>
+				{{/receiving_sessions}}
+			</tbody>
+		</table>
+	</main>
+</td>
+<script>
+	jQuery('.tablesorter').tablesorter({
+		widgets: ['zebra'],
+		headers: {
+			6: { sorter: 'date' },
+		},
+		sortList: [[6, 1]]
+	});
+</script>

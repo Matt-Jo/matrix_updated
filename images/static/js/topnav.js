@@ -1,0 +1,3 @@
+var ck=ck||{};
+ck.topnav=function(d,c){var b=this;this.$boundary="undefined"!==typeof c?$(c):null;this.menulist=d;this.close_delay=20;this.close_animation=120;this.right_boundary=this.$boundary.offset().left+this.$boundary.width();$(document).ready(function(){for(var a=0;a<b.menulist.length;a++)$("."+b.menulist[a].menu).each(function(a){$(this).offset().left+$(this).width()>b.right_boundary&&$(this).addClass("boundary-shift")}),$("."+b.menulist[a].link).hover(function(){$(this).addClass("in-context")},function(){var a=
+$(this);a.addClass("unselect");$(".ie").length?a.removeClass("in-context").removeClass("unselect"):setTimeout(function(){a.removeClass("in-context").removeClass("unselect")},b.close_animation)})})};

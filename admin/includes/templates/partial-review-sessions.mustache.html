@@ -1,0 +1,37 @@
+{{#reviews}}
+<table class="review-session {{#under_review}}reviewing{{/under_review}} ck-table-manager color-rows" cellspacing="0" cellpadding="0" border="0">
+	<caption>Receiving Session for Tracking #: {{tracking_number}} {{^under_review}}<input type="checkbox" class="complete-reviews" name="complete-tracking-number[{{purchase_order_tracking_id}}]">{{/under_review}}</caption>
+	<thead>
+		<tr>
+			<th class="review-control">Edit</th>
+			<th class="review-ipn">Stock Name</th>
+			<th class="review-qty">Qty</th>
+			<th class="review-reviewing">
+				<strong>Reviewing</strong>
+				<a href="/admin/po_receiver.php?poId={{po_id}}&po_review_id={{po_review_id}}&action=unlock-review">[UNLOCK REVIEW]</a>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#products}}
+		<tr id="po_review_product_{{po_review_product_id}}" data-stock-id="{{stock_name}}" class="staged-ipns {{#on_hold}}on-hold{{/on_hold}} {{#unexpected?}}unexpected{{/unexpected?}}">
+			<td class="review-control">
+				<a href="#" class="delete-review-product" data-context="reviews" data-po_product_id="{{po_product_id}}" data-tracking_id="{{purchase_order_tracking_id}}"><img src="images/delete.png"></a>
+				<a href="#" class="receive-product" data-context="reviews" data-po_product_id="{{po_product_id}}" data-tracking_id="{{purchase_order_tracking_id}}"><img src="images/edit.png"></a>
+			</td>
+			<td class="review-ipn"><strong>{{stock_name}}</strong></td>
+			<td class="review-qty">{{qty_received}}</td>
+			<td class="review-reviewing">{{#unexpected?}}Unexpected{{/unexpected?}}</td>
+		</tr>
+		{{/products}}
+		{{^products}}
+		<tr>
+			<td colspan="3" class="no-products">NO PRODUCTS</td>
+		</tr>
+		{{/products}}
+	</tbody>
+</table>
+{{/reviews}}
+{{^reviews}}
+NO ACTIVE RECEIVING SESSIONS
+{{/reviews}}

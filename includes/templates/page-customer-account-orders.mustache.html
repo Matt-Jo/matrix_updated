@@ -1,0 +1,62 @@
+<style>
+	.customer-account-orders-table { margin-top:10px; box-shadow: 0 1px 2px 0 rgba(34,36,38,.15); }
+	#pagination-footer { background-color:#c6e8f9; }
+</style>
+<table class="customer-account-table">
+	<thead id="order-column-titles">
+		<tr>
+			<th>Order #</th>
+			<th>Order Date</th>
+			<th>PO #</th>
+			<th>Ref #</th>
+			<th>Status</th>
+			<th>Total</th>
+			<th>Ordered By</th>
+			<th>Shipped To</th>
+		</tr>
+	</thead>
+	{{#paginate}}
+	<tfoot>
+		<tr>
+			<td id="pagination-footer" colspan="8">
+				<div style="float:left;">
+					Displaying {{pagination_status}} orders)
+				</div>
+				<div style="float:right;">
+					Results Pages:
+					{{#previous_page}}
+					<a href="?page={{.}}">[&lt;< Prev]</a>
+					{{/previous_page}}
+					{{#page_numbers}}
+						<a href="?page={{.}}">{{.}}</a>
+					{{/page_numbers}}
+					{{#next_page}}
+					<a href="?page={{.}}">[Next &gt;&gt;]</a>
+					{{/next_page}}
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+	{{/paginate}}
+	<tbody>
+		{{#page_orders}}
+		<tr>
+			<td title="Order #">
+				<a href="/account_history_info.php?order_id={{order_id}}" style="color:#06c;">{{order_id}}</a>
+			</td>
+			<td title="Order Date">{{date_purchased}}</td>
+			<td title="Payment Type">{{payment_type}}</td>
+			<td title="Ref #">{{purchase_order}}</td>
+			<td title="Status">{{orders_status}}</td>
+			<td title="Total">{{order_total}}</td>
+			<td title="Ordered By">{{ordered_by}}</td>
+			<td title="Shipped To">{{shipped_to}}</td>
+		</tr>
+		{{/page_orders}}
+		{{^page_orders}}
+		<tr>
+			<td colspan="8">You don't have any orders yet!</td>
+		</tr>
+		{{/page_orders}}
+	</tbody>
+</table>

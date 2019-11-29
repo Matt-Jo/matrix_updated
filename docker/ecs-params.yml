@@ -1,0 +1,20 @@
+## See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cmd-ecs-cli-compose-ecsparams.html
+version: 1
+task_definition:
+  task_execution_role: ecsTaskExecutionRole
+  ecs_network_mode: bridge
+  task_size:
+    mem_limit: 0.5GB
+    cpu_limit: 256
+  services:
+    apache_img:
+      essential: true
+    php_img:
+      essential: true
+    memcached_img:
+      essential: true
+    composer_img:
+      essential: true
+    utils_img:
+      essential: false
+

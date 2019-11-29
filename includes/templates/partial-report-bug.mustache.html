@@ -1,0 +1,72 @@
+<style>
+	#ck-bug-reporter { position:fixed; bottom:0px; left:20px; font-size: 14px; z-index:999; }
+	#ck-bug-reporter .bug-report-tag { font-size:14px; display:block; padding:3px 6px 4px 6px; margin-left:5px; border-color:#33f; border-style:solid; border-width:1px 1px 0px 1px; position:relative; top:1px; background-color:#fff; float:left; clear:both; }
+	#ck-bug-reporter .bug-report-form { float:left; clear:both; display:none; border-color:#000; border-style:solid; border-width:1px 1px 0px 1px; background-color:#fff; padding:10px; }
+	#ck-bug-reporter .bug-report-capturing { display:none; background-color:#fff; padding:3px; }
+	#bug-url { width:600px; }
+	.check-mark { color:#008000; font-size:20px; }
+	.confirmation-message { text-align:center; color:#ff0000; }
+</style>
+<div id="ck-bug-reporter">
+	<a href="#" class="bug-report-tag">Report a Bug{{#bug_reported}} <span class="check-mark">&#10004;</span>{{/bug_reported}}</a>
+	<div class="bug-report-form">
+		{{#bug_reported}}<p class="confirmation-message">You just submitted a bug; be sure you aren't submitting a duplicate! You should receive a confirmation email momentarily!</p>{{/bug_reported}}
+		<form id="bug-report" action="/admin/report-bug.php" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="action" value="report-bug">
+			<input type="hidden" name="action-level" value="global">
+			<input type="hidden" id="bug-return-to" name="return-to"  value="">
+			<strong>Summary:</strong> <input type="text" id="bug-summary" name="summary" required><br>
+			<strong>URL:</strong> <input type="text" id="bug-url" name="url" value="" autocomplete="off"><br>
+			<span id="bug-screenshot"><strong>Screenshot:</strong> <input type="file" name="screenshot" value=""><br></span>
+			<strong>Is your process halted?:</strong> [<input type="radio" name="stuck" value="yes"> Yes] [<input type="radio" name="stuck" value="no" checked> No]<br>
+			<strong>Is there a workaround?:</strong> [<input type="radio" name="workaround" value="yes" checked> Yes] [<input type="radio" name="workaround" value="no"> No]<br>
+			<strong>Describe the issue:</strong><br>
+			<textarea name="description" cols="80" rows="10" wrap="virtual" required></textarea><br>
+			<input type="hidden" id="bug-querystring" name="querystring" value="">
+			<input type="hidden" name="postvars" value="{{postvars}}">
+			<input type="hidden" name="sessvars" value="{{sessvars}}">
+			<input type="hidden" id="bug-page-source" name="page-source" value="">
+			<input type="hidden" id="bug-auto-screenshot" name="auto-screenshot" value="">
+			<input type="submit" value="Report">
+		</form>
+	</div>
+	<div class="bug-report-capturing">Capturing Screenshot...</div>
+</div>
+<script src="{{static_files}}/js/html2canvas.js" defer></script>
+<script>
+	jQuery('#bug-report').submit(function () {
+		jQuery(this).find('input[type=submit]').attr('disabled', 'true');
+	});
+
+	jQuery('.bug-report-tag').click(function(e) {
+		e.preventDefault();
+
+		if (jQuery('#ck-bug-reporter').hasClass('view')) {
+			jQuery('#ck-bug-reporter').removeClass('view');
+			jQuery('.bug-report-form').hide();
+			return;
+		}
+		jQuery('#ck-bug-reporter').addClass('view');
+		jQuery('#bug-auto-captured').remove();
+
+		jQuery('.bug-report-tag').hide();
+		jQuery('.bug-report-capturing').show();
+		jQuery('#bug-return-to').val(window.location.href);
+		jQuery('#bug-url').val(window.location.href);
+
+		html2canvas(document.body, {
+			onrendered: function(canvas) {
+				jQuery('.bug-report-capturing').hide();
+				jQuery('.bug-report-tag').show();
+				jQuery('.bug-report-form').show();
+				jQuery('#bug-auto-screenshot').val(canvas.toDataURL());
+				jQuery('.bug-report-form').append('<div id="bug-auto-captured">Screenshot of this page has been auto-captured</div>');
+			},
+			allowTaint: false
+		});
+
+		jQuery('#bug-querystring').val(window.location.search);
+		jQuery('#bug-page-source').val(document.documentElement.outerHTML);
+
+	});
+</script>

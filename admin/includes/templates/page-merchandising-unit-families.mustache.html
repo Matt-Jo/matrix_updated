@@ -1,0 +1,68 @@
+<style>
+	h3 { margin:3px 0px 6px 0px; color:#727272; }
+
+	.family-actions { text-align:right; margin:0px 0px 3px 0px; padding:0px 1px 0px 0px; }
+
+	.no-results { text-align:center; font-weight:bold; padding:8px; }
+</style>
+<td id="page-body">
+	{{#has_errors?}}
+		<br>ERRORS:<br>
+		{{#errors}}{{{.}}}<br>{{/errors}}
+	{{/has_errors?}}
+	<h3>Family Units</h3>
+	<div class="family-actions">
+		<a href="/admin/merchandising-unit-family-detail.php?context=create" class="button-link">Create New Family</a>
+	</div>
+	<table cellpadding="0" cellspacing="0" border="0" id="merchandising-unit-family-list" class="ck-table-manager">
+		<thead>
+			<tr>
+				<th>Family ID</th>
+				<th>Model # Generic</th>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Active</th>
+				<th>Created</th>
+				<th class="no-sort">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#families}}
+			<tr data-family-id="{{family_unit_id}}">
+				<td>{{family_unit_id}}</td>
+				<td>{{generic_model_number}}</td>
+				<td>{{name}}</td>
+				<td>{{type}}</td>
+				<td>{{active}}</td>
+				<td>{{date_created}}</td>
+				<td>
+					<a href="/admin/merchandising-unit-family-detail.php?context=edit&family_unit_id={{family_unit_id}}" class="button-link">Edit</a>
+				</td>
+			</tr>
+			{{/families}}
+			{{^families}}
+			<tr>
+				<td colspan="7" class="no-results">No Families Found</td>
+			</tr>
+			{{/families}}
+		</tbody>
+	</table>
+</td>
+<script>
+	jQuery('#merchandising-unit-family-list').table_manager({
+		color_rows: true,
+		sortable: true,
+		sort_methods: {
+			0: 'integer',
+			//1: 'text',
+			//2: 'text',
+			//3: 'text',
+			4: function(val1, val2) {
+				if (val1 == 'Y' && val2 == 'N') return -1;
+				if (val1 == 'N' && val2 == 'Y') return 1;
+				return 0;
+			},
+			5: 'date',
+		},
+	});
+</script>

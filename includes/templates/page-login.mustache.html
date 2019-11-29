@@ -1,0 +1,369 @@
+<style>
+	.main-body-container { margin-bottom:15px; width:auto; }
+	.main-body-inner-container { margin:0px; padding:20px; font-size:13px; line-height:1.5em; }
+
+	.main-body-container.template-basic { background-color:#f1f1f1; padding:10px; border-style:solid; border-color:#cecece; border-width:0px 1px 2px 1px; }
+	.template-basic .main-body-inner-container { background-color:#fff; border:1px solid #ddd; border-radius:10px; }
+
+	.clearfix { clear:both; }
+
+	.error-stack { margin-bottom:20px; }
+
+	.login-header { font-size:24px; font-weight:bold; margin-bottom:30px; position:relative; }
+	.login-header sup { position:absolute; font-size:11px; color:#f00; margin:5px 0px 0px 10px; font-weight:normal; }
+
+	.account-handling input, .account-handling select { padding:3px 3px 3px 15px; color:#666; border:1px solid #ccc; font-size:14px; }
+	.account-handling select { min-width:200px; height:25px; }
+	.account-handling input::placeholder, .account-handling select option:first-child { color:#aaa; }
+	.account-handling input[type=image] { border-width:0px; position:relative; bottom:15px; }
+	.account-handling input[type=checkbox], .account-handling input[type=radio] { padding:0px; border-width:0px; }
+	.account-handling input[required], .account-handling select[required] { background-image:url(/images/static/img/required.png); background-repeat:no-repeat; background-position:3px 50%; }
+
+	.login-block { width:100%; text-align:center; color:#555; }
+	.login-block .field { display:inline-block; vertical-align:top; text-align:right; margin-left:30px; }
+	.login-block sub { font-size:11px; font-weight:bold; }
+	.login-block sub a { color:#4d98eb; }
+	.login-block sub a:hover { color:#3970ae; }
+
+	.account-separator { width:100%; text-align:center; margin-bottom:20px; }
+
+	.create-block { width:100%; text-align:left; color:#555; }
+	.create-block .login-header { text-align:center; }
+	.create-block .field { display:inline-block; vertical-align:top; text-align:left; margin:0px 5px 20px 5px; }
+	.create-block .long-field { margin:0px 5px 20px 6px; }
+	.create-block .long-input { width:393px; }
+	.create-block .long-select { width:415px; }
+	.create-block .column { display:inline-block; width:430px; margin-left:20px; border-width:0px; /*padding:0px 50px;*/ }
+	.create-block .account-details { }
+	.create-block .segmentation { vertical-align:bottom; font-size:18px; line-height:1.5em; }
+	.create-block .segmentation .field { padding-left:20px; }
+	.create-block .form-submit { text-align:right; margin:15px 40px 0px 0px; }
+
+	.option-list { padding-left:10px; margin:5px 0px 0px 0px; }
+	.option-list li { list-style-type:none; }
+
+	@media (max-width:980px) {
+		.main-body-container.template-basic { padding:0px; }
+		.template-basic .main-body-inner-container { border-radius:0px; border-width:0px; padding:20px 5px 10px 10px; }
+
+		.create-block .column { display:block; width:auto; text-align:center; }
+		.create-block .form-submit { text-align:center; margin:15px 0px 0px 0px; }
+	}
+
+	@media (max-width:700px) {
+		.login-header { margin-bottom:20px; }
+
+		.account-handling input[type=image] { position:static; }
+
+		.login-block .field { margin:0px auto 15px; text-align:center; display:block; }
+	}
+
+	@media (max-width:480px) {
+		.login-header sup { margin-left:4px; line-height:1.5em; }
+		.create-block .field { display:block; width:auto; text-align:center; }
+		.create-block .segmentation .field { text-align:left; }
+		.create-block .long-input, .create-block .long-select { width:auto; }
+	}
+</style>
+<div class="main-body-container template-basic">
+	<div class="main-body-inner-container">
+		{{#login-error}}
+		<div class="error-stack">{{{.}}}</div>
+		{{/login-error}}
+
+		{{#create-account-error}}
+		<div class="error-stack">{{{.}}}</div>
+		{{/create-account-error}}
+
+		<div class="account-handling">
+			<div class="login-block">
+				<div class="login-header">Returning Customer</div>
+
+				<form name="login" action="/login.php" method="post">
+					<input type="hidden" name="action" value="login">
+					<input type="hidden" name="new_customer" value="N">
+					<input type="hidden" name="target_page" value="{{target_page}}">
+
+					<div class="field">
+						<input type="text" name="email_address" placeholder="Email" value="{{login_email_address}}" required><br>
+					</div>
+					<div class="field">
+						<input type="password" name="password" placeholder="Password" required><br>
+						<sub><a href="/password_forgotten.php">forgot password</a></sub>
+					</div>
+					<div class="field">
+						<input type="image" src="//media.cablesandkits.com/static/img/sign-in-button.png" alt="sign in">
+					</div>
+					<div class="clearfix"></div>
+				</form>
+			</div>
+
+			<div class="account-separator">
+				<img src="/images/static/img/log_hor_or.gif" alt="separator">
+			</div>
+
+			<div class="create-block">
+				<div class="login-header">
+					New Customer
+					<sup>(<img src="/images/static/img/required.png" alt="required"> Required Field)</sup>
+				</div>
+
+				<form name="create_account" action="/login.php" method="post" onsubmit="return check_form(create_account);">
+					<input type="hidden" name="action" value="create-account">
+					<input type="hidden" name="newsletter" value="1">
+					<input type="hidden" name="target_page" value="{{target_page}}">
+
+					<div class="column account-details">
+						<div class="field">
+							<input type="text" name="firstname" placeholder="First Name" value="{{firstname}}" required>
+						</div>
+						<div class="field">
+							<input type="text" name="lastname" placeholder="Last Name" value="{{lastname}}" required>
+						</div>
+						<div class="long-field">
+							<input type="text" class="long-input" name="company" placeholder="Company (optional)" value="{{company}}">
+						</div>
+						<div class="long-field">
+							<input type="text" class="long-input" name="street_address" placeholder="Street Address (billing)" value="{{street_address}}" required>
+						</div>
+						<div class="long-field">
+							<input type="text" class="long-input" name="suburb" placeholder="Street Address (continued)" value="{{suburb}}">
+						</div>
+						<div class="field">
+							<input type="text" name="city" placeholder="City" value="{{city}}" required>
+						</div>
+						<div class="field">
+							<input type="text" name="postcode" placeholder="Zip" value="{{postcode}}" required>
+						</div>
+						<div class="long-field">
+							<select name="country" class="long-select" onchange="return refresh_form(create_account);" required>
+								<option>Please Select</option>
+								{{#countries}}
+								<option value="{{countries_id}}" {{#selected?}}selected{{/selected?}}>{{countries_name}}</option>
+								{{/countries}}
+							</select>
+						</div>
+						<div class="field">
+							{{#states.0}}
+							<select name="state" required>
+								<option>State/Province</option>
+								{{#states}}
+								<option value="{{zone_name}}" {{#selected?}}selected{{/selected?}}>{{zone_name}}</option>
+								{{/states}}
+							</select>
+							{{/states.0}}
+							{{^states.0}}
+							<input type="text" name="state" placeholder="State/Province" value="{{state}}" required>
+							{{/states.0}}
+						</div><br>
+						<div class="field">
+							<input type="text" name="telephone" placeholder="Phone Number" value="{{telephone}}" required>
+						</div><br>
+						<div class="field">
+							<input type="text" id="new_email_address" name="email_address" placeholder="Email Address" value="{{create_email_address}}" required>
+						</div>
+						<div class="field">
+							<input type="text" name="confirm_email_address" placeholder="Confirm Email Address" required>
+						</div><br>
+						{{#admin?}}
+						<div class="field">
+							<input type="hidden" id="send-customer-password" name="send_customer_password" checked>
+							<b>Admin, The customer will receive an automated email to set their initial password.</b>
+						</div>
+						{{/admin?}}
+						{{^admin?}}
+						<div class="field">
+							<input type="password" name="password" placeholder="Password" required>
+						</div>
+						<div class="field">
+							<input type="password" name="confirmation" placeholder="Confirm Password" required>
+						</div>
+						{{/admin?}}
+						{{#canadian?}}
+						<div class="field">
+							<input type="checkbox" name="canada_opt_in" {{#canada_opt_in}}checked{{/canada_opt_in}}>
+							Check here to sign up for our monthly emails to stay up to date on the latest products, services, and deals.
+						</div>
+						{{/canadian?}}
+					</div>
+
+					<div class="column segmentation">
+						<div class="field">
+							<img src="/images/static/img/required.png" alt="required"> <strong>How do you plan to use our products?</strong><br>
+							<ul class="option-list">
+								<li><input type="radio" name="customer_segment" value="IN" id="cs-in" {{#IN?}}checked{{/IN?}} required> <label for="cs-in">for personal use</label></li>
+								<li><input type="radio" name="customer_segment" value="EU" id="cs-eu" {{#EU?}}checked{{/EU?}} required> <label for="cs-eu">for installation in my business/where I work</label></li>
+								<li><input type="radio" name="customer_segment" value="RS" id="cs-rs" {{#RS?}}checked{{/RS?}} required> <label for="cs-rs">for installation/management of a client or resale to a customer</label></li>
+								<li><input type="radio" name="customer_segment" value="ST" id="cs-st" {{#ST?}}checked{{/ST?}} required> <label for="cs-st">for furthering my IT education</label></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="form-submit">
+						<input type="image" src="//media.cablesandkits.com/static/img/proceed-to-checkout-button.png">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var form = '';
+	var submitted = false;
+	var error = false;
+	var error_message = '';
+
+	function check_input(field_name, field_size, message) {
+		if (form.elements[field_name] && (form.elements[field_name].type != 'hidden')) {
+			var field_value = form.elements[field_name].value;
+
+			if (field_value == '' || field_value.length < field_size) {
+				error_message = error_message + "* " + message + "\n";
+				error = true;
+			}
+		}
+	}
+
+	function check_postcode() {
+		check_input('postcode', {{validation.postcode.min_length}}, 'Your Zip Code must contain a minimum of {{validation.postcode.min_length}} characters.');
+
+		var valid = '0123456789-';
+		var hyphencount = 0;
+		var country = form.elements['country'].value;
+		if (country == '223') {
+			var field = form.elements['postcode'].value;
+
+			if (field.length!=5 && field.length!=10) {
+				error_message = error_message + '* ' + 'Please enter your 5 digit or 5 digit+4 zip code.\n';
+				error = true;
+				return false;
+			}
+
+			for (var i=0; i < field.length; i++) {
+				temp = '' + field.substring(i, i+1);
+				if (temp == '-') hyphencount++;
+				if (valid.indexOf(temp) == '-1') {
+					error_message = error_message + '* Invalid characters in your zip code. Please try again.\n';
+					error = true;
+					return false;
+				}
+				if ((hyphencount > 1) || ((field.length==10) && ''+field.charAt(5)!='-')) {
+					error_message = error_message + '* ' + "The hyphen character should be used with a properly formatted 5 digit+four zip code, like '12345-6789'. Please try again.\n";
+					error = true;
+					return false;
+				}
+			}
+		}
+	}
+
+	function check_radio(field_name, message) {
+		var isChecked = false;
+
+		if (form.elements[field_name] && (form.elements[field_name].type != 'hidden')) {
+			var radio = form.elements[field_name];
+
+			for (var i=0; i<radio.length; i++) {
+				if (radio[i].checked == true) {
+					isChecked = true;
+					break;
+				}
+			}
+
+			if (isChecked == false) {
+				error_message = error_message + '* ' + message + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_select(field_name, field_default, message) {
+		if (form.elements[field_name] && (form.elements[field_name].type != 'hidden')) {
+			var field_value = form.elements[field_name].value;
+
+			if (field_value == field_default) {
+				error_message = error_message + '* ' + message + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_password(field_name_1, field_name_2, field_size, message_1, message_2) {
+		if (form.elements[field_name_1] && (form.elements[field_name_1].type != 'hidden')) {
+			var password = form.elements[field_name_1].value;
+			var confirmation = form.elements[field_name_2].value;
+
+			if (password == '' || password.length < field_size) {
+				error_message = error_message + '* ' + message_1 + '\n';
+				error = true;
+			}
+			else if (password != confirmation) {
+				error_message = error_message + '* ' + message_2 + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_password_new(field_name_1, field_name_2, field_name_3, field_size, message_1, message_2, message_3) {
+		if (form.elements[field_name_1] && (form.elements[field_name_1].type != 'hidden')) {
+			var password_current = form.elements[field_name_1].value;
+			var password_new = form.elements[field_name_2].value;
+			var password_confirmation = form.elements[field_name_3].value;
+
+			if (password_current == '' || password_current.length < field_size) {
+				error_message = error_message + '* ' + message_1 + '\n';
+				error = true;
+			}
+			else if (password_new == '' || password_new.length < field_size) {
+				error_message = error_message + '* ' + message_2 + '\n';
+				error = true;
+			}
+			else if (password_new != password_confirmation) {
+				error_message = error_message + '* ' + message_3 + '\n';
+				error = true;
+			}
+		}
+	}
+
+	function check_form(form_name) {
+		if (submitted == true) {
+			alert('This form has already been submitted. Please press Ok and wait for this process to be completed.');
+			return false;
+		}
+
+		error = false;
+		form = form_name;
+		error_message = 'Errors have occured during the process of your form.\n\nPlease make the following corrections:\n\n';
+
+		check_input('firstname', {{validation.first_name.min_length}}, 'Your First Name must contain a minimum of {{validation.first_name.min_length}} characters.');
+		check_input('lastname', {{validation.last_name.min_length}}, 'Your Last Name must contain a minimum of {{validation.last_name.min_length}} characters.');
+
+		check_input('email_address', {{validation.email_address.min_length}}, 'Your E-Mail Address must contain a minimum of {{validation.email_address.min_length}} characters.');
+		check_password('email_address', 'confirm_email_address', 0, 'Please enter an email address.', 'The email addresses you entered do not match');
+
+		check_input('street_address', {{validation.address1.min_length}}, 'Your Street Address must contain a minimum of {{validation.address1.min_length}} characters.');
+		check_postcode();
+		check_input('city', {{validation.city.min_length}}, 'Your City must contain a minimum of {{validation.city.min_length}} characters.');
+		check_input('state', {{validation.state.min_length}}, 'Please select a state.');
+		check_select('country', '', 'You must select a country form the Countries pull down menu.');
+
+		check_input('telephone', {{validation.telephone.min_length}}, 'Your Telephone Number must contain a minimum of {{validation.telephone.min_length}} characters.');
+
+		check_password('password', 'confirmation', {{validation.password.min_length}}, 'Your Password must contain a minimum of {{validation.password.min_length}} characters', 'The Password Confirmation must match your Password.');
+		check_password_new('password_current', 'password_new', 'password_confirmation', {{validation.password.min_length}}, 'Your Password must contain a minimum of {{validation.password.min_length}} characters', 'Your new Password must contain a minimum of {{validation.password.min_length}} characters', 'The Password Confirmation must match your new Password');
+
+		if (error == true) {
+			alert(error_message);
+			return false;
+		}
+		else {
+			submitted = true;
+			return true;
+		}
+	}
+
+	function refresh_form(form_name) {
+		form_name.action.value = 'refresh';
+		form_name.submit();
+		return true;
+	}
+</script>
